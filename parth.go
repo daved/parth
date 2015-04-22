@@ -1,7 +1,7 @@
-// Package pathparse provides a simple API for accessing path segments.
+// Package parth provides a simple API for accessing path segments.
 // Accessing multiple segments may produce errors at any stage, so be mindful
 // of when they are checked.
-package pathparse
+package parth
 
 import (
 	"fmt"
