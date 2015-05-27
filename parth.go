@@ -1,162 +1,158 @@
 // Package parth provides a simple API for accessing path segments.
-// Accessing multiple segments may produce errors at any stage, so be mindful
-// of when they are checked.
 package parth
 
 import (
 	"fmt"
 	"strconv"
-	"strings"
 )
 
-// Parser holds path segment info, and err for accumulated errors.
-type Parser struct {
-	segments []string
-	len		int
-	err      error
+// Parth holds the path for parsing.
+type Parth struct {
+	path string
 }
 
-// New receives a path, and returns a new Parser.
-func New(path string) *Parser {
-	s := strings.Split(strings.TrimLeft(path, "/"), "/")
-	return &Parser{segments: s, len:len(s)}
+// New receives a path, and returns a new Parth object.
+func New(path string) *Parth {
+	return &Parth{path: path}
 }
 
-// Err allows errors to be checked more flexibly.
-func (p *Parser) Err() error {
-	return p.err
+// String receives an int representing a path segment, and returns both the
+// specified segment as a string and a nil error.  If any error is encountered,
+// a zero value string and error are returned.
+func (p *Parth) String(i int) (string, error) {
+	c, i1, i2 := 0, 0, 0
+	for n := 0; n < len(p.path); n++ {
+		if p.path[n] == '/' {
+			if c == i {
+				if n+1 < len(p.path) && p.path[n+1] != '/' {
+					i1 = n + 1
+				} else {
+					break
+				}
+			}
+			if c > i {
+				i2 = n
+				break
+			}
+			c++
+		} else if n == 0 {
+			if c == i {
+				i1 = n
+			}
+			c++
+		} else if n == len(p.path)-1 {
+			if c > i {
+				i2 = n + 1
+			}
+			break
+		}
+	}
+	if i < 0 || i2 == 0 {
+		return "", fmt.Errorf("path segment index %d does not exist", i)
+	}
+	return p.path[i1:i2], nil
 }
 
-// String receives an int representing a segment, and returns the specified
-// segment as a string, or returns empty and sets p.err upon any failure.
-// Because paths start as strings, this method is used by other methods.
-func (p *Parser) String(i int) string {
-	if p.err != nil {
-		return ""
+// Int64 receives an int representing a path segment, and returns both the
+// specified segment as an int64 and a nil error.  If any error is encountered,
+// a zero value int64 and error are returned.
+func (p *Parth) Int64(i int) (v int64, err error) {
+	if s, err := p.String(i); err == nil {
+		if v, err = strconv.ParseInt(s, 10, 64); err == nil {
+			return v, nil
+		}
 	}
-	if i < 0 || i >= p.len {
-		p.err = fmt.Errorf("%d is out of bounds", i)
-		return ""
-	}
-	return p.segments[i]
+
+	return 0, err
 }
 
-// Int64 receives an int representing a segment, and returns the specified
-// segment as an int64, or returns 0 and sets p.err upon any failure.
-func (p *Parser) Int64(i int) int64 {
-	s := p.String(i)
-	if p.err != nil {
-		return 0
+// Int32 receives an int representing a path segment, and returns both the
+// specified segment as an int32 and a nil error.  If any error is encountered,
+// a zero value int32 and error are returned.
+func (p *Parth) Int32(i int) (_ int32, err error) {
+	if s, err := p.String(i); err == nil {
+		if v, err := strconv.ParseInt(s, 10, 32); err == nil {
+			return int32(v), nil
+		}
 	}
-	v, err := strconv.ParseInt(s, 10, 64)
-	if err != nil {
-		p.err = err
-		return 0
-	}
-	return v
+
+	return 0, err
 }
 
-// Int32 receives an int representing a segment, and returns the specified
-// segment as an int32, or returns 0 and sets p.err upon any failure.
-func (p *Parser) Int32(i int) int32 {
-	s := p.String(i)
-	if p.err != nil {
-		return 0
+// Int16 receives an int representing a path segment, and returns both the
+// specified segment as an int16 and a nil error.  If any error is encountered,
+// a zero value int16 and error are returned.
+func (p *Parth) Int16(i int) (_ int16, err error) {
+	if s, err := p.String(i); err == nil {
+		if v, err := strconv.ParseInt(s, 10, 16); err == nil {
+			return int16(v), nil
+		}
 	}
-	v, err := strconv.ParseInt(s, 10, 32)
-	if err != nil {
-		p.err = err
-		return 0
-	}
-	return int32(v)
+
+	return 0, err
 }
 
-// Int16 receives an int representing a segment, and returns the specified
-// segment as an int16, or returns 0 and sets p.err upon any failure.
-func (p *Parser) Int16(i int) int16 {
-	s := p.String(i)
-	if p.err != nil {
-		return 0
+// Int8 receives an int representing a path segment, and returns both the
+// specified segment as an int8 and a nil error.  If any error is encountered,
+// a zero value int8 and error are returned.
+func (p *Parth) Int8(i int) (_ int8, err error) {
+	if s, err := p.String(i); err == nil {
+		if v, err := strconv.ParseInt(s, 10, 8); err == nil {
+			return int8(v), nil
+		}
 	}
-	v, err := strconv.ParseInt(s, 10, 16)
-	if err != nil {
-		p.err = err
-		return 0
-	}
-	return int16(v)
+
+	return 0, err
 }
 
-// Int8 receives an int representing a segment, and returns the specified
-// segment as an int8, or returns 0 and sets p.err upon any failure.
-func (p *Parser) Int8(i int) int8 {
-	s := p.String(i)
-	if p.err != nil {
-		return 0
+// Int receives an int representing a path segment, and returns both the
+// specified segment as an int and a nil error.  If any error is encountered,
+// a zero value int and error are returned.
+func (p *Parth) Int(i int) (_ int, err error) {
+	if s, err := p.String(i); err == nil {
+		if v, err := strconv.ParseInt(s, 10, 0); err == nil {
+			return int(v), nil
+		}
 	}
-	v, err := strconv.ParseInt(s, 10, 8)
-	if err != nil {
-		p.err = err
-		return 0
-	}
-	return int8(v)
+
+	return 0, err
 }
 
-// Int receives an int representing a segment, and returns the specified
-// segment as an int, or returns 0 and sets p.err upon any failure.
-func (p *Parser) Int(i int) int {
-	s := p.String(i)
-	if p.err != nil {
-		return 0
+// Bool receives an int representing a path segment, and returns both the
+// specified segment as a bool and a nil error.  If any error is encountered,
+// a zero value bool and error are returned.
+func (p *Parth) Bool(i int) (v bool, err error) {
+	if s, err := p.String(i); err == nil {
+		if v, err := strconv.ParseBool(s); err == nil {
+			return v, nil
+		}
 	}
-	v, err := strconv.ParseInt(s, 10, 0)
-	if err != nil {
-		p.err = err
-		return 0
-	}
-	return int(v)
+
+	return false, err
 }
 
-// Bool receives an int representing a segment, and returns the specified
-// segment as a bool, or returns 0 and sets p.err upon any failure.
-func (p *Parser) Bool(i int) bool {
-	s := p.String(i)
-	if p.err != nil {
-		return false
+// Float64 receives an int representing a path segment, and returns both the
+// specified segment as a float64 and a nil error.  If any error is encountered,
+// a zero value float64 and error are returned.
+func (p *Parth) Float64(i int) (v float64, err error) {
+	if s, err := p.String(i); err == nil {
+		if v, err := strconv.ParseFloat(s, 64); err == nil {
+			return v, nil
+		}
 	}
-	v, err := strconv.ParseBool(s)
-	if err != nil {
-		p.err = err
-		return false
-	}
-	return v
+
+	return 0.0, err
 }
 
-// Float64 receives an int representing a segment, and returns the specified
-// segment as an float64, or returns 0 and sets p.err upon any failure.
-func (p *Parser) Float64(i int) float64 {
-	s := p.String(i)
-	if p.err != nil {
-		return 0
+// Float32 receives an int representing a path segment, and returns both the
+// specified segment as a float32 and a nil error.  If any error is encountered,
+// a zero value float32 and error are returned.
+func (p *Parth) Float32(i int) (_ float32, err error) {
+	if s, err := p.String(i); err == nil {
+		if v, err := strconv.ParseFloat(s, 32); err == nil {
+			return float32(v), nil
+		}
 	}
-	v, err := strconv.ParseFloat(s, 64)
-	if err != nil {
-		p.err = err
-		return 0
-	}
-	return v
-}
 
-// Float32 receives an int representing a segment, and returns the specified
-// segment as a float32, or returns 0 and sets p.err upon any failure.
-func (p *Parser) Float32(i int) float32 {
-	s := p.String(i)
-	if p.err != nil {
-		return 0
-	}
-	v, err := strconv.ParseFloat(s, 32)
-	if err != nil {
-		p.err = err
-		return 0
-	}
-	return float32(v)
+	return 0.0, err
 }
