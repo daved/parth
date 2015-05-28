@@ -1,7 +1,8 @@
-// Package parth provides a simple API for accessing path segments.  When
-// returning an int of any size, the first whole number within the specified
-// segment will be returned.  When returning a float of any size, the first
-// decimal number within the specified segment will be returned.
+// Package parth provides a simple API for accessing path segments.
+//
+// When returning an int of any size, the first whole number within the
+// specified segment will be returned.  When returning a float of any size,
+// the first decimal number within the specified segment will be returned.
 package parth
 
 import (
@@ -61,124 +62,150 @@ func (p *Parth) String(i int) (string, error) {
 // Int64 receives an int representing a path segment, and returns both the
 // specified segment as an int64 and a nil error.  If any error is encountered,
 // a zero value int64 and error are returned.
-func (p *Parth) Int64(i int) (v int64, err error) {
+func (p *Parth) Int64(i int) (int64, error) {
 	var s string
-	if s, err = p.String(i); err == nil {
-		if s, err = getIntString(s); err == nil {
-			if v, err = strconv.ParseInt(s, 10, 64); err == nil {
-				return v, nil
-			}
-		}
+	var v int64
+	var err error
+	if s, err = p.String(i); err != nil {
+		return 0, err
 	}
-	return 0, err
+	if s, err = getIntString(s); err != nil {
+		return 0, err
+	}
+	if v, err = strconv.ParseInt(s, 10, 64); err != nil {
+		return 0, err
+	}
+	return v, nil
 }
 
 // Int32 receives an int representing a path segment, and returns both the
 // specified segment as an int32 and a nil error.  If any error is encountered,
 // a zero value int32 and error are returned.
-func (p *Parth) Int32(i int) (_ int32, err error) {
+func (p *Parth) Int32(i int) (int32, error) {
 	var s string
 	var v int64
-	if s, err = p.String(i); err == nil {
-		if s, err = getIntString(s); err == nil {
-			if v, err = strconv.ParseInt(s, 10, 32); err == nil {
-				return int32(v), nil
-			}
-		}
+	var err error
+	if s, err = p.String(i); err != nil {
+		return 0, err
 	}
-	return 0, err
+	if s, err = getIntString(s); err != nil {
+		return 0, err
+	}
+	if v, err = strconv.ParseInt(s, 10, 32); err != nil {
+		return 0, err
+	}
+	return int32(v), nil
 }
 
 // Int16 receives an int representing a path segment, and returns both the
 // specified segment as an int16 and a nil error.  If any error is encountered,
 // a zero value int16 and error are returned.
-func (p *Parth) Int16(i int) (_ int16, err error) {
+func (p *Parth) Int16(i int) (int16, error) {
 	var s string
 	var v int64
-	if s, err = p.String(i); err == nil {
-		if s, err = getIntString(s); err == nil {
-			if v, err = strconv.ParseInt(s, 10, 16); err == nil {
-				return int16(v), nil
-			}
-		}
+	var err error
+	if s, err = p.String(i); err != nil {
+		return 0, err
 	}
-	return 0, err
+	if s, err = getIntString(s); err != nil {
+		return 0, err
+	}
+	if v, err = strconv.ParseInt(s, 10, 16); err != nil {
+		return 0, err
+	}
+	return int16(v), nil
 }
 
 // Int8 receives an int representing a path segment, and returns both the
 // specified segment as an int8 and a nil error.  If any error is encountered,
 // a zero value int8 and error are returned.
-func (p *Parth) Int8(i int) (_ int8, err error) {
+func (p *Parth) Int8(i int) (int8, error) {
 	var s string
 	var v int64
-	if s, err = p.String(i); err == nil {
-		if s, err = getIntString(s); err == nil {
-			if v, err = strconv.ParseInt(s, 10, 8); err == nil {
-				return int8(v), nil
-			}
-		}
+	var err error
+	if s, err = p.String(i); err != nil {
+		return 0, err
 	}
-	return 0, err
+	if s, err = getIntString(s); err != nil {
+		return 0, err
+	}
+	if v, err = strconv.ParseInt(s, 10, 8); err != nil {
+		return 0, err
+	}
+	return int8(v), nil
 }
 
 // Int receives an int representing a path segment, and returns both the
 // specified segment as an int and a nil error.  If any error is encountered,
 // a zero value int and error are returned.
-func (p *Parth) Int(i int) (_ int, err error) {
+func (p *Parth) Int(i int) (int, error) {
 	var s string
 	var v int64
-	if s, err = p.String(i); err == nil {
-		if s, err = getIntString(s); err == nil {
-			if v, err = strconv.ParseInt(s, 10, 0); err == nil {
-				return int(v), nil
-			}
-		}
+	var err error
+	if s, err = p.String(i); err != nil {
+		return 0, err
 	}
-	return 0, err
+	if s, err = getIntString(s); err != nil {
+		return 0, err
+	}
+	if v, err = strconv.ParseInt(s, 10, 0); err != nil {
+		return 0, err
+	}
+	return int(v), nil
 }
 
 // Bool receives an int representing a path segment, and returns both the
 // specified segment as a bool and a nil error.  If any error is encountered,
 // a zero value bool and error are returned.
-func (p *Parth) Bool(i int) (v bool, err error) {
+func (p *Parth) Bool(i int) (bool, error) {
 	var s string
-	if s, err = p.String(i); err == nil {
-		if v, err = strconv.ParseBool(s); err == nil {
-			return v, nil
-		}
+	var v bool
+	var err error
+	if s, err = p.String(i); err != nil {
+		return false, err
 	}
-	return false, err
+	if v, err = strconv.ParseBool(s); err != nil {
+		return false, err
+	}
+	return v, nil
 }
 
 // Float64 receives an int representing a path segment, and returns both the
 // specified segment as a float64 and a nil error.  If any error is encountered,
 // a zero value float64 and error are returned.
-func (p *Parth) Float64(i int) (v float64, err error) {
+func (p *Parth) Float64(i int) (float64, error) {
 	var s string
-	if s, err = p.String(i); err == nil {
-		if s, err = getFloatString(s); err == nil {
-			if v, err = strconv.ParseFloat(s, 64); err == nil {
-				return v, nil
-			}
-		}
+	var v float64
+	var err error
+	if s, err = p.String(i); err != nil {
+		return 0.0, err
 	}
-	return 0.0, err
+	if s, err = getFloatString(s); err != nil {
+		return 0.0, err
+	}
+	if v, err = strconv.ParseFloat(s, 64); err != nil {
+		return 0.0, err
+	}
+	return v, nil
 }
 
 // Float32 receives an int representing a path segment, and returns both the
 // specified segment as a float32 and a nil error.  If any error is encountered,
 // a zero value float32 and error are returned.
-func (p *Parth) Float32(i int) (_ float32, err error) {
+func (p *Parth) Float32(i int) (float32, error) {
 	var s string
 	var v float64
-	if s, err = p.String(i); err == nil {
-		if s, err = getFloatString(s); err == nil {
-			if v, err = strconv.ParseFloat(s, 32); err == nil {
-				return float32(v), nil
-			}
-		}
+	var err error
+	if s, err = p.String(i); err != nil {
+		return 0.0, err
 	}
-	return 0.0, err
+	if s, err = getFloatString(s); err != nil {
+		return 0.0, err
+	}
+	if v, err = strconv.ParseFloat(s, 32); err != nil {
+		return 0.0, err
+	}
+	return float32(v), nil
 }
 
 func getIntString(s string) (string, error) {
