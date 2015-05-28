@@ -1,4 +1,4 @@
-// Package parth provides a simple API for accessing path segments.
+// Package parth provides functions for accessing path segments.
 //
 // When returning an int of any size, the first whole number within the
 // specified segment will be returned.  When returning a float of any size,
@@ -12,25 +12,15 @@ import (
 	"unicode"
 )
 
-// Parth holds the path for parsing.
-type Parth struct {
-	path string
-}
-
-// New receives a path, and returns a new Parth object.
-func New(path string) *Parth {
-	return &Parth{path: path}
-}
-
 // SegmentToASCII receives an int representing a path segment, and returns both
 // the specified segment as a string and a nil error.  If any error is
 // encountered, a zero value string and error are returned.
-func (p *Parth) SegmentToASCII(i int) (string, error) {
+func SegmentToASCII(path string, i int) (string, error) {
 	c, ind0, ind1 := 0, 0, 0
-	for n := 0; n < len(p.path); n++ {
-		if p.path[n] == '/' {
+	for n := 0; n < len(path); n++ {
+		if path[n] == '/' {
 			if c == i {
-				if n+1 < len(p.path) && p.path[n+1] != '/' {
+				if n+1 < len(path) && path[n+1] != '/' {
 					ind0 = n + 1
 				} else {
 					break
@@ -46,7 +36,7 @@ func (p *Parth) SegmentToASCII(i int) (string, error) {
 				ind0 = n
 			}
 			c++
-		} else if n == len(p.path)-1 {
+		} else if n == len(path)-1 {
 			if c > i {
 				ind1 = n + 1
 			}
@@ -56,16 +46,16 @@ func (p *Parth) SegmentToASCII(i int) (string, error) {
 	if i < 0 || ind1 == 0 {
 		return "", fmt.Errorf("path segment index %d does not exist", i)
 	}
-	return p.path[ind0:ind1], nil
+	return path[ind0:ind1], nil
 }
 
 // SegmentToInt64 receives an int representing a path segment, and returns both
 // the specified segment as an int64 and a nil error.  If any error is
 // encountered, a zero value int64 and error are returned.
-func (p *Parth) SegmentToInt64(i int) (int64, error) {
+func SegmentToInt64(path string, i int) (int64, error) {
 	var s string
 	var err error
-	if s, err = p.SegmentToASCII(i); err != nil {
+	if s, err = SegmentToASCII(path, i); err != nil {
 		return 0, err
 	}
 	if s, err = findFirstIntString(s); err != nil {
@@ -81,10 +71,10 @@ func (p *Parth) SegmentToInt64(i int) (int64, error) {
 // SegmentToInt32 receives an int representing a path segment, and returns both
 // the specified segment as an int32 and a nil error.  If any error is
 // encountered, a zero value int32 and error are returned.
-func (p *Parth) SegmentToInt32(i int) (int32, error) {
+func SegmentToInt32(path string, i int) (int32, error) {
 	var s string
 	var err error
-	if s, err = p.SegmentToASCII(i); err != nil {
+	if s, err = SegmentToASCII(path, i); err != nil {
 		return 0, err
 	}
 	if s, err = findFirstIntString(s); err != nil {
@@ -100,10 +90,10 @@ func (p *Parth) SegmentToInt32(i int) (int32, error) {
 // SegmentToInt16 receives an int representing a path segment, and returns both
 // the specified segment as an int16 and a nil error.  If any error is
 // encountered, a zero value int16 and error are returned.
-func (p *Parth) SegmentToInt16(i int) (int16, error) {
+func SegmentToInt16(path string, i int) (int16, error) {
 	var s string
 	var err error
-	if s, err = p.SegmentToASCII(i); err != nil {
+	if s, err = SegmentToASCII(path, i); err != nil {
 		return 0, err
 	}
 	if s, err = findFirstIntString(s); err != nil {
@@ -119,10 +109,10 @@ func (p *Parth) SegmentToInt16(i int) (int16, error) {
 // SegmentToInt8 receives an int representing a path segment, and returns both
 // the specified segment as an int8 and a nil error.  If any error is
 // encountered, a zero value int8 and error are returned.
-func (p *Parth) SegmentToInt8(i int) (int8, error) {
+func SegmentToInt8(path string, i int) (int8, error) {
 	var s string
 	var err error
-	if s, err = p.SegmentToASCII(i); err != nil {
+	if s, err = SegmentToASCII(path, i); err != nil {
 		return 0, err
 	}
 	if s, err = findFirstIntString(s); err != nil {
@@ -138,10 +128,10 @@ func (p *Parth) SegmentToInt8(i int) (int8, error) {
 // SegmentToInt receives an int representing a path segment, and returns both
 // the specified segment as an int and a nil error.  If any error is
 // encountered, a zero value int and error are returned.
-func (p *Parth) SegmentToInt(i int) (int, error) {
+func SegmentToInt(path string, i int) (int, error) {
 	var s string
 	var err error
-	if s, err = p.SegmentToASCII(i); err != nil {
+	if s, err = SegmentToASCII(path, i); err != nil {
 		return 0, err
 	}
 	if s, err = findFirstIntString(s); err != nil {
@@ -157,10 +147,10 @@ func (p *Parth) SegmentToInt(i int) (int, error) {
 // SegmentToBool receives an int representing a path segment, and returns both
 // the specified segment as a bool and a nil error.  If any error is
 // encountered, a zero value bool and error are returned.
-func (p *Parth) SegmentToBool(i int) (bool, error) {
+func SegmentToBool(path string, i int) (bool, error) {
 	var s string
 	var err error
-	if s, err = p.SegmentToASCII(i); err != nil {
+	if s, err = SegmentToASCII(path, i); err != nil {
 		return false, err
 	}
 	var v bool
@@ -173,10 +163,10 @@ func (p *Parth) SegmentToBool(i int) (bool, error) {
 // SegmentToFloat64 receives an int representing a path segment, and returns
 // both the specified segment as a float64 and a nil error.  If any error is
 // encountered, a zero value float64 and error are returned.
-func (p *Parth) SegmentToFloat64(i int) (float64, error) {
+func SegmentToFloat64(path string, i int) (float64, error) {
 	var s string
 	var err error
-	if s, err = p.SegmentToASCII(i); err != nil {
+	if s, err = SegmentToASCII(path, i); err != nil {
 		return 0.0, err
 	}
 	if s, err = findFirstFloatString(s); err != nil {
@@ -192,10 +182,10 @@ func (p *Parth) SegmentToFloat64(i int) (float64, error) {
 // SegmentToFloat32 receives an int representing a path segment, and returns
 // both the specified segment as a float32 and a nil error.  If any error is
 // encountered, a zero value float32 and error are returned.
-func (p *Parth) SegmentToFloat32(i int) (float32, error) {
+func SegmentToFloat32(path string, i int) (float32, error) {
 	var s string
 	var err error
-	if s, err = p.SegmentToASCII(i); err != nil {
+	if s, err = SegmentToASCII(path, i); err != nil {
 		return 0.0, err
 	}
 	if s, err = findFirstFloatString(s); err != nil {

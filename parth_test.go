@@ -14,26 +14,25 @@ const (
 )
 
 func Example() {
-	urlPath := "/zero/1/2/nn3.3nn/4.4"
-	parthObject := parth.New(urlPath)
+	path := "/zero/1/2/nn3.3nn/4.4"
 
-	if seg, err := parthObject.SegmentToASCII(0); err == nil {
+	if seg, err := parth.SegmentToASCII(path, 0); err == nil {
 		fmt.Printf(printFmt, 0, seg, seg)
 	}
 
-	if seg, err := parthObject.SegmentToBool(1); err == nil {
+	if seg, err := parth.SegmentToBool(path, 1); err == nil {
 		fmt.Printf(printFmt, 1, seg, seg)
 	}
 
-	if seg, err := parthObject.SegmentToInt(2); err == nil {
+	if seg, err := parth.SegmentToInt(path, 2); err == nil {
 		fmt.Printf(printFmt, 2, seg, seg)
 	}
 
-	if seg, err := parthObject.SegmentToFloat32(3); err == nil {
+	if seg, err := parth.SegmentToFloat32(path, 3); err == nil {
 		fmt.Printf(printFmt, 3, seg, seg)
 	}
 
-	if seg, err := parthObject.SegmentToInt(4); err == nil {
+	if seg, err := parth.SegmentToInt(path, 4); err == nil {
 		fmt.Printf(printFmt, 4, seg, seg)
 	}
 
@@ -64,8 +63,7 @@ func TestString(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		po := parth.New(v.p)
-		seg, err := po.SegmentToASCII(v.i)
+		seg, err := parth.SegmentToASCII(v.p, v.i)
 		if err != nil && !v.e {
 			t.Fatal(err)
 		}
@@ -96,8 +94,7 @@ func TestInts(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		po := parth.New(v.p)
-		seg, err := po.SegmentToInt(0)
+		seg, err := parth.SegmentToInt(v.p, 0)
 		if err != nil && !v.e {
 			t.Fatal(err)
 		}
@@ -113,8 +110,7 @@ func TestInts(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		po := parth.New(v.p)
-		seg, err := po.SegmentToInt8(0)
+		seg, err := parth.SegmentToInt8(v.p, 0)
 		if err != nil && !v.e {
 			t.Fatal(err)
 		}
@@ -130,8 +126,7 @@ func TestInts(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		po := parth.New(v.p)
-		seg, err := po.SegmentToInt16(0)
+		seg, err := parth.SegmentToInt16(v.p, 0)
 		if err != nil && !v.e {
 			t.Fatal(err)
 		}
@@ -147,8 +142,7 @@ func TestInts(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		po := parth.New(v.p)
-		seg, err := po.SegmentToInt32(0)
+		seg, err := parth.SegmentToInt32(v.p, 0)
 		if err != nil && !v.e {
 			t.Fatal(err)
 		}
@@ -164,8 +158,7 @@ func TestInts(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		po := parth.New(v.p)
-		seg, err := po.SegmentToInt64(0)
+		seg, err := parth.SegmentToInt64(v.p, 0)
 		if err != nil && !v.e {
 			t.Fatal(err)
 		}
@@ -206,10 +199,9 @@ func TestBool(t *testing.T) {
 	for _, v := range tests {
 		path += v.p
 	}
-	po := parth.New(path)
 
 	for k, v := range tests {
-		seg, err := po.SegmentToBool(k)
+		seg, err := parth.SegmentToBool(path, k)
 		if err != nil && !v.e {
 			t.Fatal(err)
 		}
@@ -250,10 +242,9 @@ func TestFloats(t *testing.T) {
 	for _, v := range tests {
 		path += v.p
 	}
-	po := parth.New(path)
 
 	for k, v := range tests {
-		seg, err := po.SegmentToFloat32(k)
+		seg, err := parth.SegmentToFloat32(path, k)
 		if err != nil && !v.e {
 			t.Fatal(err)
 		}
@@ -269,7 +260,7 @@ func TestFloats(t *testing.T) {
 	}
 
 	for k, v := range tests {
-		seg, err := po.SegmentToFloat64(k)
+		seg, err := parth.SegmentToFloat64(path, k)
 		if err != nil && !v.e {
 			t.Fatal(err)
 		}
