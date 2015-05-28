@@ -1,4 +1,7 @@
-// Package parth provides a simple API for accessing path segments.
+// Package parth provides a simple API for accessing path segments.  When
+// returning an int of any size, the first whole number within the specified
+// segment will be returned.  When returning a float of any size, the first
+// decimal number within the specified segment will be returned.
 package parth
 
 import (
@@ -186,6 +189,13 @@ func getIntString(s string) (string, error) {
 				ind = n
 			}
 			l++
+		} else if s[n] == '-' {
+			if l == 0 {
+				ind = n
+				l++
+			} else {
+				break
+			}
 		} else {
 			if l == 0 && s[n] == '.' && unicode.IsDigit(rune(s[n+1])) {
 				return "0", nil
@@ -210,6 +220,13 @@ func getFloatString(s string) (string, error) {
 				ind = n
 			}
 			l++
+		} else if s[n] == '-' {
+			if l == 0 {
+				ind = n
+				l++
+			} else {
+				break
+			}
 		} else if s[n] == '.' {
 			if l == 0 {
 				ind = n

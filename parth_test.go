@@ -90,6 +90,8 @@ func TestInts(t *testing.T) {
 		{"/1", 1, false},
 		{"/2.2", 2, false},
 		{"/.3", 0, false},
+		{"/-4", -4, false},
+		{"/5-", 5, false},
 		{"/error", 0, true},
 	}
 
@@ -238,6 +240,8 @@ func TestFloats(t *testing.T) {
 		{"/aaa6aa", 6.0, 6.0, false},
 		{"/.7.aaaa", 0.7, 0.7, false},
 		{"/.8aa", 0.8, 0.8, false},
+		{"/-9", -9.0, -9.0, false},
+		{"/10-", 10.0, 10.0, false},
 		{"/error", 0.0, 0.0, true},
 		{"/.", 0.0, 0.0, true},
 	}
