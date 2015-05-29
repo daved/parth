@@ -2,6 +2,8 @@ package parth_test
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/codemodus/parth"
@@ -284,5 +286,32 @@ func TestFloats(t *testing.T) {
 		if got != want {
 			t.Errorf(errFmtGotWant, got, got, want)
 		}
+	}
+}
+
+func standardSegment(path string, i int) (int, error) {
+	ss := strings.Split(strings.TrimLeft(path, "/"), "/")
+	if len(ss) == 0 || i > len(ss) {
+		err := fmt.Errorf("segment out of bounds")
+		return 0, err
+	}
+	v, err := strconv.ParseInt(ss[i], 10, 0)
+	if err != nil {
+		return 0, err
+	}
+	return int(v), nil
+}
+
+func BenchmarkStandardInt(b *testing.B) {
+	path := "/zero/1"
+	for n := 0; n < b.N; n++ {
+		_, _ = standardSegment(path, 1)
+	}
+}
+
+func BenchmarkParthInt(b *testing.B) {
+	path := "/zero/1"
+	for n := 0; n < b.N; n++ {
+		_, _ = parth.SegmentToInt(path, 1)
 	}
 }

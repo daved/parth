@@ -48,6 +48,25 @@ func main() {
 }
 ```
 
+## More Info
+
+### Caution (restated): First Whole, First Decimal
+
+When returning an int of any size, the first whole number within the specified 
+segment will be returned.  When returning a float of any size, the first 
+decimal number within the specified segment will be returned.
+
+Please review the test cases for working examples.
+
 ## Documentation
 
 View the [GoDoc](http://godoc.org/github.com/codemodus/parth)
+
+## Benchmarks
+
+These results compare standard library functions to parth functions.
+
+    benchmark                  iter      time/iter   bytes alloc        allocs
+    ---------                  ----      ---------   -----------        ------
+    BenchmarkStandardInt    5000000   394.00 ns/op       64 B/op   3 allocs/op
+    BenchmarkParthInt      20000000    70.00 ns/op        0 B/op   0 allocs/op
