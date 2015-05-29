@@ -214,8 +214,11 @@ func findFirstIntString(s string) (string, error) {
 				break
 			}
 		} else {
-			if l == 0 && s[n] == '.' && unicode.IsDigit(rune(s[n+1])) {
-				return "0", nil
+			if l == 0 && s[n] == '.' {
+				if n+1 < len(s) && unicode.IsDigit(rune(s[n+1])) {
+					return "0", nil
+				}
+				break
 			}
 			if l > 0 {
 				break
@@ -253,6 +256,15 @@ func findFirstFloatString(s string) (string, error) {
 			}
 			l++
 			c++
+		} else if s[n] == 'e' && l > 0 && n+1 < len(s) && s[n+1] == '+' {
+			l++
+		} else if s[n] == '+' && l > 0 && s[n-1] == 'e' {
+			if n+1 < len(s) && unicode.IsDigit(rune(s[n+1])) {
+				l++
+				continue
+			}
+			l--
+			break
 		} else {
 			if l > 0 {
 				break
