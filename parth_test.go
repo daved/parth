@@ -19,7 +19,7 @@ const (
 func Example() {
 	path := "/zero/1/2/nn3.3nn/4.4"
 
-	if seg, err := parth.SegmentToASCII(path, 0); err == nil {
+	if seg, err := parth.SegmentToString(path, 0); err == nil {
 		fmt.Printf(printFmt, 0, seg, seg)
 	}
 
@@ -48,7 +48,7 @@ func Example() {
 
 }
 
-func TestASCII(t *testing.T) {
+func TestString(t *testing.T) {
 	var tests = []struct {
 		i int
 		p string
@@ -66,7 +66,7 @@ func TestASCII(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		seg, err := parth.SegmentToASCII(v.p, v.i)
+		seg, err := parth.SegmentToString(v.p, v.i)
 		if err != nil && !v.e {
 			t.Fatalf(errFmtUnexpErr, seg, err)
 		}

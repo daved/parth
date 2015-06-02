@@ -11,7 +11,7 @@ decimal number within the specified segment will be returned.
 ## Usage
 
 ```go
-func SegmentToASCII(path string, i int) (string, error)
+func SegmentToString(path string, i int) (string, error)
 func SegmentToBool(path string, i int) (bool, error)
 func SegmentToFloat32(path string, i int) (float32, error)
 func SegmentToFloat64(path string, i int) (float64, error)
@@ -34,7 +34,7 @@ import (
 func main() {
 	path := "/zero/1"
 
-    out0, err := parth.SegmentToASCII(path, 0)
+    out0, err := parth.SegmentToString(path, 0)
 	if err != nil {
 		fmt.Println(err)
 	}

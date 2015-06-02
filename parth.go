@@ -12,10 +12,10 @@ import (
 	"unicode"
 )
 
-// SegmentToASCII receives an int representing a path segment, and returns both
+// SegmentToString receives an int representing a path segment, and returns both
 // the specified segment as a string and a nil error.  If any error is
 // encountered, a zero value string and error are returned.
-func SegmentToASCII(path string, i int) (string, error) {
+func SegmentToString(path string, i int) (string, error) {
 	c, ind0, ind1 := 0, 0, 0
 	for n := 0; n < len(path); n++ {
 		if path[n] == '/' {
@@ -55,7 +55,7 @@ func SegmentToASCII(path string, i int) (string, error) {
 func SegmentToInt64(path string, i int) (int64, error) {
 	var s string
 	var err error
-	if s, err = SegmentToASCII(path, i); err != nil {
+	if s, err = SegmentToString(path, i); err != nil {
 		return 0, err
 	}
 	if s, err = findFirstIntString(s); err != nil {
@@ -74,7 +74,7 @@ func SegmentToInt64(path string, i int) (int64, error) {
 func SegmentToInt32(path string, i int) (int32, error) {
 	var s string
 	var err error
-	if s, err = SegmentToASCII(path, i); err != nil {
+	if s, err = SegmentToString(path, i); err != nil {
 		return 0, err
 	}
 	if s, err = findFirstIntString(s); err != nil {
@@ -93,7 +93,7 @@ func SegmentToInt32(path string, i int) (int32, error) {
 func SegmentToInt16(path string, i int) (int16, error) {
 	var s string
 	var err error
-	if s, err = SegmentToASCII(path, i); err != nil {
+	if s, err = SegmentToString(path, i); err != nil {
 		return 0, err
 	}
 	if s, err = findFirstIntString(s); err != nil {
@@ -112,7 +112,7 @@ func SegmentToInt16(path string, i int) (int16, error) {
 func SegmentToInt8(path string, i int) (int8, error) {
 	var s string
 	var err error
-	if s, err = SegmentToASCII(path, i); err != nil {
+	if s, err = SegmentToString(path, i); err != nil {
 		return 0, err
 	}
 	if s, err = findFirstIntString(s); err != nil {
@@ -131,7 +131,7 @@ func SegmentToInt8(path string, i int) (int8, error) {
 func SegmentToInt(path string, i int) (int, error) {
 	var s string
 	var err error
-	if s, err = SegmentToASCII(path, i); err != nil {
+	if s, err = SegmentToString(path, i); err != nil {
 		return 0, err
 	}
 	if s, err = findFirstIntString(s); err != nil {
@@ -150,7 +150,7 @@ func SegmentToInt(path string, i int) (int, error) {
 func SegmentToBool(path string, i int) (bool, error) {
 	var s string
 	var err error
-	if s, err = SegmentToASCII(path, i); err != nil {
+	if s, err = SegmentToString(path, i); err != nil {
 		return false, err
 	}
 	var v bool
@@ -166,7 +166,7 @@ func SegmentToBool(path string, i int) (bool, error) {
 func SegmentToFloat64(path string, i int) (float64, error) {
 	var s string
 	var err error
-	if s, err = SegmentToASCII(path, i); err != nil {
+	if s, err = SegmentToString(path, i); err != nil {
 		return 0.0, err
 	}
 	if s, err = findFirstFloatString(s); err != nil {
@@ -185,7 +185,7 @@ func SegmentToFloat64(path string, i int) (float64, error) {
 func SegmentToFloat32(path string, i int) (float32, error) {
 	var s string
 	var err error
-	if s, err = SegmentToASCII(path, i); err != nil {
+	if s, err = SegmentToString(path, i); err != nil {
 		return 0.0, err
 	}
 	if s, err = findFirstFloatString(s); err != nil {
