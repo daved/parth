@@ -32,19 +32,25 @@ import (
 )
 
 func main() {
-	path := "/zero/1"
+	path := "/zero/1/2"
 
     out0, err := parth.SegmentToString(path, 0)
 	if err != nil {
 		fmt.Println(err)
-	}
-	fmt.Println(out0)
+	}                     
+	fmt.Println(out0) // Prints: "zero"
 	
 	out1, err := parth.SegmentToInt(path, 1)
     if err != nil {
     	fmt.Println(err)
     }
-   	fmt.Println(out1)
+   	fmt.Println(out1) // Prints: 1
+
+    out2, err := parth.SegmentToInt(path, -1)
+    if err != nil {
+        fmt.Println(err)
+    }
+    fmt.Println(out2) // Prints: 2
 }
 ```
 
@@ -70,3 +76,4 @@ These results compare standard library functions to parth functions.
     ---------                  ----      ---------   -----------        ------
     BenchmarkStandardInt    5000000   394.00 ns/op       64 B/op   3 allocs/op
     BenchmarkParthInt      20000000    70.00 ns/op        0 B/op   0 allocs/op
+    BenchmarkParthIntNeg   30000000    50.00 ns/op        0 B/op   0 allocs/op
