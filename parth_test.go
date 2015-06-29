@@ -2,6 +2,7 @@ package parth_test
 
 import (
 	"fmt"
+	"path"
 	"strconv"
 	"strings"
 	"testing"
@@ -395,6 +396,17 @@ func BenchmarkParthIntNeg(b *testing.B) {
 	path := "/zero/1"
 	for n := 0; n < b.N; n++ {
 		_, _ = parth.SegmentToInt(path, -1)
+	}
+}
+
+func BenchmarkStandardSpan(b *testing.B) {
+	p := "/zero/1/2"
+	for n := 0; n < b.N; n++ {
+		cs := strings.Split(p, "/")
+		if p[0] == '/' {
+			cs[1] = "/" + cs[1]
+		}
+		_ = path.Join(cs[0:3]...)
 	}
 }
 

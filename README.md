@@ -85,4 +85,5 @@ These results compare standard library functions to parth functions.
     BenchmarkStandardInt    5000000   394.00 ns/op       64 B/op   3 allocs/op
     BenchmarkParthInt      20000000    70.00 ns/op        0 B/op   0 allocs/op
     BenchmarkParthIntNeg   30000000    50.00 ns/op        0 B/op   0 allocs/op
-    BenchmarkParthSpan     30000000     36.3 ns/op        0 B/op   0 allocs/op
+    BenchmarkStandardSpan   3000000   557.00 ns/op       88 B/op   4 allocs/op
+    BenchmarkParthSpan     30000000    36.30 ns/op        0 B/op   0 allocs/op
