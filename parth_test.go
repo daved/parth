@@ -43,6 +43,10 @@ func Example() {
 		fmt.Printf(printFmt, -1, seg, seg)
 	}
 
+	if path, err := parth.SpanToString(path, 0, -3); err == nil {
+		fmt.Printf("First Segment = 0, Last Segment = -3, Value = %v", path)
+	}
+
 	// Output:
 	// Segment Index = 0 , Type = string, Value = zero
 	// Segment Index = 1 , Type = bool, Value = true
@@ -50,6 +54,7 @@ func Example() {
 	// Segment Index = 3 , Type = float32, Value = 3.3
 	// Segment Index = 4 , Type = int, Value = 4
 	// Segment Index = -1 , Type = int, Value = 4
+	// First Segment = 0, Last Segment = -3, Value = /zero/1/2
 }
 
 func TestString(t *testing.T) {
@@ -386,5 +391,12 @@ func BenchmarkParthIntNeg(b *testing.B) {
 	path := "/zero/1"
 	for n := 0; n < b.N; n++ {
 		_, _ = parth.SegmentToInt(path, -1)
+	}
+}
+
+func BenchmarkParthSpan(b *testing.B) {
+	path := "/zero/1/2"
+	for n := 0; n < b.N; n++ {
+		_, _ = parth.SpanToString(path, 0, 1)
 	}
 }

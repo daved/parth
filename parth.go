@@ -356,7 +356,7 @@ func findFirstFloatString(s string) (string, error) {
 }
 
 func findPathIndexes(path string) []int {
-	i := []int{0}
+	i := make([]int, 1, len(path))
 	for n := 0; n < len(path); n++ {
 		if (n > 0 && path[n] == '/') || n == len(path)-1 {
 			if n == len(path)-1 && path[n] != '/' {
