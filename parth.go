@@ -6,7 +6,6 @@
 package parth
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"unicode"
@@ -177,33 +176,37 @@ func SegmentToFloat32(path string, i int) (float32, error) {
 // returned.  The segments can be of negative values, but firstSeg must come
 // before the lastSeg.
 func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
-	i := findPathIndexes(path)
-	f := firstSeg
-	l := lastSeg
+	var f, l int
+	var err error
 
-	if f < 0 {
-		f = len(i) + f - 1
-	}
-	if l >= 0 {
-		l++
+	if firstSeg < 0 {
+		t := firstSeg - 1
+		f, err = negSegAsIndex(path, t)
 	} else {
-		l = len(i) + l
+		f, err = posSegAsIndex(path, firstSeg)
 	}
-
-	if f > len(i)-2 || f < 0 {
+	if err != nil {
 		return "", fmt.Errorf("first path segment index %d does not exist", firstSeg)
 	}
-	if l > len(i) || l < 0 {
+
+	if lastSeg < 0 {
+		l, err = negSegAsIndex(path, lastSeg)
+	} else {
+		t := lastSeg + 1
+		l, err = posSegAsIndex(path, t)
+	}
+	if err != nil {
 		return "", fmt.Errorf("last path segment index %d does not exist", lastSeg)
 	}
-	if f > l { // or equal?
+
+	if f >= l { // or equal?
 		return "", fmt.Errorf("first segment must come before the last segment")
 	}
-	if i[f] >= i[l] { // or equal?
+	/*if f >= l { // or equal?
 		f, l = l-1, f+1
-	}
+	}*/
 
-	return path[i[f]:i[l]], nil
+	return path[f:l], nil
 }
 
 func posSegToString(path string, i int) (string, error) {
@@ -304,7 +307,7 @@ func findFirstIntString(s string) (string, error) {
 	}
 
 	if l == 0 {
-		return "", errors.New("path segment does not contain int")
+		return "", fmt.Errorf("path segment does not contain int")
 	}
 	return s[ind : ind+l], nil
 }
@@ -350,20 +353,46 @@ func findFirstFloatString(s string) (string, error) {
 	}
 
 	if l == 0 || s[ind:ind+l] == "." {
-		return "", errors.New("path segment does not contain float")
+		return "", fmt.Errorf("path segment does not contain float")
 	}
 	return s[ind : ind+l], nil
 }
 
-func findPathIndexes(path string) []int {
-	i := make([]int, 1, len(path))
+func posSegAsIndex(path string, i int) (int, error) {
+	if len(path) == 1 && (i == 0 || i == 1) {
+		return i, nil
+	}
+	c := 0
 	for n := 0; n < len(path); n++ {
-		if (n > 0 && path[n] == '/') || n == len(path)-1 {
+		if n > 0 && (path[n] == '/' || n == len(path)-1) {
+			c++
+		}
+		if c == i {
 			if n == len(path)-1 && path[n] != '/' {
 				n++
 			}
-			i = append(i, n)
+			return n, nil
 		}
 	}
-	return i
+	return 0, fmt.Errorf("no index found")
+}
+
+func negSegAsIndex(path string, i int) (int, error) {
+	if len(path) == 1 && (i == -1 || i == -2) {
+		i += 2
+		return i, nil
+	}
+	c := -1
+	for n := len(path) - 1; n >= 0; n-- {
+		if n < len(path)-1 && path[n] == '/' {
+			c--
+		}
+		if c == i {
+			if n == len(path)-1 && path[n] != '/' {
+				n++
+			}
+			return n, nil
+		}
+	}
+	return 0, fmt.Errorf("no index found")
 }
