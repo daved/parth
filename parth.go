@@ -171,6 +171,41 @@ func SegmentToFloat32(path string, i int) (float32, error) {
 	return float32(v), nil
 }
 
+// SpanToString receives two int values representing path segments, and
+// returns the content of and between those segments as a string and a nil
+// error.  If any error is encountered, a zero value string and error are
+// returned.  The segments can be of negative values, but firstSeg must come
+// before the lastSeg.
+func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
+	i := findPathIndexes(path)
+	f := firstSeg
+	l := lastSeg
+
+	if f < 0 {
+		f = len(i) + f - 1
+	}
+	if l >= 0 {
+		l++
+	} else {
+		l = len(i) + l
+	}
+
+	if f > len(i)-2 || f < 0 {
+		return "", fmt.Errorf("first path segment index %d does not exist", firstSeg)
+	}
+	if l > len(i) || l < 0 {
+		return "", fmt.Errorf("last path segment index %d does not exist", lastSeg)
+	}
+	if f > l { // or equal?
+		return "", fmt.Errorf("first segment must come before the last segment")
+	}
+	if i[f] >= i[l] { // or equal?
+		f, l = l-1, f+1
+	}
+
+	return path[i[f]:i[l]], nil
+}
+
 func posSegToString(path string, i int) (string, error) {
 	c, ind0, ind1 := 0, 0, 0
 	for n := 0; n < len(path); n++ {
@@ -208,7 +243,7 @@ func posSegToString(path string, i int) (string, error) {
 func negSegToString(path string, i int) (string, error) {
 	i = i * -1
 	c, ind0, ind1 := 1, 0, 0
-	for n := len(path)-1; n >= 0; n-- {
+	for n := len(path) - 1; n >= 0; n-- {
 		if path[n] == '/' {
 			if c == i {
 				if n-1 >= 0 && path[n-1] != '/' {
@@ -218,24 +253,24 @@ func negSegToString(path string, i int) (string, error) {
 				}
 			}
 			if c > i {
-				ind0 = n+1
+				ind0 = n + 1
 				break
 			}
 			c++
 		} else if n == len(path)-1 {
 			if c == i {
-				ind1 = n+1
+				ind1 = n + 1
 			}
 			c++
 		} else if n == 0 {
 			if c > i {
-				ind0 = n+1
+				ind0 = n + 1
 			}
 			break
 		}
 	}
 	if i < 1 || ind0 == 0 {
-		return "", fmt.Errorf("path segment index %d does not exist", i * -1)
+		return "", fmt.Errorf("path segment index %d does not exist", i*-1)
 	}
 	return path[ind0:ind1], nil
 }
@@ -318,4 +353,17 @@ func findFirstFloatString(s string) (string, error) {
 		return "", errors.New("path segment does not contain float")
 	}
 	return s[ind : ind+l], nil
+}
+
+func findPathIndexes(path string) []int {
+	i := []int{0}
+	for n := 0; n < len(path); n++ {
+		if (n > 0 && path[n] == '/') || n == len(path)-1 {
+			if n == len(path)-1 && path[n] != '/' {
+				n++
+			}
+			i = append(i, n)
+		}
+	}
+	return i
 }

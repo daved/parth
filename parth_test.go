@@ -310,6 +310,51 @@ func TestFloats(t *testing.T) {
 	}
 }
 
+func TestSpan(t *testing.T) {
+	var tests = []struct {
+		i int
+		n int
+		p string
+		r string
+		e bool
+	}{
+		{0, 0, "/test1", "/test1", false},
+		{0, 1, "/test1/test-2", "/test1/test-2", false},
+		{0, 1, "/test1/test-2/test_3/", "/test1/test-2", false},
+		{0, 0, "test4/t4", "test4", false},
+		{0, 1, "//test5", "//test5", false},
+		{0, 1, "/test6//", "/test6/", false},
+		{1, 2, "/test7", "", true},
+		{0, -1, "/test8", "/test8", false},
+		{0, 0, "/", "", false},
+		{-1, 0, "/test1", "/test1", false},
+		{-1, 0, "/test1/test-2", "/test1/test-2", false},
+		{-2, 0, "/test1/test-2", "/test1", false},
+		{-3, -1, "/test1/test-2/test_3", "/test1/test-2/test_3", false},
+		{-1, -1, "test4/t4/", "/t4", false},
+		{-1, -3, "/test5/test-6/test_7", "", true},
+		{-3, 0, "/test7", "", true},
+	}
+
+	for _, v := range tests {
+		spn, err := parth.SpanToString(v.p, v.i, v.n)
+		if err != nil && !v.e {
+			t.Errorf(errFmtUnexpErr, spn, err)
+			continue
+		}
+		if err == nil && v.e {
+			t.Errorf(errFmtExpErr, v.p)
+			continue
+		}
+
+		want := v.r
+		got := spn
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+}
+
 func standardSegment(path string, i int) (int, error) {
 	ss := strings.Split(strings.TrimLeft(path, "/"), "/")
 	if len(ss) == 0 || i > len(ss) {
