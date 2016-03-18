@@ -60,10 +60,10 @@ var (
 
 func TestFunctString(t *testing.T) {
 	var tests = []struct {
-		i int
-		p string
-		r string
-		e bool
+		ind   int
+		path  string
+		s     string
+		isErr bool
 	}{
 		{0, "/test1", "test1", false},
 		{1, "/test1/test-2", "test-2", false},
@@ -87,18 +87,18 @@ func TestFunctString(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		seg, err := parth.SegmentToString(v.p, v.i)
-		if err != nil && !v.e {
-			t.Errorf(errFmtUnexpErr, seg, err)
+		s, err := parth.SegmentToString(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, s, err)
 			continue
 		}
-		if err == nil && v.e {
-			t.Errorf(errFmtExpErr, v.p)
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
 			continue
 		}
 
-		want := v.r
-		got := seg
+		want := v.s
+		got := s
 		if got != want {
 			t.Errorf(errFmtGotWant, got, got, want)
 		}
@@ -107,10 +107,10 @@ func TestFunctString(t *testing.T) {
 
 func TestFunctInts(t *testing.T) {
 	var tests = []struct {
-		i int
-		p string
-		r int
-		e bool
+		ind   int
+		path  string
+		i     int
+		isErr bool
 	}{
 		{0, "/0.1", 0, false},
 		{0, "/0.2a", 0, false},
@@ -134,15 +134,31 @@ func TestFunctInts(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		seg, err := parth.SegmentToInt(v.p, v.i)
-		if err != nil && !v.e {
-			t.Fatalf(errFmtUnexpErr, seg, err)
+		i, err := parth.SegmentToInt(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Fatalf(errFmtUnexpErr, i, err)
 		}
-		if err == nil && v.e {
-			t.Errorf(errFmtExpErr, v.p)
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
 		}
 
-		want := int(v.r)
+		want := v.i
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+
+	for _, v := range tests {
+		seg, err := parth.SegmentToInt8(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Fatalf(errFmtUnexpErr, seg, err)
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+		}
+
+		want := int8(v.i)
 		got := seg
 		if got != want {
 			t.Errorf(errFmtGotWant, got, got, want)
@@ -150,64 +166,48 @@ func TestFunctInts(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		seg, err := parth.SegmentToInt8(v.p, v.i)
-		if err != nil && !v.e {
-			t.Fatalf(errFmtUnexpErr, seg, err)
+		i, err := parth.SegmentToInt16(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Fatalf(errFmtUnexpErr, i, err)
 		}
-		if err == nil && v.e {
-			t.Errorf(errFmtExpErr, v.p)
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
 		}
 
-		want := int8(v.r)
-		got := seg
+		want := int16(v.i)
+		got := i
 		if got != want {
 			t.Errorf(errFmtGotWant, got, got, want)
 		}
 	}
 
 	for _, v := range tests {
-		seg, err := parth.SegmentToInt16(v.p, v.i)
-		if err != nil && !v.e {
-			t.Fatalf(errFmtUnexpErr, seg, err)
+		i, err := parth.SegmentToInt32(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Fatalf(errFmtUnexpErr, i, err)
 		}
-		if err == nil && v.e {
-			t.Errorf(errFmtExpErr, v.p)
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
 		}
 
-		want := int16(v.r)
-		got := seg
+		want := int32(v.i)
+		got := i
 		if got != want {
 			t.Errorf(errFmtGotWant, got, got, want)
 		}
 	}
 
 	for _, v := range tests {
-		seg, err := parth.SegmentToInt32(v.p, v.i)
-		if err != nil && !v.e {
-			t.Fatalf(errFmtUnexpErr, seg, err)
+		i, err := parth.SegmentToInt64(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Fatalf(errFmtUnexpErr, i, err)
 		}
-		if err == nil && v.e {
-			t.Errorf(errFmtExpErr, v.p)
-		}
-
-		want := int32(v.r)
-		got := seg
-		if got != want {
-			t.Errorf(errFmtGotWant, got, got, want)
-		}
-	}
-
-	for _, v := range tests {
-		seg, err := parth.SegmentToInt64(v.p, v.i)
-		if err != nil && !v.e {
-			t.Fatalf(errFmtUnexpErr, seg, err)
-		}
-		if err == nil && v.e {
-			t.Errorf(errFmtExpErr, v.p)
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
 		}
 
-		want := int64(v.r)
-		got := seg
+		want := int64(v.i)
+		got := i
 		if got != want {
 			t.Errorf(errFmtGotWant, got, got, want)
 		}
@@ -216,10 +216,10 @@ func TestFunctInts(t *testing.T) {
 
 func TestFunctBool(t *testing.T) {
 	tests := []struct {
-		i int
-		p string
-		b bool
-		e bool
+		ind   int
+		path  string
+		b     bool
+		isErr bool
 	}{
 		{0, "/1", true, false},
 		{0, "/t", true, false},
@@ -239,16 +239,16 @@ func TestFunctBool(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		seg, err := parth.SegmentToBool(v.p, v.i)
-		if err != nil && !v.e {
-			t.Fatalf(errFmtUnexpErr, seg, err)
+		b, err := parth.SegmentToBool(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Fatalf(errFmtUnexpErr, b, err)
 		}
-		if err == nil && v.e {
-			t.Errorf(errFmtExpErr, v.p)
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
 		}
 
 		want := v.b
-		got := seg
+		got := b
 		if got != want {
 			t.Errorf(errFmtGotWant, got, got, want)
 		}
@@ -257,11 +257,11 @@ func TestFunctBool(t *testing.T) {
 
 func TestFunctFloats(t *testing.T) {
 	tests := []struct {
-		i   int
-		p   string
-		f32 float32
-		f64 float64
-		e   bool
+		ind   int
+		path  string
+		f32   float32
+		f64   float64
+		isErr bool
 	}{
 		{0, "/0.1", 0.1, 0.1, false},
 		{0, "/0.2a", 0.2, 0.2, false},
@@ -284,32 +284,32 @@ func TestFunctFloats(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		seg, err := parth.SegmentToFloat32(v.p, v.i)
-		if err != nil && !v.e {
-			t.Fatalf(errFmtUnexpErr, seg, err)
+		f32, err := parth.SegmentToFloat32(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Fatalf(errFmtUnexpErr, f32, err)
 		}
-		if err == nil && v.e {
-			t.Errorf(errFmtExpErr, v.p)
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
 		}
 
 		want := v.f32
-		got := seg
+		got := f32
 		if got != want {
 			t.Errorf(errFmtGotWant, got, got, want)
 		}
 	}
 
 	for _, v := range tests {
-		seg, err := parth.SegmentToFloat64(v.p, v.i)
-		if err != nil && !v.e {
-			t.Fatalf(errFmtUnexpErr, seg, err)
+		f64, err := parth.SegmentToFloat64(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Fatalf(errFmtUnexpErr, f64, err)
 		}
-		if err == nil && v.e {
-			t.Errorf(errFmtExpErr, v.p)
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
 		}
 
 		want := v.f64
-		got := seg
+		got := f64
 		if got != want {
 			t.Errorf(errFmtGotWant, got, got, want)
 		}
@@ -318,11 +318,11 @@ func TestFunctFloats(t *testing.T) {
 
 func TestFunctSpan(t *testing.T) {
 	var tests = []struct {
-		i int
-		n int
-		p string
-		r string
-		e bool
+		firstInd int
+		lastInd  int
+		path     string
+		s        string
+		isErr    bool
 	}{
 		{0, 0, "/test1", "/test1", false},
 		{0, 1, "/test1/test-2", "/test1/test-2", false},
@@ -347,72 +347,110 @@ func TestFunctSpan(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		spn, err := parth.SpanToString(v.p, v.i, v.n)
-		if err != nil && !v.e {
-			t.Errorf(errFmtUnexpErr, spn, err)
+		s, err := parth.SpanToString(v.path, v.firstInd, v.lastInd)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, s, err)
 			continue
 		}
-		if err == nil && v.e {
-			t.Errorf(errFmtExpErr, v.p)
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
 			continue
 		}
 
-		want := v.r
-		got := spn
+		want := v.s
+		got := s
 		if got != want {
 			t.Errorf(errFmtGotWant, got, got, want)
 		}
 	}
 }
 
+var (
+	bmri int
+	bmrs string
+)
+
 func standardSegment(path string, i int) (int, error) {
 	ss := strings.Split(strings.TrimLeft(path, "/"), "/")
+
 	if len(ss) == 0 || i > len(ss) {
 		err := fmt.Errorf("segment out of bounds")
 		return 0, err
 	}
+
 	v, err := strconv.ParseInt(ss[i], 10, 0)
 	if err != nil {
 		return 0, err
 	}
+
 	return int(v), nil
 }
 
 func BenchmarkStandardInt(b *testing.B) {
-	path := "/zero/1"
+	p := "/zero/1"
+	var r int
+
+	b.ResetTimer()
+
 	for n := 0; n < b.N; n++ {
-		_, _ = standardSegment(path, 1)
+		r, _ = standardSegment(p, 1)
 	}
+
+	bmri = r
 }
 
 func BenchmarkParthInt(b *testing.B) {
-	path := "/zero/1"
+	p := "/zero/1"
+	var r int
+
+	b.ResetTimer()
+
 	for n := 0; n < b.N; n++ {
-		_, _ = parth.SegmentToInt(path, 1)
+		r, _ = parth.SegmentToInt(p, 1)
 	}
+
+	bmri = r
 }
 
 func BenchmarkParthIntNeg(b *testing.B) {
-	path := "/zero/1"
+	p := "/zero/1"
+	var r int
+
+	b.ResetTimer()
+
 	for n := 0; n < b.N; n++ {
-		_, _ = parth.SegmentToInt(path, -1)
+		r, _ = parth.SegmentToInt(p, -1)
 	}
+
+	bmri = r
 }
 
 func BenchmarkStandardSpan(b *testing.B) {
 	p := "/zero/1/2"
+	var r string
+
+	b.ResetTimer()
+
 	for n := 0; n < b.N; n++ {
 		cs := strings.Split(p, "/")
 		if p[0] == '/' {
 			cs[1] = "/" + cs[1]
 		}
-		_ = path.Join(cs[0:3]...)
+		r = path.Join(cs[0:3]...)
 	}
+
+	bmrs = r
 }
 
 func BenchmarkParthSpan(b *testing.B) {
-	path := "/zero/1/2"
+	p := "/zero/1/2"
+	var r string
+
+	b.ResetTimer()
+
 	for n := 0; n < b.N; n++ {
-		_, _ = parth.SpanToString(path, 0, 1)
+		r, _ = parth.SpanToString(p, 0, 1)
 	}
+
+	bmrs = r
 }
