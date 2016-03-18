@@ -18,6 +18,7 @@ func SegmentToString(path string, i int) (string, error) {
 	if i >= 0 {
 		return posSegToString(path, i)
 	}
+
 	return negSegToString(path, i)
 }
 
@@ -27,16 +28,21 @@ func SegmentToString(path string, i int) (string, error) {
 func SegmentToInt64(path string, i int) (int64, error) {
 	var s string
 	var err error
+
 	if s, err = SegmentToString(path, i); err != nil {
 		return 0, err
 	}
-	if s, err = findFirstIntString(s); err != nil {
+
+	if s, err = firstIntFromString(s); err != nil {
 		return 0, err
 	}
+
 	var v int64
+
 	if v, err = strconv.ParseInt(s, 10, 64); err != nil {
 		return 0, err
 	}
+
 	return v, nil
 }
 
@@ -46,16 +52,21 @@ func SegmentToInt64(path string, i int) (int64, error) {
 func SegmentToInt32(path string, i int) (int32, error) {
 	var s string
 	var err error
+
 	if s, err = SegmentToString(path, i); err != nil {
 		return 0, err
 	}
-	if s, err = findFirstIntString(s); err != nil {
+
+	if s, err = firstIntFromString(s); err != nil {
 		return 0, err
 	}
+
 	var v int64
+
 	if v, err = strconv.ParseInt(s, 10, 32); err != nil {
 		return 0, err
 	}
+
 	return int32(v), nil
 }
 
@@ -65,16 +76,21 @@ func SegmentToInt32(path string, i int) (int32, error) {
 func SegmentToInt16(path string, i int) (int16, error) {
 	var s string
 	var err error
+
 	if s, err = SegmentToString(path, i); err != nil {
 		return 0, err
 	}
-	if s, err = findFirstIntString(s); err != nil {
+
+	if s, err = firstIntFromString(s); err != nil {
 		return 0, err
 	}
+
 	var v int64
+
 	if v, err = strconv.ParseInt(s, 10, 16); err != nil {
 		return 0, err
 	}
+
 	return int16(v), nil
 }
 
@@ -84,16 +100,21 @@ func SegmentToInt16(path string, i int) (int16, error) {
 func SegmentToInt8(path string, i int) (int8, error) {
 	var s string
 	var err error
+
 	if s, err = SegmentToString(path, i); err != nil {
 		return 0, err
 	}
-	if s, err = findFirstIntString(s); err != nil {
+
+	if s, err = firstIntFromString(s); err != nil {
 		return 0, err
 	}
+
 	var v int64
+
 	if v, err = strconv.ParseInt(s, 10, 8); err != nil {
 		return 0, err
 	}
+
 	return int8(v), nil
 }
 
@@ -103,16 +124,21 @@ func SegmentToInt8(path string, i int) (int8, error) {
 func SegmentToInt(path string, i int) (int, error) {
 	var s string
 	var err error
+
 	if s, err = SegmentToString(path, i); err != nil {
 		return 0, err
 	}
-	if s, err = findFirstIntString(s); err != nil {
+
+	if s, err = firstIntFromString(s); err != nil {
 		return 0, err
 	}
+
 	var v int64
+
 	if v, err = strconv.ParseInt(s, 10, 0); err != nil {
 		return 0, err
 	}
+
 	return int(v), nil
 }
 
@@ -122,13 +148,17 @@ func SegmentToInt(path string, i int) (int, error) {
 func SegmentToBool(path string, i int) (bool, error) {
 	var s string
 	var err error
+
 	if s, err = SegmentToString(path, i); err != nil {
 		return false, err
 	}
+
 	var v bool
+
 	if v, err = strconv.ParseBool(s); err != nil {
 		return false, err
 	}
+
 	return v, nil
 }
 
@@ -138,16 +168,21 @@ func SegmentToBool(path string, i int) (bool, error) {
 func SegmentToFloat64(path string, i int) (float64, error) {
 	var s string
 	var err error
+
 	if s, err = SegmentToString(path, i); err != nil {
 		return 0.0, err
 	}
-	if s, err = findFirstFloatString(s); err != nil {
+
+	if s, err = firstFloatFromString(s); err != nil {
 		return 0.0, err
 	}
+
 	var v float64
+
 	if v, err = strconv.ParseFloat(s, 64); err != nil {
 		return 0.0, err
 	}
+
 	return v, nil
 }
 
@@ -157,16 +192,21 @@ func SegmentToFloat64(path string, i int) (float64, error) {
 func SegmentToFloat32(path string, i int) (float32, error) {
 	var s string
 	var err error
+
 	if s, err = SegmentToString(path, i); err != nil {
 		return 0.0, err
 	}
-	if s, err = findFirstFloatString(s); err != nil {
+
+	if s, err = firstFloatFromString(s); err != nil {
 		return 0.0, err
 	}
+
 	var v float64
+
 	if v, err = strconv.ParseFloat(s, 32); err != nil {
 		return 0.0, err
 	}
+
 	return float32(v), nil
 }
 
@@ -185,6 +225,7 @@ func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
 	} else {
 		f, err = posSegAsIndex(path, firstSeg)
 	}
+
 	if err != nil {
 		return "", fmt.Errorf("first path segment index %d does not exist", firstSeg)
 	}
@@ -195,6 +236,7 @@ func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
 		t := lastSeg + 1
 		l, err = posSegAsIndex(path, t)
 	}
+
 	if err != nil {
 		return "", fmt.Errorf("last path segment index %d does not exist", lastSeg)
 	}
@@ -211,6 +253,7 @@ func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
 
 func posSegToString(path string, i int) (string, error) {
 	c, ind0, ind1 := 0, 0, 0
+
 	for n := 0; n < len(path); n++ {
 		if path[n] == '/' {
 			if c == i {
@@ -220,6 +263,7 @@ func posSegToString(path string, i int) (string, error) {
 					break
 				}
 			}
+
 			if c > i {
 				ind1 = n
 				break
@@ -229,23 +273,28 @@ func posSegToString(path string, i int) (string, error) {
 			if c == i {
 				ind0 = n
 			}
+
 			c++
 		} else if n == len(path)-1 {
 			if c > i {
 				ind1 = n + 1
 			}
+
 			break
 		}
 	}
+
 	if i < 0 || ind1 == 0 {
 		return "", fmt.Errorf("path segment index %d does not exist", i)
 	}
+
 	return path[ind0:ind1], nil
 }
 
 func negSegToString(path string, i int) (string, error) {
 	i = i * -1
 	c, ind0, ind1 := 1, 0, 0
+
 	for n := len(path) - 1; n >= 0; n-- {
 		if path[n] == '/' {
 			if c == i {
@@ -255,36 +304,45 @@ func negSegToString(path string, i int) (string, error) {
 					break
 				}
 			}
+
 			if c > i {
 				ind0 = n + 1
+
 				break
 			}
+
 			c++
 		} else if n == len(path)-1 {
 			if c == i {
 				ind1 = n + 1
 			}
+
 			c++
 		} else if n == 0 {
 			if c > i {
 				ind0 = n + 1
 			}
+
 			break
 		}
 	}
+
 	if i < 1 || ind0 == 0 {
 		return "", fmt.Errorf("path segment index %d does not exist", i*-1)
 	}
+
 	return path[ind0:ind1], nil
 }
 
-func findFirstIntString(s string) (string, error) {
+func firstIntFromString(s string) (string, error) {
 	ind, l := 0, 0
+
 	for n := 0; n < len(s); n++ {
 		if unicode.IsDigit(rune(s[n])) {
 			if l == 0 {
 				ind = n
 			}
+
 			l++
 		} else if s[n] == '-' {
 			if l == 0 {
@@ -298,8 +356,10 @@ func findFirstIntString(s string) (string, error) {
 				if n+1 < len(s) && unicode.IsDigit(rune(s[n+1])) {
 					return "0", nil
 				}
+
 				break
 			}
+
 			if l > 0 {
 				break
 			}
@@ -309,16 +369,19 @@ func findFirstIntString(s string) (string, error) {
 	if l == 0 {
 		return "", fmt.Errorf("path segment does not contain int")
 	}
+
 	return s[ind : ind+l], nil
 }
 
-func findFirstFloatString(s string) (string, error) {
+func firstFloatFromString(s string) (string, error) {
 	c, ind, l := 0, 0, 0
+
 	for n := 0; n < len(s); n++ {
 		if unicode.IsDigit(rune(s[n])) {
 			if l == 0 {
 				ind = n
 			}
+
 			l++
 		} else if s[n] == '-' {
 			if l == 0 {
@@ -331,9 +394,11 @@ func findFirstFloatString(s string) (string, error) {
 			if l == 0 {
 				ind = n
 			}
+
 			if c > 0 {
 				break
 			}
+
 			l++
 			c++
 		} else if s[n] == 'e' && l > 0 && n+1 < len(s) && s[n+1] == '+' {
@@ -343,6 +408,7 @@ func findFirstFloatString(s string) (string, error) {
 				l++
 				continue
 			}
+
 			l--
 			break
 		} else {
@@ -355,6 +421,7 @@ func findFirstFloatString(s string) (string, error) {
 	if l == 0 || s[ind:ind+l] == "." {
 		return "", fmt.Errorf("path segment does not contain float")
 	}
+
 	return s[ind : ind+l], nil
 }
 
@@ -362,37 +429,48 @@ func posSegAsIndex(path string, i int) (int, error) {
 	if len(path) == 1 && (i == 0 || i == 1) {
 		return i, nil
 	}
+
 	c := 0
+
 	for n := 0; n < len(path); n++ {
 		if n > 0 && (path[n] == '/' || n == len(path)-1) {
 			c++
 		}
+
 		if c == i {
 			if n == len(path)-1 && path[n] != '/' {
 				n++
 			}
+
 			return n, nil
 		}
 	}
+
 	return 0, fmt.Errorf("no index found")
 }
 
 func negSegAsIndex(path string, i int) (int, error) {
 	if len(path) == 1 && (i == -1 || i == -2) {
 		i += 2
+
 		return i, nil
 	}
+
 	c := -1
+
 	for n := len(path) - 1; n >= 0; n-- {
 		if n < len(path)-1 && path[n] == '/' {
 			c--
 		}
+
 		if c == i {
 			if n == len(path)-1 && path[n] != '/' {
 				n++
 			}
+
 			return n, nil
 		}
 	}
+
 	return 0, fmt.Errorf("no index found")
 }
