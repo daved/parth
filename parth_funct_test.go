@@ -10,42 +10,36 @@ import (
 	"github.com/codemodus/parth"
 )
 
-const (
-	errFmtGotWant  = "Type = %T, Segment Value = %v, want %v"
-	errFmtExpErr   = "Did not receive expected err for segment value %v"
-	errFmtUnexpErr = "Received unexpected err for segment type %T: %v"
-	printFmt       = "Segment Index = %v , Type = %T, Value = %v\n"
-)
-
 func Example() {
-	path := "/zero/1/2/nn3.3nn/4.4"
+	testPath := "/zero/1/2/nn3.3nn/4.4"
+	printFmt := "Segment Index = %v , Type = %T, Value = %v\n"
 
-	if seg, err := parth.SegmentToString(path, 0); err == nil {
-		fmt.Printf(printFmt, 0, seg, seg)
+	if s0, err := parth.SegmentToString(testPath, 0); err == nil {
+		fmt.Printf(printFmt, 0, s0, s0)
 	}
 
-	if seg, err := parth.SegmentToBool(path, 1); err == nil {
-		fmt.Printf(printFmt, 1, seg, seg)
+	if b1, err := parth.SegmentToBool(testPath, 1); err == nil {
+		fmt.Printf(printFmt, 1, b1, b1)
 	}
 
-	if seg, err := parth.SegmentToInt(path, 2); err == nil {
-		fmt.Printf(printFmt, 2, seg, seg)
+	if i2, err := parth.SegmentToInt(testPath, 2); err == nil {
+		fmt.Printf(printFmt, 2, i2, i2)
 	}
 
-	if seg, err := parth.SegmentToFloat32(path, 3); err == nil {
-		fmt.Printf(printFmt, 3, seg, seg)
+	if f3, err := parth.SegmentToFloat32(testPath, 3); err == nil {
+		fmt.Printf(printFmt, 3, f3, f3)
 	}
 
-	if seg, err := parth.SegmentToInt(path, 4); err == nil {
-		fmt.Printf(printFmt, 4, seg, seg)
+	if i4, err := parth.SegmentToInt(testPath, 4); err == nil {
+		fmt.Printf(printFmt, 4, i4, i4)
 	}
 
-	if seg, err := parth.SegmentToInt(path, -1); err == nil {
-		fmt.Printf(printFmt, -1, seg, seg)
+	if iN1, err := parth.SegmentToInt(testPath, -1); err == nil {
+		fmt.Printf(printFmt, -1, iN1, iN1)
 	}
 
-	if path, err := parth.SpanToString(path, 0, -3); err == nil {
-		fmt.Printf("First Segment = 0, Last Segment = -3, Value = %v", path)
+	if s0N3, err := parth.SpanToString(testPath, 0, -3); err == nil {
+		fmt.Printf("First Segment = 0, Last Segment = -3, Value = %v", s0N3)
 	}
 
 	// Output:
@@ -58,7 +52,13 @@ func Example() {
 	// First Segment = 0, Last Segment = -3, Value = /zero/1/2
 }
 
-func TestString(t *testing.T) {
+var (
+	errFmtGotWant  = "Type = %T, Segment Value = %v, want %v"
+	errFmtExpErr   = "Did not receive expected err for segment value %v"
+	errFmtUnexpErr = "Received unexpected err for segment type %T: %v"
+)
+
+func TestFunctString(t *testing.T) {
 	var tests = []struct {
 		i int
 		p string
@@ -105,7 +105,7 @@ func TestString(t *testing.T) {
 	}
 }
 
-func TestInts(t *testing.T) {
+func TestFunctInts(t *testing.T) {
 	var tests = []struct {
 		i int
 		p string
@@ -214,7 +214,7 @@ func TestInts(t *testing.T) {
 	}
 }
 
-func TestBool(t *testing.T) {
+func TestFunctBool(t *testing.T) {
 	tests := []struct {
 		i int
 		p string
@@ -255,7 +255,7 @@ func TestBool(t *testing.T) {
 	}
 }
 
-func TestFloats(t *testing.T) {
+func TestFunctFloats(t *testing.T) {
 	tests := []struct {
 		i   int
 		p   string
@@ -316,7 +316,7 @@ func TestFloats(t *testing.T) {
 	}
 }
 
-func TestSpan(t *testing.T) {
+func TestFunctSpan(t *testing.T) {
 	var tests = []struct {
 		i int
 		n int
