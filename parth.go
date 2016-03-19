@@ -262,6 +262,10 @@ func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
 	return path[f:l], nil
 }
 
+//func SubSegToString(path, key string) (string, error) {
+//	return "", nil
+//}
+
 func posSegToString(path string, i int) (string, error) {
 	c, ind0, ind1 := 0, 0, 0
 
@@ -519,4 +523,36 @@ func segEndIndexFromEnd(path string, seg int) (int, error) {
 	}
 
 	return 0, ErrIndexNotFound
+}
+
+func segIndexByKey(path, key string) (int, error) {
+	if path == "" || key == "" {
+		return 0, ErrUnparsable
+	}
+
+	for n := 0; n < len(path); n++ {
+		si, err := segStartIndexFromStart(path, n)
+		if err != nil {
+			return 0, ErrSegNotExist
+		}
+
+		if len(path[si:]) == len(key)+1 {
+			if path[si+1:] == key {
+				return si, nil
+			}
+
+			return 0, ErrSegNotExist
+		}
+
+		tmpEI, err := segStartIndexFromStart(path[si:], 1)
+		if err != nil {
+			return 0, ErrSegNotExist
+		}
+
+		if path[si+1:tmpEI+si] == key || n == 0 && path[0] != '/' && path[si:tmpEI+si] == key {
+			return si, nil
+		}
+	}
+
+	return 0, nil
 }

@@ -324,3 +324,43 @@ func TestUnitSegEndIndexFromEnd(t *testing.T) {
 		}
 	}
 }
+
+func TestUnitSegIndexByKey(t *testing.T) {
+	tests := []struct {
+		k     string
+		s     string
+		i     int
+		isErr bool
+	}{
+		{"test", "/1/test/3", 2, false},
+		{"2", "/2/t/3", 0, false},
+		{"3", "/1/test/3", 7, false},
+		{"4", "/44/44/33", 0, true},
+		{"best", "12/best/3", 2, false},
+		{"6", "6/tt/66", 0, false},
+		{"7", "1/test/7", 6, false},
+		{"first", "first/2/three", 0, false},
+		{"bad", "/ba/d/", 0, true},
+		{"11", "/4/56/11/", 5, false},
+		{"", "/4/56/11/", 0, true},
+		{"t", "", 0, true},
+	}
+
+	for _, v := range tests {
+		i, err := segIndexByKey(v.s, v.k)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.s)
+			continue
+		}
+
+		want := v.i
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+}
