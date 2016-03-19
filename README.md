@@ -53,7 +53,7 @@ func main() {
     }
     fmt.Println(out2) // Prints: 2
 
-    out3, err := parth.SpanToString(path, 0, -2)
+    out3, err := parth.SpanToString(path, 0, -1)
     if err != nil {
 		fmt.Println(err)
     }
@@ -72,7 +72,7 @@ decimal number within the specified segment will be returned.
 
 Please review the test cases for working examples.
 
-### SpanToString
+### SpanToString (Indexed similarly to slices/arrays)
 
 SpanToString receives two int values representing path segments, and returns 
 the content between those segments, including the first segment, as a string 

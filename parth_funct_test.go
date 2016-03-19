@@ -18,28 +18,28 @@ func Example() {
 		fmt.Printf(printFmt, 0, s0, s0)
 	}
 
-	if b1, err := parth.SegmentToBool(testPath, 1); err == nil {
-		fmt.Printf(printFmt, 1, b1, b1)
+	if b, err := parth.SegmentToBool(testPath, 1); err == nil {
+		fmt.Printf(printFmt, 1, b, b)
 	}
 
-	if i2, err := parth.SegmentToInt(testPath, 2); err == nil {
-		fmt.Printf(printFmt, 2, i2, i2)
+	if i0, err := parth.SegmentToInt(testPath, 2); err == nil {
+		fmt.Printf(printFmt, 2, i0, i0)
 	}
 
-	if f3, err := parth.SegmentToFloat32(testPath, 3); err == nil {
-		fmt.Printf(printFmt, 3, f3, f3)
+	if f, err := parth.SegmentToFloat32(testPath, 3); err == nil {
+		fmt.Printf(printFmt, 3, f, f)
 	}
 
-	if i4, err := parth.SegmentToInt(testPath, 4); err == nil {
-		fmt.Printf(printFmt, 4, i4, i4)
+	if i1, err := parth.SegmentToInt(testPath, 4); err == nil {
+		fmt.Printf(printFmt, 4, i1, i1)
 	}
 
-	if iN1, err := parth.SegmentToInt(testPath, -1); err == nil {
-		fmt.Printf(printFmt, -1, iN1, iN1)
+	if i2, err := parth.SegmentToInt(testPath, -1); err == nil {
+		fmt.Printf(printFmt, -1, i2, i2)
 	}
 
-	if s0N3, err := parth.SpanToString(testPath, 0, -2); err == nil {
-		fmt.Printf("First Segment = 0, Last Segment = -2, Value = %v", s0N3)
+	if s1, err := parth.SpanToString(testPath, 0, -2); err == nil {
+		fmt.Printf("First Segment = 0, Last Segment = -2, Value = %v", s1)
 	}
 
 	// Output:
