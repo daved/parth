@@ -170,7 +170,7 @@ func TestUnitFirstFloatFromString(t *testing.T) {
 	}
 }
 
-func TestUnitPosSegAsIndex(t *testing.T) {
+func TestUnitSegStartIndexFromStart(t *testing.T) {
 	tests := []struct {
 		ind   int
 		s     string
@@ -179,18 +179,22 @@ func TestUnitPosSegAsIndex(t *testing.T) {
 	}{
 		{0, "/test1", 0, false},
 		{1, "/test1/test-2", 6, false},
+		{2, "/t1-2/fd", 0, true},
 		{2, "/test1/test-2/test_3", 13, false},
 		{0, "test3/t3/", 0, false},
 		{1, "test4/t4/", 5, false},
 		{6, "/t5/f/fiv/55/5/fi/ve", 17, false},
 		{0, "/", 0, false},
-		{1, "/", 1, false},
+		{1, "/", 0, true},
 		{2, "/", 0, true},
 		{4, "/test/out", 0, true},
+		{-1, "/test/out", 0, true},
+		{2, "/0/1//", 4, false},
+		{3, "/0/1//", 5, false},
 	}
 
 	for _, v := range tests {
-		i, err := posSegAsIndex(v.s, v.ind)
+		i, err := segStartIndexFromStart(v.s, v.ind)
 		if err != nil && !v.isErr {
 			t.Errorf(errFmtUnexpErr, i, err)
 			continue
@@ -208,26 +212,102 @@ func TestUnitPosSegAsIndex(t *testing.T) {
 	}
 }
 
-func TestUnitNegSegAsIndex(t *testing.T) {
+func TestUnitSegStartIndexFromEnd(t *testing.T) {
 	tests := []struct {
 		ind   int
 		s     string
 		i     int
 		isErr bool
 	}{
-		{-1, "/test1", 6, false},
-		{-1, "/test1/test-2", 13, false},
-		{-2, "/test1/test-2/test_3", 13, false},
-		{0, "test3/t3/", 0, true},
+		{-1, "/test1", 0, false},
+		{-1, "/test1/test-2", 6, false},
+		{-1, "/test1/test-2/test_3", 13, false},
+		{-3, "test3/t3/", 0, false},
 		{-1, "test4/t4/", 8, false},
-		{-6, "/t5/f/fiv/55/5/fi/ve", 5, false},
-		{-1, "/", 1, false},
-		{-2, "/", 0, false},
+		{-2, "/t5/f/fiv/55/5/fi/ve", 14, false},
+		{-1, "/", 0, false},
+		{-2, "/", 0, true},
 		{-4, "/test/out", 0, true},
+		{1, "/test/out", 0, true},
 	}
 
 	for _, v := range tests {
-		i, err := negSegAsIndex(v.s, v.ind)
+		i, err := segStartIndexFromEnd(v.s, v.ind)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.s)
+			continue
+		}
+
+		want := v.i
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+}
+
+func TestUnitSegEndIndexFromStart(t *testing.T) {
+	tests := []struct {
+		ind   int
+		s     string
+		i     int
+		isErr bool
+	}{
+		{1, "/test1", 6, false},
+		{2, "/test1/test-2", 13, false},
+		{2, "/test1/test-2/test_3", 13, false},
+		{1, "test3/t3/", 5, false},
+		{2, "test4/t4/", 8, false},
+		{5, "/t5/f/fiv/55/5/fi/ve", 14, false},
+		{1, "/", 1, false},
+		{-4, "/test/out", 0, true},
+		{4, "/test/out", 0, true},
+	}
+
+	for _, v := range tests {
+		i, err := segEndIndexFromStart(v.s, v.ind)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.s)
+			continue
+		}
+
+		want := v.i
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+}
+
+func TestUnitSegEndIndexFromEnd(t *testing.T) {
+	tests := []struct {
+		ind   int
+		s     string
+		i     int
+		isErr bool
+	}{
+		{0, "/test1", 6, false},
+		{-1, "/t1", 0, false},
+		{-1, "/test1/test-2", 6, false},
+		{-2, "/test1/t-2/t_3", 6, false},
+		{-3, "test3/t3/", 0, false},
+		{-1, "test4/t4/", 8, false},
+		{-2, "/t5/f/fiv/55/5/fi/ve", 14, false},
+		{-1, "/", 0, false},
+		{-4, "/test/out", 0, true},
+		{4, "/test/out", 0, true},
+	}
+
+	for _, v := range tests {
+		i, err := segEndIndexFromEnd(v.s, v.ind)
 		if err != nil && !v.isErr {
 			t.Errorf(errFmtUnexpErr, i, err)
 			continue

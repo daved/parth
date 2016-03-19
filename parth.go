@@ -220,33 +220,30 @@ func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
 	var err error
 
 	if firstSeg < 0 {
-		t := firstSeg - 1
-		f, err = negSegAsIndex(path, t)
+		f, err = segStartIndexFromEnd(path, firstSeg)
 	} else {
-		f, err = posSegAsIndex(path, firstSeg)
+		f, err = segStartIndexFromStart(path, firstSeg)
 	}
-
 	if err != nil {
 		return "", fmt.Errorf("first path segment index %d does not exist", firstSeg)
 	}
 
-	if lastSeg < 0 {
-		l, err = negSegAsIndex(path, lastSeg)
+	if lastSeg > 0 {
+		l, err = segEndIndexFromStart(path, lastSeg)
 	} else {
-		t := lastSeg + 1
-		l, err = posSegAsIndex(path, t)
+		l, err = segEndIndexFromEnd(path, lastSeg)
 	}
-
 	if err != nil {
 		return "", fmt.Errorf("last path segment index %d does not exist", lastSeg)
 	}
 
-	if f >= l { // or equal?
+	if f == l {
+		return "", nil
+	}
+
+	if f > l {
 		return "", fmt.Errorf("first segment must come before the last segment")
 	}
-	/*if f >= l { // or equal?
-		f, l = l-1, f+1
-	}*/
 
 	return path[f:l], nil
 }
@@ -425,23 +422,17 @@ func firstFloatFromString(s string) (string, error) {
 	return s[ind : ind+l], nil
 }
 
-func posSegAsIndex(path string, i int) (int, error) {
-	if len(path) == 1 && (i == 0 || i == 1) {
-		return i, nil
+func segStartIndexFromStart(path string, seg int) (int, error) {
+	if seg < 0 {
+		return 0, fmt.Errorf("index cannot be found")
 	}
 
-	c := 0
-
-	for n := 0; n < len(path); n++ {
-		if n > 0 && (path[n] == '/' || n == len(path)-1) {
-			c++
+	for n, ct := 0, 0; n < len(path); n++ {
+		if n > 0 && path[n] == '/' {
+			ct++
 		}
 
-		if c == i {
-			if n == len(path)-1 && path[n] != '/' {
-				n++
-			}
-
+		if ct == seg {
 			return n, nil
 		}
 	}
@@ -449,27 +440,68 @@ func posSegAsIndex(path string, i int) (int, error) {
 	return 0, fmt.Errorf("no index found")
 }
 
-func negSegAsIndex(path string, i int) (int, error) {
-	if len(path) == 1 && (i == -1 || i == -2) {
-		i += 2
-
-		return i, nil
+func segStartIndexFromEnd(path string, seg int) (int, error) {
+	if seg > -1 {
+		return 0, fmt.Errorf("index cannot be found")
 	}
 
-	c := -1
-
-	for n := len(path) - 1; n >= 0; n-- {
-		if n < len(path)-1 && path[n] == '/' {
-			c--
+	for n, ct := len(path)-1, 0; n >= 0; n-- {
+		if path[n] == '/' || n == 0 {
+			ct--
 		}
 
-		if c == i {
-			if n == len(path)-1 && path[n] != '/' {
-				n++
-			}
-
+		if ct == seg {
 			return n, nil
 		}
+	}
+
+	return 0, fmt.Errorf("no index found")
+}
+
+func segEndIndexFromStart(path string, seg int) (int, error) {
+	if seg < 1 {
+		return 0, fmt.Errorf("index cannot be found")
+	}
+
+	for n, ct := 0, 0; n < len(path); n++ {
+		if path[n] == '/' && n > 0 {
+			ct++
+		}
+
+		if ct == seg {
+			return n, nil
+		}
+
+		if n+1 == len(path) && ct+1 == seg {
+			return n + 1, nil
+		}
+	}
+
+	return 0, fmt.Errorf("no index found")
+}
+
+func segEndIndexFromEnd(path string, seg int) (int, error) {
+	if seg > 0 {
+		return 0, fmt.Errorf("index cannot be found")
+	}
+
+	if seg == 0 {
+		return len(path), nil
+	}
+
+	if len(path) == 1 && path[0] == '/' {
+		return 0, nil
+	}
+
+	for n, ct := len(path)-1, 0; n >= 0; n-- {
+		if n == 0 || path[n] == '/' {
+			ct--
+		}
+
+		if ct == seg {
+			return n, nil
+		}
+
 	}
 
 	return 0, fmt.Errorf("no index found")
