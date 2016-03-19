@@ -53,7 +53,7 @@ func SegmentToInt64(path string, i int) (int64, error) {
 	var v int64
 
 	if v, err = strconv.ParseInt(s, 10, 64); err != nil {
-		return 0, err
+		return 0, ErrUnparsable
 	}
 
 	return v, nil
