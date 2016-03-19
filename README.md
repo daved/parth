@@ -72,6 +72,15 @@ decimal number within the specified segment will be returned.
 
 Please review the test cases for working examples.
 
+### SpanToString
+
+SpanToString receives two int values representing path segments, and returns 
+the content between those segments, including the first segment, as a string 
+and a nil error. If any error is encountered, a zero value string and error are 
+returned. The segments can be of negative values, but firstSeg must come before 
+the lastSeg. Providing a 0 int for the lastSeg is a special case which 
+indicates the end of the path.
+
 ## Documentation
 
 View the [GoDoc](http://godoc.org/github.com/codemodus/parth)

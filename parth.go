@@ -1,7 +1,7 @@
 // Package parth provides functions for accessing path segments.
 //
 // When returning an int of any size, the first whole number within the
-// specified segment will be returned.  When returning a float of any size,
+// specified segment will be returned. When returning a float of any size,
 // the first decimal number within the specified segment will be returned.
 package parth
 
@@ -12,7 +12,7 @@ import (
 )
 
 // SegmentToString receives an int representing a path segment, and returns both
-// the specified segment as a string and a nil error.  If any error is
+// the specified segment as a string and a nil error. If any error is
 // encountered, a zero value string and error are returned.
 func SegmentToString(path string, i int) (string, error) {
 	if i >= 0 {
@@ -23,7 +23,7 @@ func SegmentToString(path string, i int) (string, error) {
 }
 
 // SegmentToInt64 receives an int representing a path segment, and returns both
-// the specified segment as an int64 and a nil error.  If any error is
+// the specified segment as an int64 and a nil error. If any error is
 // encountered, a zero value int64 and error are returned.
 func SegmentToInt64(path string, i int) (int64, error) {
 	var s string
@@ -47,7 +47,7 @@ func SegmentToInt64(path string, i int) (int64, error) {
 }
 
 // SegmentToInt32 receives an int representing a path segment, and returns both
-// the specified segment as an int32 and a nil error.  If any error is
+// the specified segment as an int32 and a nil error. If any error is
 // encountered, a zero value int32 and error are returned.
 func SegmentToInt32(path string, i int) (int32, error) {
 	var s string
@@ -71,7 +71,7 @@ func SegmentToInt32(path string, i int) (int32, error) {
 }
 
 // SegmentToInt16 receives an int representing a path segment, and returns both
-// the specified segment as an int16 and a nil error.  If any error is
+// the specified segment as an int16 and a nil error. If any error is
 // encountered, a zero value int16 and error are returned.
 func SegmentToInt16(path string, i int) (int16, error) {
 	var s string
@@ -95,7 +95,7 @@ func SegmentToInt16(path string, i int) (int16, error) {
 }
 
 // SegmentToInt8 receives an int representing a path segment, and returns both
-// the specified segment as an int8 and a nil error.  If any error is
+// the specified segment as an int8 and a nil error. If any error is
 // encountered, a zero value int8 and error are returned.
 func SegmentToInt8(path string, i int) (int8, error) {
 	var s string
@@ -119,7 +119,7 @@ func SegmentToInt8(path string, i int) (int8, error) {
 }
 
 // SegmentToInt receives an int representing a path segment, and returns both
-// the specified segment as an int and a nil error.  If any error is
+// the specified segment as an int and a nil error. If any error is
 // encountered, a zero value int and error are returned.
 func SegmentToInt(path string, i int) (int, error) {
 	var s string
@@ -143,7 +143,7 @@ func SegmentToInt(path string, i int) (int, error) {
 }
 
 // SegmentToBool receives an int representing a path segment, and returns both
-// the specified segment as a bool and a nil error.  If any error is
+// the specified segment as a bool and a nil error. If any error is
 // encountered, a zero value bool and error are returned.
 func SegmentToBool(path string, i int) (bool, error) {
 	var s string
@@ -163,7 +163,7 @@ func SegmentToBool(path string, i int) (bool, error) {
 }
 
 // SegmentToFloat64 receives an int representing a path segment, and returns
-// both the specified segment as a float64 and a nil error.  If any error is
+// both the specified segment as a float64 and a nil error. If any error is
 // encountered, a zero value float64 and error are returned.
 func SegmentToFloat64(path string, i int) (float64, error) {
 	var s string
@@ -187,7 +187,7 @@ func SegmentToFloat64(path string, i int) (float64, error) {
 }
 
 // SegmentToFloat32 receives an int representing a path segment, and returns
-// both the specified segment as a float32 and a nil error.  If any error is
+// both the specified segment as a float32 and a nil error. If any error is
 // encountered, a zero value float32 and error are returned.
 func SegmentToFloat32(path string, i int) (float32, error) {
 	var s string
@@ -211,10 +211,11 @@ func SegmentToFloat32(path string, i int) (float32, error) {
 }
 
 // SpanToString receives two int values representing path segments, and
-// returns the content of and between those segments as a string and a nil
-// error.  If any error is encountered, a zero value string and error are
-// returned.  The segments can be of negative values, but firstSeg must come
-// before the lastSeg.
+// returns the content between those segments, including the first segment, as
+// a string and a nil error. If any error is encountered, a zero value string
+// and error are returned. The segments can be of negative values, but firstSeg
+// must come before the lastSeg. Providing a 0 int for the lastSeg is a special
+// case which indicates the end of the path.
 func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
 	var f, l int
 	var err error

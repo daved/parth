@@ -38,8 +38,8 @@ func Example() {
 		fmt.Printf(printFmt, -1, iN1, iN1)
 	}
 
-	if s0N3, err := parth.SpanToString(testPath, 0, -3); err == nil {
-		fmt.Printf("First Segment = 0, Last Segment = -3, Value = %v", s0N3)
+	if s0N3, err := parth.SpanToString(testPath, 0, -2); err == nil {
+		fmt.Printf("First Segment = 0, Last Segment = -2, Value = %v", s0N3)
 	}
 
 	// Output:
@@ -49,7 +49,7 @@ func Example() {
 	// Segment Index = 3 , Type = float32, Value = 3.3
 	// Segment Index = 4 , Type = int, Value = 4
 	// Segment Index = -1 , Type = int, Value = 4
-	// First Segment = 0, Last Segment = -3, Value = /zero/1/2
+	// First Segment = 0, Last Segment = -2, Value = /zero/1/2
 }
 
 var (
