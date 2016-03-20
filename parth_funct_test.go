@@ -11,45 +11,45 @@ import (
 )
 
 func Example() {
-	testPath := "/zero/1/2/nn3.3nn/4.4"
-	printFmt := "Segment Index = %v , Type = %T, Value = %v\n"
+	testPath := "/zero/1/2/nn3.3nn/key/5.5"
+	printFmt := "Segment Index = %v, Type = %T, Value = %v\n"
 
-	if s0, err := parth.SegmentToString(testPath, 0); err == nil {
-		fmt.Printf(printFmt, 0, s0, s0)
+	if s, err := parth.SegmentToString(testPath, 0); err == nil {
+		fmt.Printf(printFmt, 0, s, s)
 	}
 
 	if b, err := parth.SegmentToBool(testPath, 1); err == nil {
 		fmt.Printf(printFmt, 1, b, b)
 	}
 
-	if i0, err := parth.SegmentToInt(testPath, 2); err == nil {
-		fmt.Printf(printFmt, 2, i0, i0)
+	if i, err := parth.SegmentToInt(testPath, -4); err == nil {
+		fmt.Printf(printFmt, -4, i, i)
 	}
 
 	if f, err := parth.SegmentToFloat32(testPath, 3); err == nil {
 		fmt.Printf(printFmt, 3, f, f)
 	}
 
-	if i1, err := parth.SegmentToInt(testPath, 4); err == nil {
-		fmt.Printf(printFmt, 4, i1, i1)
+	if s, err := parth.SpanToString(testPath, 0, -3); err == nil {
+		fmt.Printf("First Segment = %d, Last Segment = %d, Value = %q\n", 0, -3, s)
 	}
 
-	if i2, err := parth.SegmentToInt(testPath, -1); err == nil {
-		fmt.Printf(printFmt, -1, i2, i2)
+	if i, err := parth.SubSegToInt(testPath, "key"); err == nil {
+		fmt.Printf("Segment Key = %q, Type = %T, Value = %v\n", "key", i, i)
 	}
 
-	if s1, err := parth.SpanToString(testPath, 0, -2); err == nil {
-		fmt.Printf("First Segment = 0, Last Segment = -2, Value = %v", s1)
+	if s, err := parth.SubSpanToString(testPath, "zero", 2); err == nil {
+		fmt.Printf("Segment Key = %q, Last Segment = %d, Value = %q\n", "zero", 2, s)
 	}
 
 	// Output:
-	// Segment Index = 0 , Type = string, Value = zero
-	// Segment Index = 1 , Type = bool, Value = true
-	// Segment Index = 2 , Type = int, Value = 2
-	// Segment Index = 3 , Type = float32, Value = 3.3
-	// Segment Index = 4 , Type = int, Value = 4
-	// Segment Index = -1 , Type = int, Value = 4
-	// First Segment = 0, Last Segment = -2, Value = /zero/1/2
+	// Segment Index = 0, Type = string, Value = zero
+	// Segment Index = 1, Type = bool, Value = true
+	// Segment Index = -4, Type = int, Value = 2
+	// Segment Index = 3, Type = float32, Value = 3.3
+	// First Segment = 0, Last Segment = -3, Value = "/zero/1/2"
+	// Segment Key = "key", Type = int, Value = 5
+	// Segment Key = "zero", Last Segment = 2, Value = "/1/2"
 }
 
 var (
