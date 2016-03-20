@@ -58,7 +58,7 @@ var (
 	errFmtUnexpErr = "Received unexpected err for segment type %T: %v"
 )
 
-func TestFunctString(t *testing.T) {
+func TestFunctSegmentToString(t *testing.T) {
 	var tests = []struct {
 		ind   int
 		path  string
@@ -105,7 +105,7 @@ func TestFunctString(t *testing.T) {
 	}
 }
 
-func TestFunctInts(t *testing.T) {
+func TestFunctSegmentToIntx(t *testing.T) {
 	var tests = []struct {
 		ind   int
 		path  string
@@ -214,7 +214,7 @@ func TestFunctInts(t *testing.T) {
 	}
 }
 
-func TestFunctBool(t *testing.T) {
+func TestFunctSegmentToBool(t *testing.T) {
 	tests := []struct {
 		ind   int
 		path  string
@@ -255,7 +255,7 @@ func TestFunctBool(t *testing.T) {
 	}
 }
 
-func TestFunctFloats(t *testing.T) {
+func TestFunctSegmentToFloatx(t *testing.T) {
 	tests := []struct {
 		ind   int
 		path  string
@@ -316,7 +316,7 @@ func TestFunctFloats(t *testing.T) {
 	}
 }
 
-func TestFunctSpan(t *testing.T) {
+func TestFunctSpanToString(t *testing.T) {
 	var tests = []struct {
 		firstInd int
 		lastInd  int
@@ -510,8 +510,8 @@ func BenchmarkParthIntNeg(b *testing.B) {
 }
 
 func BenchmarkParthSubSeg(b *testing.B) {
-	p := "/zero/one/two"
-	k := "one"
+	p := "/zero/1/2"
+	k := "1"
 	var r string
 
 	b.ResetTimer()
@@ -554,7 +554,7 @@ func BenchmarkParthSpan(b *testing.B) {
 }
 
 func BenchmarkParthSubSpan(b *testing.B) {
-	p := "/zero/one/two"
+	p := "/zero/1/2"
 	k := "zero"
 	i := 2
 	var r string
