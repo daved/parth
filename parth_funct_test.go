@@ -371,6 +371,84 @@ func TestFunctSpan(t *testing.T) {
 	}
 }
 
+func TestFunctSubSegToString(t *testing.T) {
+	var tests = []struct {
+		k     string
+		p     string
+		s     string
+		isErr bool
+	}{
+		{"test1", "/test1/res1/non1", "res1", false},
+		{"test2", "test2/res2/non2", "res2", false},
+		{"3", "/3/33/333", "33", false},
+		{"4", "4/44/444", "44", false},
+		{"55", "/5/55/555", "555", false},
+		{"66", "6/66/666", "666", false},
+		{"77", "/77", "", true},
+		{"88", "/", "", true},
+	}
+
+	for _, v := range tests {
+		s, err := parth.SubSegToString(v.p, v.k)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, s, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.p)
+			continue
+		}
+
+		want := v.s
+		got := s
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+}
+
+func TestFunctSubSpanToString(t *testing.T) {
+	var tests = []struct {
+		k     string
+		i     int
+		p     string
+		s     string
+		isErr bool
+	}{
+		{"test1", 1, "/test1/res1/non1", "/res1", false},
+		{"test2", 2, "test2/res2/non2", "/res2/non2", false},
+		{"3", 1, "/3/33/333", "/33", false},
+		{"4", 2, "4/44/444", "/44/444", false},
+		{"55", 1, "/5/55/555", "/555", false},
+		{"66", 2, "6/66/666", "", true},
+		{"77", 1, "/77", "", true},
+		{"88", 1, "/", "", true},
+		{"t1", -2, "/t1/res1/non1/xtra", "/res1", false},
+		{"t2", 0, "t2/res2/non2/xtra", "/res2/non2/xtra", false},
+		{"3", -1, "/3/33/333/303", "/33/333", false},
+		{"77", -1, "/77", "", true},
+		{"88", 0, "/", "", true},
+	}
+
+	for _, v := range tests {
+		s, err := parth.SubSpanToString(v.p, v.k, v.i)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, s, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.p)
+			continue
+		}
+
+		want := v.s
+		got := s
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+}
+
 var (
 	bmri int
 	bmrs string
@@ -431,6 +509,20 @@ func BenchmarkParthIntNeg(b *testing.B) {
 	bmri = r
 }
 
+func BenchmarkParthSubSeg(b *testing.B) {
+	p := "/zero/one/two"
+	k := "one"
+	var r string
+
+	b.ResetTimer()
+
+	for n := 0; n < b.N; n++ {
+		r, _ = parth.SubSegToString(p, k)
+	}
+
+	bmrs = r
+}
+
 func BenchmarkStandardSpan(b *testing.B) {
 	p := "/zero/1/2"
 	var r string
@@ -456,6 +548,21 @@ func BenchmarkParthSpan(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 		r, _ = parth.SpanToString(p, 0, 1)
+	}
+
+	bmrs = r
+}
+
+func BenchmarkParthSubSpan(b *testing.B) {
+	p := "/zero/one/two"
+	k := "zero"
+	i := 2
+	var r string
+
+	b.ResetTimer()
+
+	for n := 0; n < b.N; n++ {
+		r, _ = parth.SubSpanToString(p, k, i)
 	}
 
 	bmrs = r
