@@ -223,12 +223,30 @@ func SegmentToFloat32(path string, i int) (float32, error) {
 	return float32(v), nil
 }
 
+// SubSegToString receives a key which is used to search for the first matching
+// path segment, and returns both the subsequent segment as a string and a nil
+// error. If any error is encountered, a zero value string and error are
+// returned.
+func SubSegToString(path, key string) (string, error) {
+	ki, err := segIndexByKey(path, key)
+	if err != nil {
+		return "", err
+	}
+
+	s, err := SegmentToString(path[ki:], 1)
+	if err != nil {
+		return "", err
+	}
+
+	return s, nil
+}
+
 // SpanToString receives two int values representing path segments, and
 // returns the content between those segments, including the first segment, as
 // a string and a nil error. If any error is encountered, a zero value string
-// and error are returned. The segments can be of negative values, but firstSeg
-// must come before the lastSeg. Providing a 0 int for the lastSeg is a special
-// case which indicates the end of the path.
+// and error are returned. The segments can be of negative values, but the
+// first segment must come before the last segment. Providing a 0 int for the
+// second int is a special case which indicates the end of the path.
 func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
 	var f, l int
 	var err error
@@ -262,20 +280,13 @@ func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
 	return path[f:l], nil
 }
 
-func SubSegToString(path, key string) (string, error) {
-	ki, err := segIndexByKey(path, key)
-	if err != nil {
-		return "", err
-	}
-
-	s, err := SegmentToString(path[ki:], 1)
-	if err != nil {
-		return "", err
-	}
-
-	return s, nil
-}
-
+// SubSpanToString receives a key which is used to search for the first
+// matching path segment and an int value representing a second segment by it's
+// distance from the matched segment, and returns the content between those
+// segments as a string and a nil error. If any error is encountered, a zero
+// value string and error are returned. The int representing a segment can be
+// of negative values. Providing a 0 int is a special case which indicates the
+// end of the path.
 func SubSpanToString(path, key string, lastSeg int) (string, error) {
 	ki, err := segIndexByKey(path, key)
 	if err != nil {
