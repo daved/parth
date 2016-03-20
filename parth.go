@@ -28,11 +28,16 @@ var (
 // the specified segment as a string and a nil error. If any error is
 // encountered, a zero value string and error are returned.
 func SegmentToString(path string, i int) (string, error) {
-	if i >= 0 {
-		return posSegToString(path, i)
+	s, err := SpanToString(path, i, i+1)
+	if err != nil {
+		return "", err
 	}
 
-	return negSegToString(path, i)
+	if s[0] == '/' {
+		return s[1:], nil
+	}
+
+	return s, nil
 }
 
 // SegmentToInt64 receives an int representing a path segment, and returns both
@@ -501,180 +506,6 @@ func SubSpanToString(path, key string, lastSeg int) (string, error) {
 	return s, nil
 }
 
-func posSegToString(path string, i int) (string, error) {
-	c, ind0, ind1 := 0, 0, 0
-
-	for n := 0; n < len(path); n++ {
-		if path[n] == '/' {
-			if c == i {
-				if n+1 < len(path) && path[n+1] != '/' {
-					ind0 = n + 1
-				} else {
-					break
-				}
-			}
-
-			if c > i {
-				ind1 = n
-				break
-			}
-			c++
-		} else if n == 0 {
-			if c == i {
-				ind0 = n
-			}
-
-			c++
-		} else if n == len(path)-1 {
-			if c > i {
-				ind1 = n + 1
-			}
-
-			break
-		}
-	}
-
-	if i < 0 || ind1 == 0 {
-		return "", ErrSegNotExist
-	}
-
-	return path[ind0:ind1], nil
-}
-
-func negSegToString(path string, i int) (string, error) {
-	i = i * -1
-	c, ind0, ind1 := 1, 0, 0
-
-	for n := len(path) - 1; n >= 0; n-- {
-		if path[n] == '/' {
-			if c == i {
-				if n-1 >= 0 && path[n-1] != '/' {
-					ind1 = n
-				} else {
-					break
-				}
-			}
-
-			if c > i {
-				ind0 = n + 1
-
-				break
-			}
-
-			c++
-		} else if n == len(path)-1 {
-			if c == i {
-				ind1 = n + 1
-			}
-
-			c++
-		} else if n == 0 {
-			if c > i {
-				ind0 = n + 1
-			}
-
-			break
-		}
-	}
-
-	if i < 1 || ind0 == 0 {
-		return "", ErrSegNotExist
-	}
-
-	return path[ind0:ind1], nil
-}
-
-func firstIntFromString(s string) (string, error) {
-	ind, l := 0, 0
-
-	for n := 0; n < len(s); n++ {
-		if unicode.IsDigit(rune(s[n])) {
-			if l == 0 {
-				ind = n
-			}
-
-			l++
-		} else if s[n] == '-' {
-			if l == 0 {
-				ind = n
-				l++
-			} else {
-				break
-			}
-		} else {
-			if l == 0 && s[n] == '.' {
-				if n+1 < len(s) && unicode.IsDigit(rune(s[n+1])) {
-					return "0", nil
-				}
-
-				break
-			}
-
-			if l > 0 {
-				break
-			}
-		}
-	}
-
-	if l == 0 {
-		return "", ErrIntNotFound
-	}
-
-	return s[ind : ind+l], nil
-}
-
-func firstFloatFromString(s string) (string, error) {
-	c, ind, l := 0, 0, 0
-
-	for n := 0; n < len(s); n++ {
-		if unicode.IsDigit(rune(s[n])) {
-			if l == 0 {
-				ind = n
-			}
-
-			l++
-		} else if s[n] == '-' {
-			if l == 0 {
-				ind = n
-				l++
-			} else {
-				break
-			}
-		} else if s[n] == '.' {
-			if l == 0 {
-				ind = n
-			}
-
-			if c > 0 {
-				break
-			}
-
-			l++
-			c++
-		} else if s[n] == 'e' && l > 0 && n+1 < len(s) && s[n+1] == '+' {
-			l++
-		} else if s[n] == '+' && l > 0 && s[n-1] == 'e' {
-			if n+1 < len(s) && unicode.IsDigit(rune(s[n+1])) {
-				l++
-				continue
-			}
-
-			l--
-			break
-		} else {
-			if l > 0 {
-				break
-			}
-		}
-	}
-
-	if l == 0 || s[ind:ind+l] == "." {
-		return "", ErrFloatNotFound
-	}
-
-	return s[ind : ind+l], nil
-}
-
 func segStartIndexFromStart(path string, seg int) (int, error) {
 	if seg < 0 {
 		return 0, ErrIndexBad
@@ -790,4 +621,95 @@ func segIndexByKey(path, key string) (int, error) {
 	}
 
 	return 0, nil
+}
+
+func firstIntFromString(s string) (string, error) {
+	ind, l := 0, 0
+
+	for n := 0; n < len(s); n++ {
+		if unicode.IsDigit(rune(s[n])) {
+			if l == 0 {
+				ind = n
+			}
+
+			l++
+		} else if s[n] == '-' {
+			if l == 0 {
+				ind = n
+				l++
+			} else {
+				break
+			}
+		} else {
+			if l == 0 && s[n] == '.' {
+				if n+1 < len(s) && unicode.IsDigit(rune(s[n+1])) {
+					return "0", nil
+				}
+
+				break
+			}
+
+			if l > 0 {
+				break
+			}
+		}
+	}
+
+	if l == 0 {
+		return "", ErrIntNotFound
+	}
+
+	return s[ind : ind+l], nil
+}
+
+func firstFloatFromString(s string) (string, error) {
+	c, ind, l := 0, 0, 0
+
+	for n := 0; n < len(s); n++ {
+		if unicode.IsDigit(rune(s[n])) {
+			if l == 0 {
+				ind = n
+			}
+
+			l++
+		} else if s[n] == '-' {
+			if l == 0 {
+				ind = n
+				l++
+			} else {
+				break
+			}
+		} else if s[n] == '.' {
+			if l == 0 {
+				ind = n
+			}
+
+			if c > 0 {
+				break
+			}
+
+			l++
+			c++
+		} else if s[n] == 'e' && l > 0 && n+1 < len(s) && s[n+1] == '+' {
+			l++
+		} else if s[n] == '+' && l > 0 && s[n-1] == 'e' {
+			if n+1 < len(s) && unicode.IsDigit(rune(s[n+1])) {
+				l++
+				continue
+			}
+
+			l--
+			break
+		} else {
+			if l > 0 {
+				break
+			}
+		}
+	}
+
+	if l == 0 || s[ind:ind+l] == "." {
+		return "", ErrFloatNotFound
+	}
+
+	return s[ind : ind+l], nil
 }
