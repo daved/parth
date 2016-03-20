@@ -136,10 +136,12 @@ func TestFunctSegmentToIntx(t *testing.T) {
 	for _, v := range tests {
 		i, err := parth.SegmentToInt(v.path, v.ind)
 		if err != nil && !v.isErr {
-			t.Fatalf(errFmtUnexpErr, i, err)
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
 		}
 		if err == nil && v.isErr {
 			t.Errorf(errFmtExpErr, v.path)
+			continue
 		}
 
 		want := v.i
@@ -152,10 +154,12 @@ func TestFunctSegmentToIntx(t *testing.T) {
 	for _, v := range tests {
 		seg, err := parth.SegmentToInt8(v.path, v.ind)
 		if err != nil && !v.isErr {
-			t.Fatalf(errFmtUnexpErr, seg, err)
+			t.Errorf(errFmtUnexpErr, seg, err)
+			continue
 		}
 		if err == nil && v.isErr {
 			t.Errorf(errFmtExpErr, v.path)
+			continue
 		}
 
 		want := int8(v.i)
@@ -168,10 +172,12 @@ func TestFunctSegmentToIntx(t *testing.T) {
 	for _, v := range tests {
 		i, err := parth.SegmentToInt16(v.path, v.ind)
 		if err != nil && !v.isErr {
-			t.Fatalf(errFmtUnexpErr, i, err)
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
 		}
 		if err == nil && v.isErr {
 			t.Errorf(errFmtExpErr, v.path)
+			continue
 		}
 
 		want := int16(v.i)
@@ -184,10 +190,12 @@ func TestFunctSegmentToIntx(t *testing.T) {
 	for _, v := range tests {
 		i, err := parth.SegmentToInt32(v.path, v.ind)
 		if err != nil && !v.isErr {
-			t.Fatalf(errFmtUnexpErr, i, err)
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
 		}
 		if err == nil && v.isErr {
 			t.Errorf(errFmtExpErr, v.path)
+			continue
 		}
 
 		want := int32(v.i)
@@ -200,10 +208,12 @@ func TestFunctSegmentToIntx(t *testing.T) {
 	for _, v := range tests {
 		i, err := parth.SegmentToInt64(v.path, v.ind)
 		if err != nil && !v.isErr {
-			t.Fatalf(errFmtUnexpErr, i, err)
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
 		}
 		if err == nil && v.isErr {
 			t.Errorf(errFmtExpErr, v.path)
+			continue
 		}
 
 		want := int64(v.i)
@@ -241,10 +251,12 @@ func TestFunctSegmentToBool(t *testing.T) {
 	for _, v := range tests {
 		b, err := parth.SegmentToBool(v.path, v.ind)
 		if err != nil && !v.isErr {
-			t.Fatalf(errFmtUnexpErr, b, err)
+			t.Errorf(errFmtUnexpErr, b, err)
+			continue
 		}
 		if err == nil && v.isErr {
 			t.Errorf(errFmtExpErr, v.path)
+			continue
 		}
 
 		want := v.b
@@ -286,10 +298,12 @@ func TestFunctSegmentToFloatx(t *testing.T) {
 	for _, v := range tests {
 		f32, err := parth.SegmentToFloat32(v.path, v.ind)
 		if err != nil && !v.isErr {
-			t.Fatalf(errFmtUnexpErr, f32, err)
+			t.Errorf(errFmtUnexpErr, f32, err)
+			continue
 		}
 		if err == nil && v.isErr {
 			t.Errorf(errFmtExpErr, v.path)
+			continue
 		}
 
 		want := v.f32
@@ -302,10 +316,271 @@ func TestFunctSegmentToFloatx(t *testing.T) {
 	for _, v := range tests {
 		f64, err := parth.SegmentToFloat64(v.path, v.ind)
 		if err != nil && !v.isErr {
-			t.Fatalf(errFmtUnexpErr, f64, err)
+			t.Errorf(errFmtUnexpErr, f64, err)
+			continue
 		}
 		if err == nil && v.isErr {
 			t.Errorf(errFmtExpErr, v.path)
+			continue
+		}
+
+		want := v.f64
+		got := f64
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+}
+
+func TestFunctSubSegToString(t *testing.T) {
+	var tests = []struct {
+		k     string
+		p     string
+		s     string
+		isErr bool
+	}{
+		{"test1", "/test1/res1/non1", "res1", false},
+		{"test2", "test2/res2/non2", "res2", false},
+		{"3", "/3/33/333", "33", false},
+		{"4", "4/44/444", "44", false},
+		{"55", "/5/55/555", "555", false},
+		{"66", "6/66/666", "666", false},
+		{"77", "/77", "", true},
+		{"88", "/", "", true},
+	}
+
+	for _, v := range tests {
+		s, err := parth.SubSegToString(v.p, v.k)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, s, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.p)
+			continue
+		}
+
+		want := v.s
+		got := s
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+}
+
+func TestFunctSubSegToIntx(t *testing.T) {
+	var tests = []struct {
+		key   string
+		path  string
+		i     int
+		isErr bool
+	}{
+		{"t", "/t/0.1", 0, false},
+		{"2", "/2/0.2a", 0, false},
+		{"xx", "/xx/aaaa1.3", 1, false},
+		{"id", "id/4", 4, false},
+		{"d", "/d/5aaaa", 5, false},
+		{"e", "/d/e/aaa6aa", 6, false},
+		{"r", "/a/g/r/.7.aaaa", 0, false},
+		{"g", "/g/.8aa/gf/4", 0, false},
+		{"x", "/x/-9", -9, false},
+		{"rr", "/w/rr/10-", 10, false},
+		{"h", "/h/3.14e+11", 3, false},
+		{"y", "/y/3.14e.+12", 3, false},
+		{"yy", "/yy/3.14e+.13", 3, false},
+		{"s", "/hh/s/3.14e+.13", 3, false},
+		{"g", "/g/.", 0, true},
+		{"j", "/j/error", 0, true},
+		{"j", "/jj", 0, true},
+		{"k", "/k/12414143242534534346456456457457456346756868686524234", 0, true},
+	}
+
+	for _, v := range tests {
+		i, err := parth.SubSegToInt(v.path, v.key)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+			continue
+		}
+
+		want := v.i
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+
+	for _, v := range tests {
+		seg, err := parth.SubSegToInt8(v.path, v.key)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, seg, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+			continue
+		}
+
+		want := int8(v.i)
+		got := seg
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+
+	for _, v := range tests {
+		i, err := parth.SubSegToInt16(v.path, v.key)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+			continue
+		}
+
+		want := int16(v.i)
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+
+	for _, v := range tests {
+		i, err := parth.SubSegToInt32(v.path, v.key)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+			continue
+		}
+
+		want := int32(v.i)
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+
+	for _, v := range tests {
+		i, err := parth.SubSegToInt64(v.path, v.key)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+			continue
+		}
+
+		want := int64(v.i)
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+}
+
+func TestFunctSubSegToBool(t *testing.T) {
+	tests := []struct {
+		key   string
+		path  string
+		b     bool
+		isErr bool
+	}{
+		{"a", "/a/1", true, false},
+		{"b", "/a/b/t", true, false},
+		{"c", "/c/T", true, false},
+		{"3", "/3/true", true, false},
+		{"44", "/4/44/TRUE", true, false},
+		{"5", "/h/5/True/5", true, false},
+		{"0", "/0/0", false, false},
+		{"h", "/h/f", false, false},
+		{"F", "/F/F", false, false},
+		{"g", "/g/F", false, false},
+		{"j", "/j/false", false, false},
+		{"k", "/k/FALSE", false, false},
+		{"l", "/l/False", false, false},
+		{"nx", "/True", false, true},
+		{"gg", "/gg/error", false, true},
+	}
+
+	for _, v := range tests {
+		b, err := parth.SubSegToBool(v.path, v.key)
+		if err != nil && !v.isErr {
+			t.Fatalf(errFmtUnexpErr, b, err)
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+		}
+
+		want := v.b
+		got := b
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+}
+
+func TestFunctSubSegToFloatx(t *testing.T) {
+	tests := []struct {
+		key   string
+		path  string
+		f32   float32
+		f64   float64
+		isErr bool
+	}{
+		{"a", "/a/0.1", 0.1, 0.1, false},
+		{"b", "/b/0.2a", 0.2, 0.2, false},
+		{"c", "/b/c/aaaa1.3", 1.3, 1.3, false},
+		{"d", "/d/4/d", 4.0, 4.0, false},
+		{"e", "e/5aaaa", 5.0, 5.0, false},
+		{"1", "/1/aaa6aa", 6.0, 6.0, false},
+		{"2", "/2/.7.aaaa", 0.7, 0.7, false},
+		{"4", "/4/.8aa", 0.8, 0.8, false},
+		{"5", "/5/-9", -9.0, -9.0, false},
+		{"6", "/y/6/10-", 10.0, 10.0, false},
+		{"s", "s/3.14e+11", 3.14e+11, 3.14e+11, false},
+		{"g", "/g/3.14e.+12", 3.14, 3.14, false},
+		{"i", "/h/i/3.14e+.13", 3.14, 3.14, false},
+		{"3", "/3/3.14e+.13", 3.14, 3.14, false},
+		{"nx", "/14", 0.0, 0.0, true},
+		{"f", "/f/error", 0.0, 0.0, true},
+		{"ff", "/ff/3.14e+407", 0.0, 0.0, true},
+	}
+
+	for _, v := range tests {
+		f32, err := parth.SubSegToFloat32(v.path, v.key)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, f32, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+			continue
+		}
+
+		want := v.f32
+		got := f32
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+
+	for _, v := range tests {
+		f64, err := parth.SubSegToFloat64(v.path, v.key)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, f64, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+			continue
 		}
 
 		want := v.f64
@@ -360,42 +635,6 @@ func TestFunctSpanToString(t *testing.T) {
 		}
 		if err == nil && v.isErr {
 			t.Errorf(errFmtExpErr, v.path)
-			continue
-		}
-
-		want := v.s
-		got := s
-		if got != want {
-			t.Errorf(errFmtGotWant, got, got, want)
-		}
-	}
-}
-
-func TestFunctSubSegToString(t *testing.T) {
-	var tests = []struct {
-		k     string
-		p     string
-		s     string
-		isErr bool
-	}{
-		{"test1", "/test1/res1/non1", "res1", false},
-		{"test2", "test2/res2/non2", "res2", false},
-		{"3", "/3/33/333", "33", false},
-		{"4", "4/44/444", "44", false},
-		{"55", "/5/55/555", "555", false},
-		{"66", "6/66/666", "666", false},
-		{"77", "/77", "", true},
-		{"88", "/", "", true},
-	}
-
-	for _, v := range tests {
-		s, err := parth.SubSegToString(v.p, v.k)
-		if err != nil && !v.isErr {
-			t.Errorf(errFmtUnexpErr, s, err)
-			continue
-		}
-		if err == nil && v.isErr {
-			t.Errorf(errFmtExpErr, v.p)
 			continue
 		}
 

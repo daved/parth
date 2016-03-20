@@ -241,6 +241,202 @@ func SubSegToString(path, key string) (string, error) {
 	return s, nil
 }
 
+// SubSegToInt64 receives a key which is used to search for the first matching
+// path segment, and returns both the subsequent segment as an int64 and a nil
+// error. If any error is encountered, a zero value int64 and error are
+// returned.
+func SubSegToInt64(path, key string) (int64, error) {
+	var s string
+	var err error
+
+	if s, err = SubSegToString(path, key); err != nil {
+		return 0, err
+	}
+
+	if s, err = firstIntFromString(s); err != nil {
+		return 0, err
+	}
+
+	var v int64
+
+	if v, err = strconv.ParseInt(s, 10, 64); err != nil {
+		return 0, ErrUnparsable
+	}
+
+	return v, nil
+}
+
+// SubSegToInt32 receives a key which is used to search for the first matching
+// path segment, and returns both the subsequent segment as an int32 and a nil
+// error. If any error is encountered, a zero value int32 and error are
+// returned.
+func SubSegToInt32(path, key string) (int32, error) {
+	var s string
+	var err error
+
+	if s, err = SubSegToString(path, key); err != nil {
+		return 0, err
+	}
+
+	if s, err = firstIntFromString(s); err != nil {
+		return 0, err
+	}
+
+	var v int64
+
+	if v, err = strconv.ParseInt(s, 10, 32); err != nil {
+		return 0, ErrUnparsable
+	}
+
+	return int32(v), nil
+}
+
+// SubSegToInt16 receives a key which is used to search for the first matching
+// path segment, and returns both the subsequent segment as an int16 and a nil
+// error. If any error is encountered, a zero value int16 and error are
+// returned.
+func SubSegToInt16(path, key string) (int16, error) {
+	var s string
+	var err error
+
+	if s, err = SubSegToString(path, key); err != nil {
+		return 0, err
+	}
+
+	if s, err = firstIntFromString(s); err != nil {
+		return 0, err
+	}
+
+	var v int64
+
+	if v, err = strconv.ParseInt(s, 10, 16); err != nil {
+		return 0, ErrUnparsable
+	}
+
+	return int16(v), nil
+}
+
+// SubSegToInt8 receives a key which is used to search for the first matching
+// path segment, and returns both the subsequent segment as an int8 and a nil
+// error. If any error is encountered, a zero value int8 and error are
+// returned.
+func SubSegToInt8(path, key string) (int8, error) {
+	var s string
+	var err error
+
+	if s, err = SubSegToString(path, key); err != nil {
+		return 0, err
+	}
+
+	if s, err = firstIntFromString(s); err != nil {
+		return 0, err
+	}
+
+	var v int64
+
+	if v, err = strconv.ParseInt(s, 10, 8); err != nil {
+		return 0, ErrUnparsable
+	}
+
+	return int8(v), nil
+}
+
+// SubSegToInt receives a key which is used to search for the first matching
+// path segment, and returns both the subsequent segment as an int and a nil
+// error. If any error is encountered, a zero value int and error are
+// returned.
+func SubSegToInt(path, key string) (int, error) {
+	var s string
+	var err error
+
+	if s, err = SubSegToString(path, key); err != nil {
+		return 0, err
+	}
+
+	if s, err = firstIntFromString(s); err != nil {
+		return 0, err
+	}
+
+	var v int64
+
+	if v, err = strconv.ParseInt(s, 10, 0); err != nil {
+		return 0, ErrUnparsable
+	}
+
+	return int(v), nil
+}
+
+// SubSegToBool receives a key which is used to search for the first matching
+// path segment, and returns both the subsequent segment as a bool and a nil
+// error. If any error is encountered, a zero value bool and error are
+// returned.
+func SubSegToBool(path, key string) (bool, error) {
+	var s string
+	var err error
+
+	if s, err = SubSegToString(path, key); err != nil {
+		return false, err
+	}
+
+	var v bool
+
+	if v, err = strconv.ParseBool(s); err != nil {
+		return false, ErrUnparsable
+	}
+
+	return v, nil
+}
+
+// SubSegToFloat64 receives a key which is used to search for the first
+// matching path segment, and returns both the subsequent segment as a float64
+// and a nil error. If any error is encountered, a zero value float64 and error
+// are returned.
+func SubSegToFloat64(path, key string) (float64, error) {
+	var s string
+	var err error
+
+	if s, err = SubSegToString(path, key); err != nil {
+		return 0.0, err
+	}
+
+	if s, err = firstFloatFromString(s); err != nil {
+		return 0.0, err
+	}
+
+	var v float64
+
+	if v, err = strconv.ParseFloat(s, 64); err != nil {
+		return 0.0, ErrUnparsable
+	}
+
+	return v, nil
+}
+
+// SubSegToFloat32 receives a key which is used to search for the first
+// matching path segment, and returns both the subsequent segment as a float32
+// and a nil error. If any error is encountered, a zero value float32 and error
+// are returned.
+func SubSegToFloat32(path, key string) (float32, error) {
+	var s string
+	var err error
+
+	if s, err = SubSegToString(path, key); err != nil {
+		return 0.0, err
+	}
+
+	if s, err = firstFloatFromString(s); err != nil {
+		return 0.0, err
+	}
+
+	var v float64
+
+	if v, err = strconv.ParseFloat(s, 32); err != nil {
+		return 0.0, ErrUnparsable
+	}
+
+	return float32(v), nil
+}
+
 // SpanToString receives two int values representing path segments, and
 // returns the content between those segments, including the first segment, as
 // a string and a nil error. If any error is encountered, a zero value string
