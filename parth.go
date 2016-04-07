@@ -402,6 +402,249 @@ func SubSpanToString(path, key string, lastSeg int) (string, error) {
 	return s, nil
 }
 
+type Parth struct {
+	path string
+	err  error
+}
+
+func New(path string) Parth {
+	return Parth{path: path}
+}
+
+func NewFromSpan(path string, firstSeg, lastSeg int) Parth {
+	s, err := SpanToString(path, firstSeg, lastSeg)
+	return Parth{s, err}
+}
+
+func NewFromSubSpan(path, key string, lastSeg int) Parth {
+	s, err := SubSpanToString(path, key, lastSeg)
+	return Parth{s, err}
+}
+
+func (p *Parth) Err() error {
+	return p.err
+}
+
+func (p *Parth) SegmentToString(i int) string {
+	if p.err != nil {
+		return ""
+	}
+
+	s, err := SegmentToString(p.path, i)
+
+	p.err = err
+	return s
+}
+
+func (p *Parth) SegmentToInt64(i int) int64 {
+	if p.err != nil {
+		return 0
+	}
+
+	n, err := SegmentToInt64(p.path, i)
+
+	p.err = err
+	return n
+}
+
+func (p *Parth) SegmentToInt32(i int) int32 {
+	if p.err != nil {
+		return 0
+	}
+
+	n, err := SegmentToInt32(p.path, i)
+
+	p.err = err
+	return n
+}
+
+func (p *Parth) SegmentToInt16(i int) int16 {
+	if p.err != nil {
+		return 0
+	}
+
+	n, err := SegmentToInt16(p.path, i)
+
+	p.err = err
+	return n
+}
+
+func (p *Parth) SegmentToInt8(i int) int8 {
+	if p.err != nil {
+		return 0
+	}
+
+	n, err := SegmentToInt8(p.path, i)
+
+	p.err = err
+	return n
+}
+
+func (p *Parth) SegmentToInt(i int) int {
+	if p.err != nil {
+		return 0
+	}
+
+	n, err := SegmentToInt(p.path, i)
+
+	p.err = err
+	return n
+}
+
+func (p *Parth) SegmentToBool(i int) bool {
+	if p.err != nil {
+		return false
+	}
+
+	b, err := SegmentToBool(p.path, i)
+
+	p.err = err
+	return b
+}
+
+func (p *Parth) SegmentToFloat64(i int) float64 {
+	if p.err != nil {
+		return 0
+	}
+
+	f, err := SegmentToFloat64(p.path, i)
+
+	p.err = err
+	return f
+}
+
+func (p *Parth) SegmentToFloat32(i int) float32 {
+	if p.err != nil {
+		return 0
+	}
+
+	f, err := SegmentToFloat32(p.path, i)
+
+	p.err = err
+	return f
+}
+
+func (p *Parth) SubSegToString(key string) string {
+	if p.err != nil {
+		return ""
+	}
+
+	s, err := SubSegToString(p.path, key)
+
+	p.err = err
+	return s
+}
+
+func (p *Parth) SubSegToInt64(key string) int64 {
+	if p.err != nil {
+		return 0
+	}
+
+	i, err := SubSegToInt64(p.path, key)
+
+	p.err = err
+	return i
+}
+
+func (p *Parth) SubSegToInt32(key string) int32 {
+	if p.err != nil {
+		return 0
+	}
+
+	i, err := SubSegToInt32(p.path, key)
+
+	p.err = err
+	return i
+}
+
+func (p *Parth) SubSegToInt16(key string) int16 {
+	if p.err != nil {
+		return 0
+	}
+
+	i, err := SubSegToInt16(p.path, key)
+
+	p.err = err
+	return i
+}
+
+func (p *Parth) SubSegToInt8(key string) int8 {
+	if p.err != nil {
+		return 0
+	}
+
+	i, err := SubSegToInt8(p.path, key)
+
+	p.err = err
+	return i
+}
+
+func (p *Parth) SubSegToInt(key string) int {
+	if p.err != nil {
+		return 0
+	}
+
+	i, err := SubSegToInt(p.path, key)
+
+	p.err = err
+	return i
+}
+
+func (p *Parth) SubSegToBool(key string) bool {
+	if p.err != nil {
+		return false
+	}
+
+	b, err := SubSegToBool(p.path, key)
+
+	p.err = err
+	return b
+}
+
+func (p *Parth) SubSegToFloat64(key string) float64 {
+	if p.err != nil {
+		return 0
+	}
+
+	f, err := SubSegToFloat64(p.path, key)
+
+	p.err = err
+	return f
+}
+
+func (p *Parth) SubSegToFloat32(key string) float32 {
+	if p.err != nil {
+		return 0
+	}
+
+	f, err := SubSegToFloat32(p.path, key)
+
+	p.err = err
+	return f
+}
+
+func (p *Parth) SpanToString(firstSeg, lastSeg int) string {
+	if p.err != nil {
+		return ""
+	}
+
+	s, err := SpanToString(p.path, firstSeg, lastSeg)
+
+	p.err = err
+	return s
+}
+
+func (p *Parth) SubSpanToString(key string, lastSeg int) string {
+	if p.err != nil {
+		return ""
+	}
+
+	s, err := SubSpanToString(p.path, key, lastSeg)
+
+	p.err = err
+	return s
+}
+
 func segStartIndexFromStart(path string, seg int) (int, error) {
 	if seg < 0 {
 		return 0, ErrIndexBad

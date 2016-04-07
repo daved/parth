@@ -31,6 +31,31 @@ func SubSegToInt64(path, key string) (int64, error)
 func SubSegToInt8(path, key string) (int8, error)
 func SubSegToString(path, key string) (string, error)
 func SubSpanToString(path, key string, lastSeg int) (string, error)
+type Parth
+    func New(path string) Parth
+    func NewFromSpan(path string, firstSeg, lastSeg int) Parth
+    func NewFromSubSpan(path, key string, lastSeg int) Parth
+    func (p *Parth) Err() error
+    func (p *Parth) SegmentToBool(i int) bool
+    func (p *Parth) SegmentToFloat32(i int) float32
+    func (p *Parth) SegmentToFloat64(i int) float64
+    func (p *Parth) SegmentToInt(i int) int
+    func (p *Parth) SegmentToInt16(i int) int16
+    func (p *Parth) SegmentToInt32(i int) int32
+    func (p *Parth) SegmentToInt64(i int) int64
+    func (p *Parth) SegmentToInt8(i int) int8
+    func (p *Parth) SegmentToString(i int) string
+    func (p *Parth) SpanToString(firstSeg, lastSeg int) string
+    func (p *Parth) SubSegToBool(key string) bool
+    func (p *Parth) SubSegToFloat32(key string) float32
+    func (p *Parth) SubSegToFloat64(key string) float64
+    func (p *Parth) SubSegToInt(key string) int
+    func (p *Parth) SubSegToInt16(key string) int16
+    func (p *Parth) SubSegToInt32(key string) int32
+    func (p *Parth) SubSegToInt64(key string) int64
+    func (p *Parth) SubSegToInt8(key string) int8
+    func (p *Parth) SubSegToString(key string) string
+    func (p *Parth) SubSpanToString(key string, lastSeg int) string
 ```
 
 ### Setup
