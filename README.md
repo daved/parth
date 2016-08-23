@@ -58,35 +58,6 @@ type Parth
     func (p *Parth) SubSpanToString(key string, lastSeg int) string
 ```
 
-```go
-import (
-	"fmt"
-
-	"github.com/codemodus/parth"
-)
-
-func main() {
-    r, err := http.NewRequest("GET", "/zero/1/2/nn3.3nn/key/5.5", nil)
-    if err != nil {
-        fmt.Fprintln(os.Stderr, err)
-    }
-
-    printFmt := "Type = %T, Value = %v\n"
-
-    p := parth.New(r.URL.Path)
-
-    s := p.SegmentToString(0)
-    f := p.SegmentToFloat32(3)
-    ss := p.SubSpanToString("zero", 2)
-
-    if p.Err() == nil {
-        fmt.Printf(printFmt, s, s)   // Outputs: Type = string, Value = zero
-        fmt.Printf(printFmt, f, f)   // Outputs: Type = float32, Value = 3.3
-        fmt.Printf(printFmt, ss, ss) // Outputs: Type = string, Value = /1/2
-    }
-}
-```
-
 ### Setup
 
 ```go
@@ -130,6 +101,35 @@ func main() {
 
     if s, err := parth.SubSpanToString(r.URL.Path, "zero", 2); err == nil {
         fmt.Printf(printFmt, s, s) // Outputs: Type = string, Value = /1/2
+    }
+}
+```
+
+```go
+import (
+	"fmt"
+
+	"github.com/codemodus/parth"
+)
+
+func main() {
+    r, err := http.NewRequest("GET", "/zero/1/2/nn3.3nn/key/5.5", nil)
+    if err != nil {
+        fmt.Fprintln(os.Stderr, err)
+    }
+
+    printFmt := "Type = %T, Value = %v\n"
+
+    p := parth.New(r.URL.Path)
+
+    s := p.SegmentToString(0)
+    f := p.SegmentToFloat32(3)
+    ss := p.SubSpanToString("zero", 2)
+
+    if p.Err() == nil {
+        fmt.Printf(printFmt, s, s)   // Outputs: Type = string, Value = zero
+        fmt.Printf(printFmt, f, f)   // Outputs: Type = float32, Value = 3.3
+        fmt.Printf(printFmt, ss, ss) // Outputs: Type = string, Value = /1/2
     }
 }
 ```
