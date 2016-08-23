@@ -381,16 +381,16 @@ type Parth struct {
 
 // New receives a path as a string, then returns a new Parth set with the
 // provided path.
-func New(path string) Parth {
-	return Parth{path: path}
+func New(path string) *Parth {
+	return &Parth{path: path}
 }
 
 // NewFromSpan receives a path as a string, and two int values representing
 // path segments, then returns a new Parth set with the content between those
 // segments, and any error encountered. See SpanToString for more info.
-func NewFromSpan(path string, firstSeg, lastSeg int) Parth {
+func NewFromSpan(path string, firstSeg, lastSeg int) *Parth {
 	s, err := SpanToString(path, firstSeg, lastSeg)
-	return Parth{s, err}
+	return &Parth{s, err}
 }
 
 // NewFromSubSpan receives a path as a string, a key which is used to search
@@ -398,9 +398,9 @@ func NewFromSpan(path string, firstSeg, lastSeg int) Parth {
 // segment by it's distance from the matched segment, then returns a new Parth
 // set with the content between those segments, and any error encountered. See
 // SubSpanToString for more info.
-func NewFromSubSpan(path, key string, lastSeg int) Parth {
+func NewFromSubSpan(path, key string, lastSeg int) *Parth {
 	s, err := SubSpanToString(path, key, lastSeg)
-	return Parth{s, err}
+	return &Parth{s, err}
 }
 
 // Err returns the first error encountered by the Parth instance.

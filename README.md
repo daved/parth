@@ -32,9 +32,9 @@ func SubSegToInt8(path, key string) (int8, error)
 func SubSegToString(path, key string) (string, error)
 func SubSpanToString(path, key string, lastSeg int) (string, error)
 type Parth
-    func New(path string) Parth
-    func NewFromSpan(path string, firstSeg, lastSeg int) Parth
-    func NewFromSubSpan(path, key string, lastSeg int) Parth
+    func New(path string) *Parth
+    func NewFromSpan(path string, firstSeg, lastSeg int) *Parth
+    func NewFromSubSpan(path, key string, lastSeg int) *Parth
     func (p *Parth) Err() error
     func (p *Parth) SegmentToBool(i int) bool
     func (p *Parth) SegmentToFloat32(i int) float32
