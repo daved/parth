@@ -11,6 +11,7 @@ import (
 	"unicode"
 )
 
+// Err{Name} values are for error identification.
 var (
 	ErrFirstSegNotExist = errors.New("first segment index does not exist")
 	ErrLastSegNotExist  = errors.New("last segment index does not exist")
@@ -24,8 +25,8 @@ var (
 	ErrIndexNotFound = errors.New("no index found")
 )
 
-// SegmentToString receives an int representing a path segment, and returns both
-// the specified segment as a string and a nil error. If any error is
+// SegmentToString receives an int representing a path segment, then returns
+// both the specified segment as a string and a nil error. If any error is
 // encountered, a zero value string and error are returned.
 func SegmentToString(path string, i int) (string, error) {
 	s, err := SpanToString(path, i, i+1)
@@ -40,8 +41,8 @@ func SegmentToString(path string, i int) (string, error) {
 	return s, nil
 }
 
-// SegmentToInt64 receives an int representing a path segment, and returns both
-// the specified segment as an int64 and a nil error. If any error is
+// SegmentToInt64 receives an int representing a path segment, then returns
+// both the specified segment as an int64 and a nil error. If any error is
 // encountered, a zero value int64 and error are returned.
 func SegmentToInt64(path string, i int) (int64, error) {
 	s, err := segToStrInt(path, i)
@@ -57,8 +58,8 @@ func SegmentToInt64(path string, i int) (int64, error) {
 	return v, nil
 }
 
-// SegmentToInt32 receives an int representing a path segment, and returns both
-// the specified segment as an int32 and a nil error. If any error is
+// SegmentToInt32 receives an int representing a path segment, then returns
+// both the specified segment as an int32 and a nil error. If any error is
 // encountered, a zero value int32 and error are returned.
 func SegmentToInt32(path string, i int) (int32, error) {
 	s, err := segToStrInt(path, i)
@@ -74,8 +75,8 @@ func SegmentToInt32(path string, i int) (int32, error) {
 	return int32(v), nil
 }
 
-// SegmentToInt16 receives an int representing a path segment, and returns both
-// the specified segment as an int16 and a nil error. If any error is
+// SegmentToInt16 receives an int representing a path segment, then returns
+// both the specified segment as an int16 and a nil error. If any error is
 // encountered, a zero value int16 and error are returned.
 func SegmentToInt16(path string, i int) (int16, error) {
 	s, err := segToStrInt(path, i)
@@ -91,7 +92,7 @@ func SegmentToInt16(path string, i int) (int16, error) {
 	return int16(v), nil
 }
 
-// SegmentToInt8 receives an int representing a path segment, and returns both
+// SegmentToInt8 receives an int representing a path segment, then returns both
 // the specified segment as an int8 and a nil error. If any error is
 // encountered, a zero value int8 and error are returned.
 func SegmentToInt8(path string, i int) (int8, error) {
@@ -108,7 +109,7 @@ func SegmentToInt8(path string, i int) (int8, error) {
 	return int8(v), nil
 }
 
-// SegmentToInt receives an int representing a path segment, and returns both
+// SegmentToInt receives an int representing a path segment, then returns both
 // the specified segment as an int and a nil error. If any error is
 // encountered, a zero value int and error are returned.
 func SegmentToInt(path string, i int) (int, error) {
@@ -125,7 +126,7 @@ func SegmentToInt(path string, i int) (int, error) {
 	return int(v), nil
 }
 
-// SegmentToBool receives an int representing a path segment, and returns both
+// SegmentToBool receives an int representing a path segment, then returns both
 // the specified segment as a bool and a nil error. If any error is
 // encountered, a zero value bool and error are returned.
 func SegmentToBool(path string, i int) (bool, error) {
@@ -142,7 +143,7 @@ func SegmentToBool(path string, i int) (bool, error) {
 	return v, nil
 }
 
-// SegmentToFloat64 receives an int representing a path segment, and returns
+// SegmentToFloat64 receives an int representing a path segment, then returns
 // both the specified segment as a float64 and a nil error. If any error is
 // encountered, a zero value float64 and error are returned.
 func SegmentToFloat64(path string, i int) (float64, error) {
@@ -159,7 +160,7 @@ func SegmentToFloat64(path string, i int) (float64, error) {
 	return v, nil
 }
 
-// SegmentToFloat32 receives an int representing a path segment, and returns
+// SegmentToFloat32 receives an int representing a path segment, then returns
 // both the specified segment as a float32 and a nil error. If any error is
 // encountered, a zero value float32 and error are returned.
 func SegmentToFloat32(path string, i int) (float32, error) {
@@ -177,7 +178,7 @@ func SegmentToFloat32(path string, i int) (float32, error) {
 }
 
 // SubSegToString receives a key which is used to search for the first matching
-// path segment, and returns both the subsequent segment as a string and a nil
+// path segment, then returns both the subsequent segment as a string and a nil
 // error. If any error is encountered, a zero value string and error are
 // returned.
 func SubSegToString(path, key string) (string, error) {
@@ -195,7 +196,7 @@ func SubSegToString(path, key string) (string, error) {
 }
 
 // SubSegToInt64 receives a key which is used to search for the first matching
-// path segment, and returns both the subsequent segment as an int64 and a nil
+// path segment, then returns both the subsequent segment as an int64 and a nil
 // error. If any error is encountered, a zero value int64 and error are
 // returned.
 func SubSegToInt64(path, key string) (int64, error) {
@@ -213,7 +214,7 @@ func SubSegToInt64(path, key string) (int64, error) {
 }
 
 // SubSegToInt32 receives a key which is used to search for the first matching
-// path segment, and returns both the subsequent segment as an int32 and a nil
+// path segment, then returns both the subsequent segment as an int32 and a nil
 // error. If any error is encountered, a zero value int32 and error are
 // returned.
 func SubSegToInt32(path, key string) (int32, error) {
@@ -231,7 +232,7 @@ func SubSegToInt32(path, key string) (int32, error) {
 }
 
 // SubSegToInt16 receives a key which is used to search for the first matching
-// path segment, and returns both the subsequent segment as an int16 and a nil
+// path segment, then returns both the subsequent segment as an int16 and a nil
 // error. If any error is encountered, a zero value int16 and error are
 // returned.
 func SubSegToInt16(path, key string) (int16, error) {
@@ -249,7 +250,7 @@ func SubSegToInt16(path, key string) (int16, error) {
 }
 
 // SubSegToInt8 receives a key which is used to search for the first matching
-// path segment, and returns both the subsequent segment as an int8 and a nil
+// path segment, then returns both the subsequent segment as an int8 and a nil
 // error. If any error is encountered, a zero value int8 and error are
 // returned.
 func SubSegToInt8(path, key string) (int8, error) {
@@ -267,7 +268,7 @@ func SubSegToInt8(path, key string) (int8, error) {
 }
 
 // SubSegToInt receives a key which is used to search for the first matching
-// path segment, and returns both the subsequent segment as an int and a nil
+// path segment, then returns both the subsequent segment as an int and a nil
 // error. If any error is encountered, a zero value int and error are
 // returned.
 func SubSegToInt(path, key string) (int, error) {
@@ -285,7 +286,7 @@ func SubSegToInt(path, key string) (int, error) {
 }
 
 // SubSegToBool receives a key which is used to search for the first matching
-// path segment, and returns both the subsequent segment as a bool and a nil
+// path segment, then returns both the subsequent segment as a bool and a nil
 // error. If any error is encountered, a zero value bool and error are
 // returned.
 func SubSegToBool(path, key string) (bool, error) {
@@ -303,7 +304,7 @@ func SubSegToBool(path, key string) (bool, error) {
 }
 
 // SubSegToFloat64 receives a key which is used to search for the first
-// matching path segment, and returns both the subsequent segment as a float64
+// matching path segment, then returns both the subsequent segment as a float64
 // and a nil error. If any error is encountered, a zero value float64 and error
 // are returned.
 func SubSegToFloat64(path, key string) (float64, error) {
@@ -321,7 +322,7 @@ func SubSegToFloat64(path, key string) (float64, error) {
 }
 
 // SubSegToFloat32 receives a key which is used to search for the first
-// matching path segment, and returns both the subsequent segment as a float32
+// matching path segment, then returns both the subsequent segment as a float32
 // and a nil error. If any error is encountered, a zero value float32 and error
 // are returned.
 func SubSegToFloat32(path, key string) (float32, error) {
@@ -379,7 +380,7 @@ func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
 
 // SubSpanToString receives a key which is used to search for the first
 // matching path segment and an int value representing a second segment by it's
-// distance from the matched segment, and returns the content between those
+// distance from the matched segment, then returns the content between those
 // segments as a string and a nil error. If any error is encountered, a zero
 // value string and error are returned. The int representing a segment can be
 // of negative values. Providing a 0 int is a special case which indicates the
@@ -402,29 +403,47 @@ func SubSpanToString(path, key string, lastSeg int) (string, error) {
 	return s, nil
 }
 
+// Parth holds path and error data for processing paths multiple times, and
+// then checking for errors only once. Only the first encountered error will be
+// returned.
 type Parth struct {
 	path string
 	err  error
 }
 
+// New receives a path as a string, then returns a new Parth set with the
+// provided path.
 func New(path string) Parth {
 	return Parth{path: path}
 }
 
+// NewFromSpan receives a path as a string, and two int values representing
+// path segments, then returns a new Parth set with the content between those
+// segments, and any error encountered. See SpanToString for more info.
 func NewFromSpan(path string, firstSeg, lastSeg int) Parth {
 	s, err := SpanToString(path, firstSeg, lastSeg)
 	return Parth{s, err}
 }
 
+// NewFromSubSpan receives a path as a string, a key which is used to search
+// for the first matching path segment, and an int value representing a second
+// segment by it's distance from the matched segment, then returns a new Parth
+// set with the content between those segments, and any error encountered. See
+// SubSpanToString for more info.
 func NewFromSubSpan(path, key string, lastSeg int) Parth {
 	s, err := SubSpanToString(path, key, lastSeg)
 	return Parth{s, err}
 }
 
+// Err returns the first error encountered by the Parth instance.
 func (p *Parth) Err() error {
 	return p.err
 }
 
+// SegmentToString receives an int representing a path segment, then returns
+// the specified segment as a string. If any error is encountered, a zero value
+// string is returned, and the Parth instance's err value is set. If an error
+// has already been set, a zero value string is returned.
 func (p *Parth) SegmentToString(i int) string {
 	if p.err != nil {
 		return ""
@@ -436,6 +455,10 @@ func (p *Parth) SegmentToString(i int) string {
 	return s
 }
 
+// SegmentToInt64 receives an int representing a path segment, then returns the
+// specified segment as an int64. If any error is encountered, a zero value
+// int64 is returned, and the Parth instance's err value is set. If an error
+// has already been set, a zero value int64 is returned.
 func (p *Parth) SegmentToInt64(i int) int64 {
 	if p.err != nil {
 		return 0
@@ -447,6 +470,10 @@ func (p *Parth) SegmentToInt64(i int) int64 {
 	return n
 }
 
+// SegmentToInt32 receives an int representing a path segment, then returns the
+// specified segment as an int32. If any error is encountered, a zero value
+// int32 is returned, and the Parth instance's err value is set. If an error
+// has already been set, a zero value int32 is returned.
 func (p *Parth) SegmentToInt32(i int) int32 {
 	if p.err != nil {
 		return 0
@@ -458,6 +485,10 @@ func (p *Parth) SegmentToInt32(i int) int32 {
 	return n
 }
 
+// SegmentToInt16 receives an int representing a path segment, then returns the
+// specified segment as an int16. If any error is encountered, a zero value
+// int16 is returned, and the Parth instance's err value is set. If an error
+// has already been set, a zero value int16 is returned.
 func (p *Parth) SegmentToInt16(i int) int16 {
 	if p.err != nil {
 		return 0
@@ -469,6 +500,10 @@ func (p *Parth) SegmentToInt16(i int) int16 {
 	return n
 }
 
+// SegmentToInt8 receives an int representing a path segment, then returns the
+// specified segment as an int8. If any error is encountered, a zero value int8
+// is returned, and the Parth instance's err value is set. If an error has
+// already been set, a zero value int8 is returned.
 func (p *Parth) SegmentToInt8(i int) int8 {
 	if p.err != nil {
 		return 0
@@ -480,6 +515,10 @@ func (p *Parth) SegmentToInt8(i int) int8 {
 	return n
 }
 
+// SegmentToInt receives an int representing a path segment, then returns the
+// specified segment as an int. If any error is encountered, a zero value int
+// is returned, and the Parth instance's err value is set. If an error has
+// already been set, a zero value int is returned.
 func (p *Parth) SegmentToInt(i int) int {
 	if p.err != nil {
 		return 0
@@ -491,6 +530,10 @@ func (p *Parth) SegmentToInt(i int) int {
 	return n
 }
 
+// SegmentToBool receives an int representing a path segment, then returns the
+// specified segment as a bool. If any error is encountered, a zero value bool
+// is returned, and the Parth instance's err value is set. If an error has
+// already been set, a zero value bool is returned.
 func (p *Parth) SegmentToBool(i int) bool {
 	if p.err != nil {
 		return false
@@ -502,6 +545,10 @@ func (p *Parth) SegmentToBool(i int) bool {
 	return b
 }
 
+// SegmentToFloat64 receives an int representing a path segment, then returns
+// the specified segment as a float64. If any error is encountered, a zero
+// value float64 is returned, and the Parth instance's err value is set. If an
+// error has already been set, a zero value float64 is returned.
 func (p *Parth) SegmentToFloat64(i int) float64 {
 	if p.err != nil {
 		return 0
@@ -513,6 +560,10 @@ func (p *Parth) SegmentToFloat64(i int) float64 {
 	return f
 }
 
+// SegmentToFloat32 receives an int representing a path segment, then returns
+// the specified segment as a float32. If any error is encountered, a zero
+// value float32 is returned, and the Parth instance's err value is set. If an
+// error has already been set, a zero value float32 is returned.
 func (p *Parth) SegmentToFloat32(i int) float32 {
 	if p.err != nil {
 		return 0
@@ -524,6 +575,11 @@ func (p *Parth) SegmentToFloat32(i int) float32 {
 	return f
 }
 
+// SubSegToString receives a key which is used to search for the first matching
+// path segment, then returns the subsequent segment as a string. If any error
+// is encountered, a zero value string is returned, and the Parth instances err
+// value is set. If an error has already been set, a zero value string is
+// returned.
 func (p *Parth) SubSegToString(key string) string {
 	if p.err != nil {
 		return ""
@@ -535,6 +591,11 @@ func (p *Parth) SubSegToString(key string) string {
 	return s
 }
 
+// SubSegToInt64 receives a key which is used to search for the first matching
+// path segment, then returns the subsequent segment as an int64. If any error
+// is encountered, a zero value int64 is returned, and the Parth instances err
+// value is set. If an error has already been set, a zero value int64 is
+// returned.
 func (p *Parth) SubSegToInt64(key string) int64 {
 	if p.err != nil {
 		return 0
@@ -546,6 +607,11 @@ func (p *Parth) SubSegToInt64(key string) int64 {
 	return i
 }
 
+// SubSegToInt32 receives a key which is used to search for the first matching
+// path segment, then returns the subsequent segment as an int32. If any error
+// is encountered, a zero value int32 is returned, and the Parth instances err
+// value is set. If an error has already been set, a zero value int32 is
+// returned.
 func (p *Parth) SubSegToInt32(key string) int32 {
 	if p.err != nil {
 		return 0
@@ -557,6 +623,11 @@ func (p *Parth) SubSegToInt32(key string) int32 {
 	return i
 }
 
+// SubSegToInt16 receives a key which is used to search for the first matching
+// path segment, then returns the subsequent segment as an int16. If any error
+// is encountered, a zero value int16 is returned, and the Parth instances err
+// value is set. If an error has already been set, a zero value int16 is
+// returned.
 func (p *Parth) SubSegToInt16(key string) int16 {
 	if p.err != nil {
 		return 0
@@ -568,6 +639,11 @@ func (p *Parth) SubSegToInt16(key string) int16 {
 	return i
 }
 
+// SubSegToInt8 receives a key which is used to search for the first matching
+// path segment, then returns the subsequent segment as an int8. If any error
+// is encountered, a zero value int8 is returned, and the Parth instances err
+// value is set. If an error has already been set, a zero value int8 is
+// returned.
 func (p *Parth) SubSegToInt8(key string) int8 {
 	if p.err != nil {
 		return 0
@@ -579,6 +655,11 @@ func (p *Parth) SubSegToInt8(key string) int8 {
 	return i
 }
 
+// SubSegToInt receives a key which is used to search for the first matching
+// path segment, then returns the subsequent segment as an int. If any error is
+// encountered, a zero value int8 is returned, and the Parth instances err
+// value is set. If an error has already been set, a zero value int8 is
+// returned.
 func (p *Parth) SubSegToInt(key string) int {
 	if p.err != nil {
 		return 0
@@ -590,6 +671,11 @@ func (p *Parth) SubSegToInt(key string) int {
 	return i
 }
 
+// SubSegToBool receives a key which is used to search for the first matching
+// path segment, then returns the subsequent segment as an bool. If any error
+// is encountered, a zero value bool is returned, and the Parth instances err
+// value is set. If an error has already been set, a zero value bool is
+// returned.
 func (p *Parth) SubSegToBool(key string) bool {
 	if p.err != nil {
 		return false
@@ -601,6 +687,11 @@ func (p *Parth) SubSegToBool(key string) bool {
 	return b
 }
 
+// SubSegToFloat64 receives a key which is used to search for the first
+// matching path segment, then returns the subsequent segment as an float64. If
+// any error is encountered, a zero value float64 is returned, and the Parth
+// instance's err value is set. If an error has already been set, a zero value
+// float64 is returned.
 func (p *Parth) SubSegToFloat64(key string) float64 {
 	if p.err != nil {
 		return 0
@@ -612,6 +703,11 @@ func (p *Parth) SubSegToFloat64(key string) float64 {
 	return f
 }
 
+// SubSegToFloat32 receives a key which is used to search for the first
+// matching path segment, then returns the subsequent segment as an float32. If
+// any error is encountered, a zero value float32 is returned, and the Parth
+// instance's err value is set. If an error has already been set, a zero value
+// float32 is returned.
 func (p *Parth) SubSegToFloat32(key string) float32 {
 	if p.err != nil {
 		return 0
@@ -623,6 +719,11 @@ func (p *Parth) SubSegToFloat32(key string) float32 {
 	return f
 }
 
+// SpanToString receives two int values representing path segments, then
+// returns the content between those segments, including the first segment, as
+// a string. If any error is encountered, a zero value string is returned, and
+// the Parth instance's err value is set. If an error has already been set, a
+// zero value string is returned. See SubSpanToString for more info.
 func (p *Parth) SpanToString(firstSeg, lastSeg int) string {
 	if p.err != nil {
 		return ""
@@ -634,6 +735,11 @@ func (p *Parth) SpanToString(firstSeg, lastSeg int) string {
 	return s
 }
 
+// SubSpanToString receives a key which is used to search for the first
+// matching path segment, and an int value representing a second segment by
+// it's distance from the matched segment, then returns the content between
+// those segments as a string. If an error has already been set, a zero value
+// string is returned. See SubSpanToString for more info.
 func (p *Parth) SubSpanToString(key string, lastSeg int) string {
 	if p.err != nil {
 		return ""
