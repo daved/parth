@@ -146,3 +146,13 @@ View the [GoDoc](http://godoc.org/github.com/codemodus/parth)
     BenchmarkStandardSpan-8    3000000   527.00 ns/op       88 B/op   4 allocs/op
     BenchmarkParthSpan-8      50000000    29.70 ns/op        0 B/op   0 allocs/op
     BenchmarkParthSubSpan-8   20000000    82.60 ns/op        0 B/op   0 allocs/op
+
+
+    Go 1.7
+
+    benchmark                                 iter       time/iter   bytes alloc        allocs
+    ---------                                 ----       ---------   -----------        ------
+    BenchmarkVsCtxParthString2x-8         20000000     83.80 ns/op        0 B/op   0 allocs/op
+    BenchmarkVsCtxParthString3x-8         10000000    125.00 ns/op        0 B/op   0 allocs/op
+    BenchmarkVsCtxContextGetSetGet-8       1000000   1629.00 ns/op      336 B/op   5 allocs/op
+    BenchmarkVsCtxContextGetSetGetGet-8    1000000   2044.00 ns/op      352 B/op   6 allocs/op
