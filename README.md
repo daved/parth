@@ -107,6 +107,15 @@ func main() {
 
 ## More Info
 
+### Path parameters via global, alternate HandlerFunc, or Context? Why?
+
+The most obvious use case for parth is when working with http.Request data 
+within an http.Handler. parth is fast enough that it can be used 20+ times when 
+compared to similar router-parameter/Context usage. Why pass data that is 
+already being passed? The request type holds URL data and parth loves handling 
+it! Additionally, parth takes care of parsing segments into the types actually 
+needed. It's not only fast, it does more, and requires less code.  
+
 ### Caution (restated): First Whole, First Decimal
 
 When returning an int of any size, the first whole number within the specified 
