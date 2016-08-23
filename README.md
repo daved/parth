@@ -105,6 +105,8 @@ func main() {
 }
 ```
 
+### Setup (ParthType)
+
 ```go
 import (
 	"fmt"
@@ -145,14 +147,6 @@ already being passed? The request type holds URL data and parth loves handling
 it! Additionally, parth takes care of parsing segments into the types actually 
 needed. It's not only fast, it does more, and requires less code.  
 
-### Caution (restated): First Whole, First Decimal
-
-When returning an int of any size, the first whole number within the specified 
-segment will be returned.  When returning a float of any size, the first 
-decimal number within the specified segment will be returned.
-
-Please review the test cases for working examples.
-
 ### SpanToString
 
 SpanToString receives two int values representing path segments, and returns 
@@ -170,6 +164,14 @@ from the matched segment, then returns the content between those segments as a
 string and a nil error. If any error is encountered, a zero value string and 
 error are returned. The int representing a segment can be of negative values. 
 Providing a 0 int is a special case which indicates the end of the path.
+
+### Caution (restated): First Whole, First Decimal
+
+When returning an int of any size, the first whole number within the specified 
+segment will be returned.  When returning a float of any size, the first 
+decimal number within the specified segment will be returned.
+
+Please review the test cases for working examples.
 
 ## Documentation
 
