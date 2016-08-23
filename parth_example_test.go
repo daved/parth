@@ -2,48 +2,79 @@ package parth_test
 
 import (
 	"fmt"
+	"net/http"
+	"os"
 
 	"github.com/codemodus/parth"
 )
 
 func Example() {
-	testPath := "/zero/1/2/nn3.3nn/key/5.5"
-	printFmt := "Segment Index = %v, Type = %T, Value = %v\n"
-
-	if s, err := parth.SegmentToString(testPath, 0); err == nil {
-		fmt.Printf(printFmt, 0, s, s)
+	r, err := http.NewRequest("GET", "/zero/1/2/nn3.3nn/key/5.5", nil)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
 	}
 
-	if b, err := parth.SegmentToBool(testPath, 1); err == nil {
-		fmt.Printf(printFmt, 1, b, b)
+	printFmt := "Type = %T, Value = %v\n"
+
+	if s, err := parth.SegmentToString(r.URL.Path, 0); err == nil {
+		fmt.Printf(printFmt, s, s)
 	}
 
-	if i, err := parth.SegmentToInt(testPath, -4); err == nil {
-		fmt.Printf(printFmt, -4, i, i)
+	if b, err := parth.SegmentToBool(r.URL.Path, 1); err == nil {
+		fmt.Printf(printFmt, b, b)
 	}
 
-	if f, err := parth.SegmentToFloat32(testPath, 3); err == nil {
-		fmt.Printf(printFmt, 3, f, f)
+	if i, err := parth.SegmentToInt(r.URL.Path, -4); err == nil {
+		fmt.Printf(printFmt, i, i)
 	}
 
-	if s, err := parth.SpanToString(testPath, 0, -3); err == nil {
-		fmt.Printf("First Segment = %d, Last Segment = %d, Value = %q\n", 0, -3, s)
+	if f, err := parth.SegmentToFloat32(r.URL.Path, 3); err == nil {
+		fmt.Printf(printFmt, f, f)
 	}
 
-	if i, err := parth.SubSegToInt(testPath, "key"); err == nil {
-		fmt.Printf("Segment Key = %q, Type = %T, Value = %v\n", "key", i, i)
+	if s, err := parth.SpanToString(r.URL.Path, 0, -3); err == nil {
+		fmt.Printf(printFmt, s, s)
 	}
 
-	if s, err := parth.SubSpanToString(testPath, "zero", 2); err == nil {
-		fmt.Printf("Segment Key = %q, Last Segment = %d, Value = %q\n", "zero", 2, s)
+	if i, err := parth.SubSegToInt(r.URL.Path, "key"); err == nil {
+		fmt.Printf(printFmt, i, i)
+	}
+
+	if s, err := parth.SubSpanToString(r.URL.Path, "zero", 2); err == nil {
+		fmt.Printf(printFmt, s, s)
 	}
 
 	// Output:
-	// Segment Index = 0, Type = string, Value = zero
-	// Segment Index = 1, Type = bool, Value = true
-	// Segment Index = -4, Type = int, Value = 2
-	// Segment Index = 3, Type = float32, Value = 3.3
-	// First Segment = 0, Last Segment = -3, Value = "/zero/1/2"
-	// Segment Key = "key", Type = int, Value = 5
-	// Segment Key = "zero", Last Segment = 2, Value = "/1/2"
+	// Type = string, Value = zero
+	// Type = bool, Value = true
+	// Type = int, Value = 2
+	// Type = float32, Value = 3.3
+	// Type = string, Value = /zero/1/2
+	// Type = int, Value = 5
+	// Type = string, Value = /1/2
+}
+
+func Example_parthType() {
+	r, err := http.NewRequest("GET", "/zero/1/2/nn3.3nn/key/5.5", nil)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	printFmt := "Type = %T, Value = %v\n"
+
+	p := parth.New(r.URL.Path)
+
+	s := p.SegmentToString(0)
+	f := p.SegmentToFloat32(3)
+	ss := p.SubSpanToString("zero", 2)
+	if p.Err() == nil {
+		fmt.Printf(printFmt, s, s)
+		fmt.Printf(printFmt, f, f)
+		fmt.Printf(printFmt, ss, ss)
+	}
+
+	// Output:
+	// Type = string, Value = zero
+	// Type = float32, Value = 3.3
+	// Type = string, Value = /1/2
 }

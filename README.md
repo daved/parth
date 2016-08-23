@@ -68,37 +68,40 @@ import (
 )
 
 func main() {
-	path := "/zero/1/2"
+    r, err := http.NewRequest("GET", "/zero/1/2/nn3.3nn/key/5.5", nil)
+    if err != nil {
+        fmt.Fprintln(os.Stderr, err)
+    }
 
-	out0, err := parth.SegmentToString(path, 0)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(out0) // Prints: "zero"
+    printFmt := "Type = %T, Value = %v\n"
 
-	out1, err := parth.SegmentToBool(path, 1)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(out1) // Prints: true
+    if s, err := parth.SegmentToString(r.URL.Path, 0); err == nil {
+        fmt.Printf(printFmt, s, s) // Outputs: Type = string, Value = zero
+    }
 
-	out2, err := parth.SegmentToInt(path, -1)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(out2) // Prints: 2
+    if b, err := parth.SegmentToBool(r.URL.Path, 1); err == nil {
+        fmt.Printf(printFmt, b, b) // Outputs: Type = bool, Value = true
+    }
 
-	out3, err := parth.SpanToString(path, 0, -1)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(out3) // Prints: "/zero/1"
+    if i, err := parth.SegmentToInt(r.URL.Path, -4); err == nil {
+        fmt.Printf(printFmt, i, i) // Outputs: Type = int, Value = 2
+    }
 
-	out4, err := parth.SubSegToInt(path, "zero")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(out4) // Prints: 1
+    if f, err := parth.SegmentToFloat32(r.URL.Path, 3); err == nil {
+        fmt.Printf(printFmt, f, f) // Outputs: Type = float32, Value = 3.3
+    }
+
+    if s, err := parth.SpanToString(r.URL.Path, 0, -3); err == nil {
+        fmt.Printf(printFmt, s, s) // Outputs: Type = string, Value = /zero/1/2
+    }
+
+    if i, err := parth.SubSegToInt(r.URL.Path, "key"); err == nil {
+        fmt.Printf(printFmt, i, i) // Outputs: Type = int, Value = 5
+    }
+
+    if s, err := parth.SubSpanToString(r.URL.Path, "zero", 2); err == nil {
+        fmt.Printf(printFmt, s, s) // Outputs: Type = string, Value = /1/2
+    }
 }
 ```
 
@@ -112,22 +115,23 @@ decimal number within the specified segment will be returned.
 
 Please review the test cases for working examples.
 
-### SpanToString (Indexed similarly to slices/arrays)
+### SpanToString
 
 SpanToString receives two int values representing path segments, and returns 
 the content between those segments, including the first segment, as a string 
-and a nil error. The segments can be of negative values, but the first segment 
-must come before the last segment. Providing a 0 int for the second int is a 
-special case which indicates the end of the path.
+and a nil error. If any error is encountered, a zero value string and error are 
+returned. The segments can be of negative values, but the first segment must 
+come before the last segment. Providing a 0 int for the second int is a special 
+case which indicates the end of the path.
 
-### SubSpanToString (Indexed similarly to slices/arrays - Starting from key)
+### SubSpanToString
 
 SubSpanToString receives a key which is used to search for the first matching 
 path segment and an int value representing a second segment by it's distance 
-from the matched segment, and returns the content between those segments as a 
-string and a nil error. The int representing a segment can be of negative 
-values. Providing a 0 int is a special case which indicates the end of the 
-path.
+from the matched segment, then returns the content between those segments as a 
+string and a nil error. If any error is encountered, a zero value string and 
+error are returned. The int representing a segment can be of negative values. 
+Providing a 0 int is a special case which indicates the end of the path.
 
 ## Documentation
 

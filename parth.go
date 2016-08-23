@@ -691,7 +691,7 @@ func (p *Parth) SubSegToFloat32(key string) float32 {
 // returns the content between those segments, including the first segment, as
 // a string. If any error is encountered, a zero value string is returned, and
 // the Parth instance's err value is set. If an error has already been set, a
-// zero value string is returned. See SubSpanToString for more info.
+// zero value string is returned. See SpanToString for more info.
 func (p *Parth) SpanToString(firstSeg, lastSeg int) string {
 	if p.err != nil {
 		return ""
