@@ -140,7 +140,7 @@ func main() {
 
 ### Path parameters via global, alternate HandlerFunc, or Context? Why?
 
-The most obvious use case for parth is when working http.Request.URL.Path from 
+The most obvious use case for parth is when working with http.Request.URL.Path 
 within an http.Handler. parth is fast enough that it can be used 20+ times when 
 compared to similar router-parameter/Context usage. Why pass data that is 
 already being passed? The request type holds URL data and parth loves handling 
