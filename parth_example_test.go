@@ -67,6 +67,7 @@ func Example_parthType() {
 	s := p.SegmentToString(0)
 	f := p.SegmentToFloat32(3)
 	ss := p.SubSpanToString("zero", 2)
+
 	if p.Err() == nil {
 		fmt.Printf(printFmt, s, s)
 		fmt.Printf(printFmt, f, f)
