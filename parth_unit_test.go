@@ -8,6 +8,49 @@ var (
 	errFmtUnexpErr = "Received unexpected err for segment type %T: %v"
 )
 
+func TestUnitFirstUintFromString(t *testing.T) {
+	var tests = []struct {
+		s     string
+		i     string
+		isErr bool
+	}{
+		{"0.1", "0", false},
+		{"0.2a", "0", false},
+		{"aaaa1.3", "1", false},
+		{"4", "4", false},
+		{"5aaaa", "5", false},
+		{"aaa6aa", "6", false},
+		{".7.aaaa", "0", false},
+		{".8aa", "0", false},
+		{"-9", "9", false},
+		{"10-", "10", false},
+		{"3.14e+11", "3", false},
+		{"3.14e.+12", "3", false},
+		{"3.14e+.13", "3", false},
+		{"18446744073709551615", "18446744073709551615", false},
+		{".", "", true},
+		{"error", "", true},
+	}
+
+	for _, v := range tests {
+		i, err := firstUintFromString(v.s)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.s)
+			continue
+		}
+
+		want := v.i
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+}
+
 func TestUnitFirstIntFromString(t *testing.T) {
 	var tests = []struct {
 		s     string
@@ -23,12 +66,11 @@ func TestUnitFirstIntFromString(t *testing.T) {
 		{".7.aaaa", "0", false},
 		{".8aa", "0", false},
 		{"-9", "-9", false},
-		{"-9", "-9", false},
 		{"10-", "10", false},
 		{"3.14e+11", "3", false},
 		{"3.14e.+12", "3", false},
 		{"3.14e+.13", "3", false},
-		{"3.14e+.13", "3", false},
+		{"18446744073709551615", "18446744073709551615", false},
 		{".", "", true},
 		{"error", "", true},
 	}

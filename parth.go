@@ -41,6 +41,75 @@ func SegmentToString(path string, i int) (string, error) {
 	return s, nil
 }
 
+func segmentToUintN(path string, i, size int) (uint64, error) {
+	s, err := segToStrUint(path, i)
+	if err != nil {
+		return 0, err
+	}
+
+	v, err := strconv.ParseUint(s, 10, size)
+	if err != nil {
+		return 0, ErrUnparsable
+	}
+
+	return v, nil
+}
+
+// SegmentToUint64 receives an int representing a path segment, then returns
+// both the specified segment as a uint64 and a nil error. If any error is
+// encountered, a zero value uint64 and error are returned.
+func SegmentToUint64(path string, i int) (uint64, error) {
+	return segmentToUintN(path, i, 64)
+}
+
+// SegmentToUint32 receives an int representing a path segment, then returns
+// both the specified segment as a uint32 and a nil error. If any error is
+// encountered, a zero value uint32 and error are returned.
+func SegmentToUint32(path string, i int) (uint32, error) {
+	v, err := segmentToUintN(path, i, 32)
+	if err != nil {
+		return 0, err
+	}
+
+	return uint32(v), nil
+}
+
+// SegmentToUint16 receives an int representing a path segment, then returns
+// both the specified segment as a uint16 and a nil error. If any error is
+// encountered, a zero value uint16 and error are returned.
+func SegmentToUint16(path string, i int) (uint16, error) {
+	v, err := segmentToUintN(path, i, 16)
+	if err != nil {
+		return 0, err
+	}
+
+	return uint16(v), nil
+}
+
+// SegmentToUint8 receives an int representing a path segment, then returns
+// both the specified segment as a uint8 and a nil error. If any error is
+// encountered, a zero value uint8 and error are returned.
+func SegmentToUint8(path string, i int) (uint8, error) {
+	v, err := segmentToUintN(path, i, 8)
+	if err != nil {
+		return 0, err
+	}
+
+	return uint8(v), nil
+}
+
+// SegmentToUint receives an int representing a path segment, then returns
+// both the specified segment as a uint and a nil error. If any error is
+// encountered, a zero value uint and error are returned.
+func SegmentToUint(path string, i int) (uint, error) {
+	v, err := segmentToUintN(path, i, 0)
+	if err != nil {
+		return 0, err
+	}
+
+	return uint(v), nil
+}
+
 func segmentToIntN(path string, i, size int) (int64, error) {
 	s, err := segToStrInt(path, i)
 	if err != nil {
@@ -421,6 +490,81 @@ func (p *Parth) SegmentToString(i int) string {
 
 	p.err = err
 	return s
+}
+
+// SegmentToUint64 receives an int representing a path segment, then returns the
+// specified segment as an uint64. If any error is encountered, a zero value
+// uint64 is returned, and the Parth instance's err value is set. If an error
+// has already been set, a zero value uint64 is returned.
+func (p *Parth) SegmentToUint64(i int) uint64 {
+	if p.err != nil {
+		return 0
+	}
+
+	n, err := SegmentToUint64(p.path, i)
+
+	p.err = err
+	return n
+}
+
+// SegmentToUint32 receives an int representing a path segment, then returns the
+// specified segment as an uint32. If any error is encountered, a zero value
+// uint32 is returned, and the Parth instance's err value is set. If an error
+// has already been set, a zero value uint32 is returned.
+func (p *Parth) SegmentToUint32(i int) uint32 {
+	if p.err != nil {
+		return 0
+	}
+
+	n, err := SegmentToUint32(p.path, i)
+
+	p.err = err
+	return n
+}
+
+// SegmentToUint16 receives an int representing a path segment, then returns the
+// specified segment as an uint16. If any error is encountered, a zero value
+// uint16 is returned, and the Parth instance's err value is set. If an error
+// has already been set, a zero value uint16 is returned.
+func (p *Parth) SegmentToUint16(i int) uint16 {
+	if p.err != nil {
+		return 0
+	}
+
+	n, err := SegmentToUint16(p.path, i)
+
+	p.err = err
+	return n
+}
+
+// SegmentToUint8 receives an int representing a path segment, then returns the
+// specified segment as an uint8. If any error is encountered, a zero value
+// uint8 is returned, and the Parth instance's err value is set. If an error
+// has already been set, a zero value uint8 is returned.
+func (p *Parth) SegmentToUint8(i int) uint8 {
+	if p.err != nil {
+		return 0
+	}
+
+	n, err := SegmentToUint8(p.path, i)
+
+	p.err = err
+	return n
+}
+
+// SegmentToUint receives an int representing a path segment, then returns the
+// specified segment as an uint. If any error is encountered, a zero value
+// uint is returned, and the Parth instance's err value is set. If an error
+// has already been set, a zero value uint is returned.
+func (p *Parth) SegmentToUint(i int) uint {
+	if p.err != nil {
+		return 0
+	}
+
+	n, err := SegmentToUint(p.path, i)
+
+	p.err = err
+	return n
 }
 
 // SegmentToInt64 receives an int representing a path segment, then returns the
@@ -836,6 +980,19 @@ func segIndexByKey(path, key string) (int, error) {
 	return 0, nil
 }
 
+func segToStrUint(path string, i int) (string, error) {
+	s, err := SegmentToString(path, i)
+	if err != nil {
+		return "", err
+	}
+
+	if s, err = firstUintFromString(s); err != nil {
+		return "", err
+	}
+
+	return s, nil
+}
+
 func segToStrInt(path string, i int) (string, error) {
 	s, err := SegmentToString(path, i)
 	if err != nil {
@@ -886,6 +1043,38 @@ func subSegToStrFloat(path, key string) (string, error) {
 	}
 
 	return s, nil
+}
+
+func firstUintFromString(s string) (string, error) {
+	ind, l := 0, 0
+
+	for n := 0; n < len(s); n++ {
+		if unicode.IsDigit(rune(s[n])) {
+			if l == 0 {
+				ind = n
+			}
+
+			l++
+		} else {
+			if l == 0 && s[n] == '.' {
+				if n+1 < len(s) && unicode.IsDigit(rune(s[n+1])) {
+					return "0", nil
+				}
+
+				break
+			}
+
+			if l > 0 {
+				break
+			}
+		}
+	}
+
+	if l == 0 {
+		return "", ErrIntNotFound
+	}
+
+	return s[ind : ind+l], nil
 }
 
 func firstIntFromString(s string) (string, error) {

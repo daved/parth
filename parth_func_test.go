@@ -59,6 +59,135 @@ func TestFunctSegmentToString(t *testing.T) {
 	}
 }
 
+func TestFunctSegmentToUintx(t *testing.T) {
+	var tests = []struct {
+		ind   int
+		path  string
+		i     uint
+		isErr bool
+	}{
+		{0, "/0.1", 0, false},
+		{0, "/0.2a", 0, false},
+		{0, "/aaaa1.3", 1, false},
+		{0, "/4", 4, false},
+		{0, "/5aaaa", 5, false},
+		{0, "/aaa6aa", 6, false},
+		{0, "/.7.aaaa", 0, false},
+		{0, "/.8aa", 0, false},
+		{0, "/-9", 9, false},
+		{-1, "/-9", 9, false},
+		{0, "/10-", 10, false},
+		{0, "/3.14e+11", 3, false},
+		{0, "/3.14e.+12", 3, false},
+		{0, "/3.14e+.13", 3, false},
+		{-1, "/3.14e+.13", 3, false},
+		{1, "/8", 0, true},
+		{0, "/.", 0, true},
+		{0, "/error", 0, true},
+	}
+
+	for _, v := range tests {
+		i, err := parth.SegmentToUint(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+			continue
+		}
+
+		want := v.i
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+
+	for _, v := range tests {
+		seg, err := parth.SegmentToUint8(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, seg, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+			continue
+		}
+
+		want := uint8(v.i)
+		got := seg
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+
+	for _, v := range tests {
+		i, err := parth.SegmentToUint16(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+			continue
+		}
+
+		want := uint16(v.i)
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+
+	for _, v := range tests {
+		i, err := parth.SegmentToUint32(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+			continue
+		}
+
+		want := uint32(v.i)
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+
+	for _, v := range tests {
+		i, err := parth.SegmentToUint64(v.path, v.ind)
+		if err != nil && !v.isErr {
+			t.Errorf(errFmtUnexpErr, i, err)
+			continue
+		}
+		if err == nil && v.isErr {
+			t.Errorf(errFmtExpErr, v.path)
+			continue
+		}
+
+		want := uint64(v.i)
+		got := i
+		if got != want {
+			t.Errorf(errFmtGotWant, got, got, want)
+		}
+	}
+
+	i, err := parth.SegmentToUint64("/18446744073709551615", 0)
+	if err != nil {
+		t.Errorf(errFmtUnexpErr, i, err)
+	}
+
+	want := uint64(18446744073709551615)
+	got := i
+	if got != want {
+		t.Errorf(errFmtGotWant, got, got, want)
+	}
+}
+
 func TestFunctSegmentToIntx(t *testing.T) {
 	var tests = []struct {
 		ind   int
@@ -84,7 +213,7 @@ func TestFunctSegmentToIntx(t *testing.T) {
 		{1, "/8", 0, true},
 		{0, "/.", 0, true},
 		{0, "/error", 0, true},
-		{0, "/12414143242534534346456456457457456346756868686524234", 0, true},
+		{0, "/18446744073709551615", 0, true},
 	}
 
 	for _, v := range tests {
