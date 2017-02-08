@@ -1,6 +1,6 @@
 // Package parth provides functions for accessing path segments.
 //
-// When returning an int of any size, the first whole number within the
+// When returning an int/uint of any size, the first whole number within the
 // specified segment will be returned. When returning a float of any size,
 // the first decimal number within the specified segment will be returned.
 package parth
@@ -567,7 +567,7 @@ func (p *Parth) SegmentToString(i int) string {
 }
 
 // SegmentToUint64 receives an int representing a path segment, then returns the
-// specified segment as an uint64. If any error is encountered, a zero value
+// specified segment as a uint64. If any error is encountered, a zero value
 // uint64 is returned, and the Parth instance's err value is set. If an error
 // has already been set, a zero value uint64 is returned.
 func (p *Parth) SegmentToUint64(i int) uint64 {
@@ -582,7 +582,7 @@ func (p *Parth) SegmentToUint64(i int) uint64 {
 }
 
 // SegmentToUint32 receives an int representing a path segment, then returns the
-// specified segment as an uint32. If any error is encountered, a zero value
+// specified segment as a uint32. If any error is encountered, a zero value
 // uint32 is returned, and the Parth instance's err value is set. If an error
 // has already been set, a zero value uint32 is returned.
 func (p *Parth) SegmentToUint32(i int) uint32 {
@@ -597,7 +597,7 @@ func (p *Parth) SegmentToUint32(i int) uint32 {
 }
 
 // SegmentToUint16 receives an int representing a path segment, then returns the
-// specified segment as an uint16. If any error is encountered, a zero value
+// specified segment as a uint16. If any error is encountered, a zero value
 // uint16 is returned, and the Parth instance's err value is set. If an error
 // has already been set, a zero value uint16 is returned.
 func (p *Parth) SegmentToUint16(i int) uint16 {
@@ -612,7 +612,7 @@ func (p *Parth) SegmentToUint16(i int) uint16 {
 }
 
 // SegmentToUint8 receives an int representing a path segment, then returns the
-// specified segment as an uint8. If any error is encountered, a zero value
+// specified segment as a uint8. If any error is encountered, a zero value
 // uint8 is returned, and the Parth instance's err value is set. If an error
 // has already been set, a zero value uint8 is returned.
 func (p *Parth) SegmentToUint8(i int) uint8 {
@@ -627,7 +627,7 @@ func (p *Parth) SegmentToUint8(i int) uint8 {
 }
 
 // SegmentToUint receives an int representing a path segment, then returns the
-// specified segment as an uint. If any error is encountered, a zero value
+// specified segment as a uint. If any error is encountered, a zero value
 // uint is returned, and the Parth instance's err value is set. If an error
 // has already been set, a zero value uint is returned.
 func (p *Parth) SegmentToUint(i int) uint {

@@ -4,9 +4,9 @@
 
 Package parth provides functions for accessing path segments.
 
-When returning an int of any size, the first whole number within the specified 
-segment will be returned.  When returning a float of any size, the first 
-decimal number within the specified segment will be returned.
+When returning an int/uint of any size, the first whole number within the 
+specified segment will be returned.  When returning a float of any size, the 
+first decimal number within the specified segment will be returned.
 
 ## Usage
 
@@ -20,6 +20,11 @@ func SegmentToInt32(path string, i int) (int32, error)
 func SegmentToInt64(path string, i int) (int64, error)
 func SegmentToInt8(path string, i int) (int8, error)
 func SegmentToString(path string, i int) (string, error)
+func SegmentToUint(path string, i int) (uint, error)
+func SegmentToUint16(path string, i int) (uint16, error)
+func SegmentToUint32(path string, i int) (uint32, error)
+func SegmentToUint64(path string, i int) (uint64, error)
+func SegmentToUint8(path string, i int) (uint8, error)
 func SpanToString(path string, firstSeg, lastSeg int) (string, error)
 func SubSegToBool(path, key string) (bool, error)
 func SubSegToFloat32(path, key string) (float32, error)
@@ -30,6 +35,11 @@ func SubSegToInt32(path, key string) (int32, error)
 func SubSegToInt64(path, key string) (int64, error)
 func SubSegToInt8(path, key string) (int8, error)
 func SubSegToString(path, key string) (string, error)
+func SubSegToUint(path, key string) (uint, error)
+func SubSegToUint16(path, key string) (uint16, error)
+func SubSegToUint32(path, key string) (uint32, error)
+func SubSegToUint64(path, key string) (uint64, error)
+func SubSegToUint8(path, key string) (uint8, error)
 func SubSpanToString(path, key string, lastSeg int) (string, error)
 type Parth
     func New(path string) *Parth
@@ -45,6 +55,11 @@ type Parth
     func (p *Parth) SegmentToInt64(i int) int64
     func (p *Parth) SegmentToInt8(i int) int8
     func (p *Parth) SegmentToString(i int) string
+    func (p *Parth) SegmentToUint(i int) uint
+    func (p *Parth) SegmentToUint16(i int) uint16
+    func (p *Parth) SegmentToUint32(i int) uint32
+    func (p *Parth) SegmentToUint64(i int) uint64
+    func (p *Parth) SegmentToUint8(i int) uint8
     func (p *Parth) SpanToString(firstSeg, lastSeg int) string
     func (p *Parth) SubSegToBool(key string) bool
     func (p *Parth) SubSegToFloat32(key string) float32
@@ -55,6 +70,11 @@ type Parth
     func (p *Parth) SubSegToInt64(key string) int64
     func (p *Parth) SubSegToInt8(key string) int8
     func (p *Parth) SubSegToString(key string) string
+    func (p *Parth) SubSegToUint(key string) uint
+    func (p *Parth) SubSegToUint16(key string) uint16
+    func (p *Parth) SubSegToUint32(key string) uint32
+    func (p *Parth) SubSegToUint64(key string) uint64
+    func (p *Parth) SubSegToUint8(key string) uint8
     func (p *Parth) SubSpanToString(key string, lastSeg int) string
 ```
 
@@ -167,9 +187,9 @@ Providing a 0 int is a special case which indicates the end of the path.
 
 ### Caution (restated): First Whole, First Decimal
 
-When returning an int of any size, the first whole number within the specified 
-segment will be returned.  When returning a float of any size, the first 
-decimal number within the specified segment will be returned.
+When returning an int/uint of any size, the first whole number within the 
+specified segment will be returned.  When returning a float of any size, the 
+first decimal number within the specified segment will be returned.
 
 Please review the test cases for working examples.
 
