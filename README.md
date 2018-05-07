@@ -78,7 +78,28 @@ type Parth
     func (p *Parth) SubSpanToString(key string, lastSeg int) string
 ```
 
-### Setup
+### Setup (Simple)
+
+```go
+import (
+	"fmt"
+
+	"github.com/codemodus/parth"
+)
+
+func main() {
+    r, err := http.NewRequest("GET", "/api/v1/user/3", nil)
+    if err != nil {
+        fmt.Fprintln(os.Stderr, err)
+    }
+
+    if i, err := parth.SubSegToInt(r.URL.Path, "user"); err == nil {
+        fmt.Printf("Type = %T, Value = %v\n", i, i) // Outputs: Type = int, Value = 3
+    }
+}
+```
+
+### Setup (Detail)
 
 ```go
 import (
