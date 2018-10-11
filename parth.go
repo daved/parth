@@ -357,17 +357,20 @@ func subSegToUintN(path, key string, size int) (uint64, error) {
 // value string and error are returned. The int representing a segment can be
 // of negative values. Providing a 0 int is a special case which indicates the
 // end of the path.
-func SubSpan(path, key string, lastSeg int) (string, error) {
+func SubSpan(path, key string, firstSeg, lastSeg int) (string, error) {
 	i, err := segIndexByKey(path, key)
 	if err != nil {
 		return "", err
 	}
 
+	if firstSeg >= 0 {
+		firstSeg++
+	}
 	if lastSeg > 0 {
 		lastSeg++
 	}
 
-	s, err := Span(path[i:], 1, lastSeg)
+	s, err := Span(path[i:], firstSeg, lastSeg)
 	if err != nil {
 		return "", err
 	}
@@ -402,8 +405,8 @@ func NewFromSpan(path string, firstSeg, lastSeg int) *Parth {
 // segment by it's distance from the matched segment, then returns a new Parth
 // set with the content between those segments, and any error encountered. See
 // SubSpan for more info.
-func NewFromSubSpan(path, key string, lastSeg int) *Parth {
-	s, err := SubSpan(path, key, lastSeg)
+func NewFromSubSpan(path, key string, firstSeg, lastSeg int) *Parth {
+	s, err := SubSpan(path, key, firstSeg, lastSeg)
 	return &Parth{s, err}
 }
 
@@ -458,12 +461,12 @@ func (p *Parth) SubSeg(key string, v interface{}) {
 // it's distance from the matched segment, then returns the content between
 // those segments as a string. If an error has already been set, a zero value
 // string is returned. See SubSpan for more info.
-func (p *Parth) SubSpan(key string, lastSeg int) string {
+func (p *Parth) SubSpan(key string, firstSeg, lastSeg int) string {
 	if p.err != nil {
 		return ""
 	}
 
-	s, err := SubSpan(p.path, key, lastSeg)
+	s, err := SubSpan(p.path, key, firstSeg, lastSeg)
 	p.err = err
 
 	return s
