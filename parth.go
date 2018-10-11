@@ -25,17 +25,129 @@ var (
 	ErrIndexNotFound = errors.New("no index found")
 )
 
-// SegmentToString receives an int representing a path segment, then returns
+// Segment receives an int representing a path segment, then returns
 // both the specified segment as a string and a nil error. If any error is
 // encountered, a zero value string and error are returned.
-func SegmentToString(path string, i int) (string, error) {
-	s, err := SpanToString(path, i, i+1)
+func Segment(path string, i int, v interface{}) error {
+	var err error
+
+	switch v := v.(type) {
+	case *bool:
+		*v, err = segmentToBool(path, i)
+
+	case *float32:
+		var f float64
+		f, err = segmentToFloatN(path, i, 32)
+		*v = float32(f)
+
+	case *float64:
+		*v, err = segmentToFloatN(path, i, 64)
+
+	case *int:
+		var n int64
+		n, err = segmentToIntN(path, i, 0)
+		*v = int(n)
+
+	case *int16:
+		var n int64
+		n, err = segmentToIntN(path, i, 16)
+		*v = int16(n)
+
+	case *int32:
+		var n int64
+		n, err = segmentToIntN(path, i, 32)
+		*v = int32(n)
+
+	case *int64:
+		*v, err = segmentToIntN(path, i, 64)
+
+	case *int8:
+		var n int64
+		n, err = segmentToIntN(path, i, 8)
+		*v = int8(n)
+
+	case *string:
+		*v, err = segmentToString(path, i)
+
+	case *uint:
+		var n uint64
+		n, err = segmentToUintN(path, i, 0)
+		*v = uint(n)
+
+	case *uint16:
+		var n uint64
+		n, err = segmentToUintN(path, i, 16)
+		*v = uint16(n)
+
+	case *uint32:
+		var n uint64
+		n, err = segmentToUintN(path, i, 32)
+		*v = uint32(n)
+
+	case *uint64:
+		*v, err = segmentToUintN(path, i, 64)
+
+	case *uint8:
+		var n uint64
+		n, err = segmentToUintN(path, i, 8)
+		*v = uint8(n)
+
+	default:
+	}
+
+	return err
+}
+
+func segmentToBool(path string, i int) (bool, error) {
+	s, err := segmentToString(path, i)
+	if err != nil {
+		return false, err
+	}
+
+	v, err := strconv.ParseBool(s)
+	if err != nil {
+		return false, ErrUnparsable
+	}
+
+	return v, nil
+}
+
+func segmentToFloatN(path string, i, size int) (float64, error) {
+	s, err := segToStrFloat(path, i)
+	if err != nil {
+		return 0.0, err
+	}
+
+	v, err := strconv.ParseFloat(s, size)
+	if err != nil {
+		return 0.0, ErrUnparsable
+	}
+
+	return v, nil
+}
+
+func segmentToIntN(path string, i, size int) (int64, error) {
+	s, err := segToStrInt(path, i)
+	if err != nil {
+		return 0, err
+	}
+
+	v, err := strconv.ParseInt(s, 10, size)
+	if err != nil {
+		return 0, ErrUnparsable
+	}
+
+	return v, nil
+}
+
+func segmentToString(path string, i int) (string, error) {
+	s, err := Span(path, i, i+1)
 	if err != nil {
 		return "", err
 	}
 
 	if s[0] == '/' {
-		return s[1:], nil
+		s = s[1:]
 	}
 
 	return s, nil
@@ -55,408 +167,13 @@ func segmentToUintN(path string, i, size int) (uint64, error) {
 	return v, nil
 }
 
-// SegmentToUint64 receives an int representing a path segment, then returns
-// both the specified segment as a uint64 and a nil error. If any error is
-// encountered, a zero value uint64 and error are returned.
-func SegmentToUint64(path string, i int) (uint64, error) {
-	return segmentToUintN(path, i, 64)
-}
-
-// SegmentToUint32 receives an int representing a path segment, then returns
-// both the specified segment as a uint32 and a nil error. If any error is
-// encountered, a zero value uint32 and error are returned.
-func SegmentToUint32(path string, i int) (uint32, error) {
-	v, err := segmentToUintN(path, i, 32)
-	if err != nil {
-		return 0, err
-	}
-
-	return uint32(v), nil
-}
-
-// SegmentToUint16 receives an int representing a path segment, then returns
-// both the specified segment as a uint16 and a nil error. If any error is
-// encountered, a zero value uint16 and error are returned.
-func SegmentToUint16(path string, i int) (uint16, error) {
-	v, err := segmentToUintN(path, i, 16)
-	if err != nil {
-		return 0, err
-	}
-
-	return uint16(v), nil
-}
-
-// SegmentToUint8 receives an int representing a path segment, then returns
-// both the specified segment as a uint8 and a nil error. If any error is
-// encountered, a zero value uint8 and error are returned.
-func SegmentToUint8(path string, i int) (uint8, error) {
-	v, err := segmentToUintN(path, i, 8)
-	if err != nil {
-		return 0, err
-	}
-
-	return uint8(v), nil
-}
-
-// SegmentToUint receives an int representing a path segment, then returns
-// both the specified segment as a uint and a nil error. If any error is
-// encountered, a zero value uint and error are returned.
-func SegmentToUint(path string, i int) (uint, error) {
-	v, err := segmentToUintN(path, i, 0)
-	if err != nil {
-		return 0, err
-	}
-
-	return uint(v), nil
-}
-
-func segmentToIntN(path string, i, size int) (int64, error) {
-	s, err := segToStrInt(path, i)
-	if err != nil {
-		return 0, err
-	}
-
-	v, err := strconv.ParseInt(s, 10, size)
-	if err != nil {
-		return 0, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-// SegmentToInt64 receives an int representing a path segment, then returns
-// both the specified segment as an int64 and a nil error. If any error is
-// encountered, a zero value int64 and error are returned.
-func SegmentToInt64(path string, i int) (int64, error) {
-	return segmentToIntN(path, i, 64)
-}
-
-// SegmentToInt32 receives an int representing a path segment, then returns
-// both the specified segment as an int32 and a nil error. If any error is
-// encountered, a zero value int32 and error are returned.
-func SegmentToInt32(path string, i int) (int32, error) {
-	v, err := segmentToIntN(path, i, 32)
-	if err != nil {
-		return 0, err
-	}
-
-	return int32(v), nil
-}
-
-// SegmentToInt16 receives an int representing a path segment, then returns
-// both the specified segment as an int16 and a nil error. If any error is
-// encountered, a zero value int16 and error are returned.
-func SegmentToInt16(path string, i int) (int16, error) {
-	v, err := segmentToIntN(path, i, 16)
-	if err != nil {
-		return 0, err
-	}
-
-	return int16(v), nil
-}
-
-// SegmentToInt8 receives an int representing a path segment, then returns both
-// the specified segment as an int8 and a nil error. If any error is
-// encountered, a zero value int8 and error are returned.
-func SegmentToInt8(path string, i int) (int8, error) {
-	v, err := segmentToIntN(path, i, 8)
-	if err != nil {
-		return 0, err
-	}
-
-	return int8(v), nil
-}
-
-// SegmentToInt receives an int representing a path segment, then returns both
-// the specified segment as an int and a nil error. If any error is
-// encountered, a zero value int and error are returned.
-func SegmentToInt(path string, i int) (int, error) {
-	v, err := segmentToIntN(path, i, 0)
-	if err != nil {
-		return 0, err
-	}
-
-	return int(v), nil
-}
-
-// SegmentToBool receives an int representing a path segment, then returns both
-// the specified segment as a bool and a nil error. If any error is
-// encountered, a zero value bool and error are returned.
-func SegmentToBool(path string, i int) (bool, error) {
-	s, err := SegmentToString(path, i)
-	if err != nil {
-		return false, err
-	}
-
-	v, err := strconv.ParseBool(s)
-	if err != nil {
-		return false, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-// SegmentToFloat64 receives an int representing a path segment, then returns
-// both the specified segment as a float64 and a nil error. If any error is
-// encountered, a zero value float64 and error are returned.
-func SegmentToFloat64(path string, i int) (float64, error) {
-	s, err := segToStrFloat(path, i)
-	if err != nil {
-		return 0.0, err
-	}
-
-	v, err := strconv.ParseFloat(s, 64)
-	if err != nil {
-		return 0.0, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-// SegmentToFloat32 receives an int representing a path segment, then returns
-// both the specified segment as a float32 and a nil error. If any error is
-// encountered, a zero value float32 and error are returned.
-func SegmentToFloat32(path string, i int) (float32, error) {
-	s, err := segToStrFloat(path, i)
-	if err != nil {
-		return 0.0, err
-	}
-
-	v, err := strconv.ParseFloat(s, 32)
-	if err != nil {
-		return 0.0, ErrUnparsable
-	}
-
-	return float32(v), nil
-}
-
-// SubSegToString receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as a string and a nil
-// error. If any error is encountered, a zero value string and error are
-// returned.
-func SubSegToString(path, key string) (string, error) {
-	ki, err := segIndexByKey(path, key)
-	if err != nil {
-		return "", err
-	}
-
-	s, err := SegmentToString(path[ki:], 1)
-	if err != nil {
-		return "", err
-	}
-
-	return s, nil
-}
-
-func subSegToUintN(path, key string, size int) (uint64, error) {
-	s, err := subSegToStrUint(path, key)
-	if err != nil {
-		return 0, err
-	}
-
-	v, err := strconv.ParseUint(s, 10, size)
-	if err != nil {
-		return 0, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-// SubSegToUint64 receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as a uint64 and a nil
-// error. If any error is encountered, a zero value uint64 and error are
-// returned.
-func SubSegToUint64(path, key string) (uint64, error) {
-	return subSegToUintN(path, key, 64)
-}
-
-// SubSegToUint32 receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as a uint32 and a nil
-// error. If any error is encountered, a zero value uint32 and error are
-// returned.
-func SubSegToUint32(path, key string) (uint32, error) {
-	v, err := subSegToUintN(path, key, 32)
-	if err != nil {
-		return 0, err
-	}
-
-	return uint32(v), nil
-}
-
-// SubSegToUint16 receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as a uint16 and a nil
-// error. If any error is encountered, a zero value uint16 and error are
-// returned.
-func SubSegToUint16(path, key string) (uint16, error) {
-	v, err := subSegToUintN(path, key, 16)
-	if err != nil {
-		return 0, err
-	}
-
-	return uint16(v), nil
-}
-
-// SubSegToUint8 receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as a uint8 and a nil
-// error. If any error is encountered, a zero value uint8 and error are
-// returned.
-func SubSegToUint8(path, key string) (uint8, error) {
-	v, err := subSegToUintN(path, key, 8)
-	if err != nil {
-		return 0, err
-	}
-
-	return uint8(v), nil
-}
-
-// SubSegToUint receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as a uint and a nil
-// error. If any error is encountered, a zero value uint and error are
-// returned.
-func SubSegToUint(path, key string) (uint, error) {
-	v, err := subSegToUintN(path, key, 0)
-	if err != nil {
-		return 0, err
-	}
-
-	return uint(v), nil
-}
-
-func subSegToIntN(path, key string, size int) (int64, error) {
-	s, err := subSegToStrInt(path, key)
-	if err != nil {
-		return 0, err
-	}
-
-	v, err := strconv.ParseInt(s, 10, size)
-	if err != nil {
-		return 0, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-// SubSegToInt64 receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as an int64 and a nil
-// error. If any error is encountered, a zero value int64 and error are
-// returned.
-func SubSegToInt64(path, key string) (int64, error) {
-	return subSegToIntN(path, key, 64)
-}
-
-// SubSegToInt32 receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as an int32 and a nil
-// error. If any error is encountered, a zero value int32 and error are
-// returned.
-func SubSegToInt32(path, key string) (int32, error) {
-	v, err := subSegToIntN(path, key, 32)
-	if err != nil {
-		return 0, err
-	}
-
-	return int32(v), nil
-}
-
-// SubSegToInt16 receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as an int16 and a nil
-// error. If any error is encountered, a zero value int16 and error are
-// returned.
-func SubSegToInt16(path, key string) (int16, error) {
-	v, err := subSegToIntN(path, key, 16)
-	if err != nil {
-		return 0, err
-	}
-
-	return int16(v), nil
-}
-
-// SubSegToInt8 receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as an int8 and a nil
-// error. If any error is encountered, a zero value int8 and error are
-// returned.
-func SubSegToInt8(path, key string) (int8, error) {
-	v, err := subSegToIntN(path, key, 8)
-	if err != nil {
-		return 0, err
-	}
-
-	return int8(v), nil
-}
-
-// SubSegToInt receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as an int and a nil
-// error. If any error is encountered, a zero value int and error are
-// returned.
-func SubSegToInt(path, key string) (int, error) {
-	v, err := subSegToIntN(path, key, 0)
-	if err != nil {
-		return 0, err
-	}
-
-	return int(v), nil
-}
-
-// SubSegToBool receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as a bool and a nil
-// error. If any error is encountered, a zero value bool and error are
-// returned.
-func SubSegToBool(path, key string) (bool, error) {
-	s, err := SubSegToString(path, key)
-	if err != nil {
-		return false, err
-	}
-
-	v, err := strconv.ParseBool(s)
-	if err != nil {
-		return false, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-// SubSegToFloat64 receives a key which is used to search for the first
-// matching path segment, then returns both the subsequent segment as a float64
-// and a nil error. If any error is encountered, a zero value float64 and error
-// are returned.
-func SubSegToFloat64(path, key string) (float64, error) {
-	s, err := subSegToStrFloat(path, key)
-	if err != nil {
-		return 0.0, err
-	}
-
-	v, err := strconv.ParseFloat(s, 64)
-	if err != nil {
-		return 0.0, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-// SubSegToFloat32 receives a key which is used to search for the first
-// matching path segment, then returns both the subsequent segment as a float32
-// and a nil error. If any error is encountered, a zero value float32 and error
-// are returned.
-func SubSegToFloat32(path, key string) (float32, error) {
-	s, err := subSegToStrFloat(path, key)
-	if err != nil {
-		return 0.0, err
-	}
-
-	v, err := strconv.ParseFloat(s, 32)
-	if err != nil {
-		return 0.0, ErrUnparsable
-	}
-
-	return float32(v), nil
-}
-
-// SpanToString receives two int values representing path segments, and
+// Span receives two int values representing path segments, and
 // returns the content between those segments, including the first segment, as
 // a string and a nil error. If any error is encountered, a zero value string
 // and error are returned. The segments can be of negative values, but the
 // first segment must come before the last segment. Providing a 0 int for the
 // second int is a special case which indicates the end of the path.
-func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
+func Span(path string, firstSeg, lastSeg int) (string, error) {
 	var f, l int
 	var err error
 
@@ -489,15 +206,159 @@ func SpanToString(path string, firstSeg, lastSeg int) (string, error) {
 	return path[f:l], nil
 }
 
-// SubSpanToString receives a key which is used to search for the first
+// SubSeg receives a key which is used to search for the first matching
+// path segment, then returns both the subsequent segment as a string and a nil
+// error. If any error is encountered, a zero value string and error are
+// returned.
+func SubSeg(path, key string, v interface{}) error {
+	var err error
+
+	switch v := v.(type) {
+	case *bool:
+		*v, err = subSegToBool(path, key)
+
+	case *float32:
+		var f float64
+		f, err = subSegToFloatN(path, key, 32)
+		*v = float32(f)
+
+	case *float64:
+		*v, err = subSegToFloatN(path, key, 64)
+
+	case *int:
+		var n int64
+		n, err = subSegToIntN(path, key, 0)
+		*v = int(n)
+
+	case *int16:
+		var n int64
+		n, err = subSegToIntN(path, key, 16)
+		*v = int16(n)
+
+	case *int32:
+		var n int64
+		n, err = subSegToIntN(path, key, 32)
+		*v = int32(n)
+
+	case *int64:
+		*v, err = subSegToIntN(path, key, 64)
+
+	case *int8:
+		var n int64
+		n, err = subSegToIntN(path, key, 8)
+		*v = int8(n)
+
+	case *string:
+		*v, err = subSegToString(path, key)
+
+	case *uint:
+		var n uint64
+		n, err = subSegToUintN(path, key, 0)
+		*v = uint(n)
+
+	case *uint16:
+		var n uint64
+		n, err = subSegToUintN(path, key, 16)
+		*v = uint16(n)
+
+	case *uint32:
+		var n uint64
+		n, err = subSegToUintN(path, key, 32)
+		*v = uint32(n)
+
+	case *uint64:
+		*v, err = subSegToUintN(path, key, 64)
+
+	case *uint8:
+		var n uint64
+		n, err = subSegToUintN(path, key, 8)
+		*v = uint8(n)
+
+	default:
+	}
+
+	return err
+}
+
+func subSegToBool(path, key string) (bool, error) {
+	s, err := subSegToString(path, key)
+	if err != nil {
+		return false, err
+	}
+
+	v, err := strconv.ParseBool(s)
+	if err != nil {
+		return false, ErrUnparsable
+	}
+
+	return v, nil
+}
+
+func subSegToFloatN(path, key string, size int) (float64, error) {
+	s, err := subSegToStrFloat(path, key)
+	if err != nil {
+		return 0.0, err
+	}
+
+	v, err := strconv.ParseFloat(s, size)
+	if err != nil {
+		return 0.0, ErrUnparsable
+	}
+
+	return v, nil
+}
+
+func subSegToIntN(path, key string, size int) (int64, error) {
+	s, err := subSegToStrInt(path, key)
+	if err != nil {
+		return 0, err
+	}
+
+	v, err := strconv.ParseInt(s, 10, size)
+	if err != nil {
+		return 0, ErrUnparsable
+	}
+
+	return v, nil
+}
+
+func subSegToString(path, key string) (string, error) {
+	i, err := segIndexByKey(path, key)
+	if err != nil {
+		return "", err
+	}
+
+	s, err := segmentToString(path[i:], 1)
+	if err != nil {
+		return "", err
+	}
+
+	return s, nil
+}
+
+func subSegToUintN(path, key string, size int) (uint64, error) {
+	s, err := subSegToStrUint(path, key)
+	if err != nil {
+		return 0, err
+	}
+
+	v, err := strconv.ParseUint(s, 10, size)
+	if err != nil {
+		return 0, ErrUnparsable
+	}
+
+	return v, nil
+}
+
+// SubSpan receives a key which is used to search for the first
 // matching path segment and an int value representing a second segment by it's
 // distance from the matched segment, then returns the content between those
 // segments as a string and a nil error. If any error is encountered, a zero
 // value string and error are returned. The int representing a segment can be
 // of negative values. Providing a 0 int is a special case which indicates the
 // end of the path.
-func SubSpanToString(path, key string, lastSeg int) (string, error) {
-	ki, err := segIndexByKey(path, key)
+func SubSpan(path, key string, lastSeg int) (string, error) {
+	i, err := segIndexByKey(path, key)
 	if err != nil {
 		return "", err
 	}
@@ -506,7 +367,7 @@ func SubSpanToString(path, key string, lastSeg int) (string, error) {
 		lastSeg++
 	}
 
-	s, err := SpanToString(path[ki:], 1, lastSeg)
+	s, err := Span(path[i:], 1, lastSeg)
 	if err != nil {
 		return "", err
 	}
@@ -530,9 +391,9 @@ func New(path string) *Parth {
 
 // NewFromSpan receives a path as a string, and two int values representing
 // path segments, then returns a new Parth set with the content between those
-// segments, and any error encountered. See SpanToString for more info.
+// segments, and any error encountered. See Span for more info.
 func NewFromSpan(path string, firstSeg, lastSeg int) *Parth {
-	s, err := SpanToString(path, firstSeg, lastSeg)
+	s, err := Span(path, firstSeg, lastSeg)
 	return &Parth{s, err}
 }
 
@@ -540,9 +401,9 @@ func NewFromSpan(path string, firstSeg, lastSeg int) *Parth {
 // for the first matching path segment, and an int value representing a second
 // segment by it's distance from the matched segment, then returns a new Parth
 // set with the content between those segments, and any error encountered. See
-// SubSpanToString for more info.
+// SubSpan for more info.
 func NewFromSubSpan(path, key string, lastSeg int) *Parth {
-	s, err := SubSpanToString(path, key, lastSeg)
+	s, err := SubSpan(path, key, lastSeg)
 	return &Parth{s, err}
 }
 
@@ -551,469 +412,60 @@ func (p *Parth) Err() error {
 	return p.err
 }
 
-// SegmentToString receives an int representing a path segment, then returns
+// Segment receives an int representing a path segment, then returns
 // the specified segment as a string. If any error is encountered, a zero value
 // string is returned, and the Parth instance's err value is set. If an error
 // has already been set, a zero value string is returned.
-func (p *Parth) SegmentToString(i int) string {
+func (p *Parth) Segment(i int, v interface{}) {
+	if p.err != nil {
+		return
+	}
+
+	p.err = Segment(p.path, i, v)
+}
+
+// Span receives two int values representing path segments, then
+// returns the content between those segments, including the first segment, as
+// a string. If any error is encountered, a zero value string is returned, and
+// the Parth instance's err value is set. If an error has already been set, a
+// zero value string is returned. See Span for more info.
+func (p *Parth) Span(firstSeg, lastSeg int) string {
 	if p.err != nil {
 		return ""
 	}
 
-	s, err := SegmentToString(p.path, i)
-
+	s, err := Span(p.path, firstSeg, lastSeg)
 	p.err = err
+
 	return s
 }
 
-// SegmentToUint64 receives an int representing a path segment, then returns the
-// specified segment as a uint64. If any error is encountered, a zero value
-// uint64 is returned, and the Parth instance's err value is set. If an error
-// has already been set, a zero value uint64 is returned.
-func (p *Parth) SegmentToUint64(i int) uint64 {
-	if p.err != nil {
-		return 0
-	}
-
-	n, err := SegmentToUint64(p.path, i)
-
-	p.err = err
-	return n
-}
-
-// SegmentToUint32 receives an int representing a path segment, then returns the
-// specified segment as a uint32. If any error is encountered, a zero value
-// uint32 is returned, and the Parth instance's err value is set. If an error
-// has already been set, a zero value uint32 is returned.
-func (p *Parth) SegmentToUint32(i int) uint32 {
-	if p.err != nil {
-		return 0
-	}
-
-	n, err := SegmentToUint32(p.path, i)
-
-	p.err = err
-	return n
-}
-
-// SegmentToUint16 receives an int representing a path segment, then returns the
-// specified segment as a uint16. If any error is encountered, a zero value
-// uint16 is returned, and the Parth instance's err value is set. If an error
-// has already been set, a zero value uint16 is returned.
-func (p *Parth) SegmentToUint16(i int) uint16 {
-	if p.err != nil {
-		return 0
-	}
-
-	n, err := SegmentToUint16(p.path, i)
-
-	p.err = err
-	return n
-}
-
-// SegmentToUint8 receives an int representing a path segment, then returns the
-// specified segment as a uint8. If any error is encountered, a zero value
-// uint8 is returned, and the Parth instance's err value is set. If an error
-// has already been set, a zero value uint8 is returned.
-func (p *Parth) SegmentToUint8(i int) uint8 {
-	if p.err != nil {
-		return 0
-	}
-
-	n, err := SegmentToUint8(p.path, i)
-
-	p.err = err
-	return n
-}
-
-// SegmentToUint receives an int representing a path segment, then returns the
-// specified segment as a uint. If any error is encountered, a zero value
-// uint is returned, and the Parth instance's err value is set. If an error
-// has already been set, a zero value uint is returned.
-func (p *Parth) SegmentToUint(i int) uint {
-	if p.err != nil {
-		return 0
-	}
-
-	n, err := SegmentToUint(p.path, i)
-
-	p.err = err
-	return n
-}
-
-// SegmentToInt64 receives an int representing a path segment, then returns the
-// specified segment as an int64. If any error is encountered, a zero value
-// int64 is returned, and the Parth instance's err value is set. If an error
-// has already been set, a zero value int64 is returned.
-func (p *Parth) SegmentToInt64(i int) int64 {
-	if p.err != nil {
-		return 0
-	}
-
-	n, err := SegmentToInt64(p.path, i)
-
-	p.err = err
-	return n
-}
-
-// SegmentToInt32 receives an int representing a path segment, then returns the
-// specified segment as an int32. If any error is encountered, a zero value
-// int32 is returned, and the Parth instance's err value is set. If an error
-// has already been set, a zero value int32 is returned.
-func (p *Parth) SegmentToInt32(i int) int32 {
-	if p.err != nil {
-		return 0
-	}
-
-	n, err := SegmentToInt32(p.path, i)
-
-	p.err = err
-	return n
-}
-
-// SegmentToInt16 receives an int representing a path segment, then returns the
-// specified segment as an int16. If any error is encountered, a zero value
-// int16 is returned, and the Parth instance's err value is set. If an error
-// has already been set, a zero value int16 is returned.
-func (p *Parth) SegmentToInt16(i int) int16 {
-	if p.err != nil {
-		return 0
-	}
-
-	n, err := SegmentToInt16(p.path, i)
-
-	p.err = err
-	return n
-}
-
-// SegmentToInt8 receives an int representing a path segment, then returns the
-// specified segment as an int8. If any error is encountered, a zero value int8
-// is returned, and the Parth instance's err value is set. If an error has
-// already been set, a zero value int8 is returned.
-func (p *Parth) SegmentToInt8(i int) int8 {
-	if p.err != nil {
-		return 0
-	}
-
-	n, err := SegmentToInt8(p.path, i)
-
-	p.err = err
-	return n
-}
-
-// SegmentToInt receives an int representing a path segment, then returns the
-// specified segment as an int. If any error is encountered, a zero value int
-// is returned, and the Parth instance's err value is set. If an error has
-// already been set, a zero value int is returned.
-func (p *Parth) SegmentToInt(i int) int {
-	if p.err != nil {
-		return 0
-	}
-
-	n, err := SegmentToInt(p.path, i)
-
-	p.err = err
-	return n
-}
-
-// SegmentToBool receives an int representing a path segment, then returns the
-// specified segment as a bool. If any error is encountered, a zero value bool
-// is returned, and the Parth instance's err value is set. If an error has
-// already been set, a zero value bool is returned.
-func (p *Parth) SegmentToBool(i int) bool {
-	if p.err != nil {
-		return false
-	}
-
-	b, err := SegmentToBool(p.path, i)
-
-	p.err = err
-	return b
-}
-
-// SegmentToFloat64 receives an int representing a path segment, then returns
-// the specified segment as a float64. If any error is encountered, a zero
-// value float64 is returned, and the Parth instance's err value is set. If an
-// error has already been set, a zero value float64 is returned.
-func (p *Parth) SegmentToFloat64(i int) float64 {
-	if p.err != nil {
-		return 0
-	}
-
-	f, err := SegmentToFloat64(p.path, i)
-
-	p.err = err
-	return f
-}
-
-// SegmentToFloat32 receives an int representing a path segment, then returns
-// the specified segment as a float32. If any error is encountered, a zero
-// value float32 is returned, and the Parth instance's err value is set. If an
-// error has already been set, a zero value float32 is returned.
-func (p *Parth) SegmentToFloat32(i int) float32 {
-	if p.err != nil {
-		return 0
-	}
-
-	f, err := SegmentToFloat32(p.path, i)
-
-	p.err = err
-	return f
-}
-
-// SubSegToString receives a key which is used to search for the first matching
+// SubSeg receives a key which is used to search for the first matching
 // path segment, then returns the subsequent segment as a string. If any error
 // is encountered, a zero value string is returned, and the Parth instances err
 // value is set. If an error has already been set, a zero value string is
 // returned.
-func (p *Parth) SubSegToString(key string) string {
+func (p *Parth) SubSeg(key string, v interface{}) {
 	if p.err != nil {
-		return ""
+		return
 	}
 
-	s, err := SubSegToString(p.path, key)
-
-	p.err = err
-	return s
+	p.err = SubSeg(p.path, key, v)
 }
 
-// SubSegToUint64 receives a key which is used to search for the first matching
-// path segment, then returns the subsequent segment as a uint64. If any error
-// is encountered, a zero value uint64 is returned, and the Parth instances err
-// value is set. If an error has already been set, a zero value uint64 is
-// returned.
-func (p *Parth) SubSegToUint64(key string) uint64 {
-	if p.err != nil {
-		return 0
-	}
-
-	i, err := SubSegToUint64(p.path, key)
-
-	p.err = err
-	return i
-}
-
-// SubSegToUint32 receives a key which is used to search for the first matching
-// path segment, then returns the subsequent segment as a uint32. If any error
-// is encountered, a zero value uint32 is returned, and the Parth instances err
-// value is set. If an error has already been set, a zero value uint32 is
-// returned.
-func (p *Parth) SubSegToUint32(key string) uint32 {
-	if p.err != nil {
-		return 0
-	}
-
-	i, err := SubSegToUint32(p.path, key)
-
-	p.err = err
-	return i
-}
-
-// SubSegToUint16 receives a key which is used to search for the first matching
-// path segment, then returns the subsequent segment as a uint16. If any error
-// is encountered, a zero value uint16 is returned, and the Parth instances err
-// value is set. If an error has already been set, a zero value uint16 is
-// returned.
-func (p *Parth) SubSegToUint16(key string) uint16 {
-	if p.err != nil {
-		return 0
-	}
-
-	i, err := SubSegToUint16(p.path, key)
-
-	p.err = err
-	return i
-}
-
-// SubSegToUint8 receives a key which is used to search for the first matching
-// path segment, then returns the subsequent segment as a uint8. If any error
-// is encountered, a zero value uint8 is returned, and the Parth instances err
-// value is set. If an error has already been set, a zero value uint8 is
-// returned.
-func (p *Parth) SubSegToUint8(key string) uint8 {
-	if p.err != nil {
-		return 0
-	}
-
-	i, err := SubSegToUint8(p.path, key)
-
-	p.err = err
-	return i
-}
-
-// SubSegToUint receives a key which is used to search for the first matching
-// path segment, then returns the subsequent segment as a uint. If any error
-// is encountered, a zero value uint is returned, and the Parth instances err
-// value is set. If an error has already been set, a zero value uint is
-// returned.
-func (p *Parth) SubSegToUint(key string) uint {
-	if p.err != nil {
-		return 0
-	}
-
-	i, err := SubSegToUint(p.path, key)
-
-	p.err = err
-	return i
-}
-
-// SubSegToInt64 receives a key which is used to search for the first matching
-// path segment, then returns the subsequent segment as an int64. If any error
-// is encountered, a zero value int64 is returned, and the Parth instances err
-// value is set. If an error has already been set, a zero value int64 is
-// returned.
-func (p *Parth) SubSegToInt64(key string) int64 {
-	if p.err != nil {
-		return 0
-	}
-
-	i, err := SubSegToInt64(p.path, key)
-
-	p.err = err
-	return i
-}
-
-// SubSegToInt32 receives a key which is used to search for the first matching
-// path segment, then returns the subsequent segment as an int32. If any error
-// is encountered, a zero value int32 is returned, and the Parth instances err
-// value is set. If an error has already been set, a zero value int32 is
-// returned.
-func (p *Parth) SubSegToInt32(key string) int32 {
-	if p.err != nil {
-		return 0
-	}
-
-	i, err := SubSegToInt32(p.path, key)
-
-	p.err = err
-	return i
-}
-
-// SubSegToInt16 receives a key which is used to search for the first matching
-// path segment, then returns the subsequent segment as an int16. If any error
-// is encountered, a zero value int16 is returned, and the Parth instances err
-// value is set. If an error has already been set, a zero value int16 is
-// returned.
-func (p *Parth) SubSegToInt16(key string) int16 {
-	if p.err != nil {
-		return 0
-	}
-
-	i, err := SubSegToInt16(p.path, key)
-
-	p.err = err
-	return i
-}
-
-// SubSegToInt8 receives a key which is used to search for the first matching
-// path segment, then returns the subsequent segment as an int8. If any error
-// is encountered, a zero value int8 is returned, and the Parth instances err
-// value is set. If an error has already been set, a zero value int8 is
-// returned.
-func (p *Parth) SubSegToInt8(key string) int8 {
-	if p.err != nil {
-		return 0
-	}
-
-	i, err := SubSegToInt8(p.path, key)
-
-	p.err = err
-	return i
-}
-
-// SubSegToInt receives a key which is used to search for the first matching
-// path segment, then returns the subsequent segment as an int. If any error is
-// encountered, a zero value int8 is returned, and the Parth instances err
-// value is set. If an error has already been set, a zero value int8 is
-// returned.
-func (p *Parth) SubSegToInt(key string) int {
-	if p.err != nil {
-		return 0
-	}
-
-	i, err := SubSegToInt(p.path, key)
-
-	p.err = err
-	return i
-}
-
-// SubSegToBool receives a key which is used to search for the first matching
-// path segment, then returns the subsequent segment as an bool. If any error
-// is encountered, a zero value bool is returned, and the Parth instances err
-// value is set. If an error has already been set, a zero value bool is
-// returned.
-func (p *Parth) SubSegToBool(key string) bool {
-	if p.err != nil {
-		return false
-	}
-
-	b, err := SubSegToBool(p.path, key)
-
-	p.err = err
-	return b
-}
-
-// SubSegToFloat64 receives a key which is used to search for the first
-// matching path segment, then returns the subsequent segment as an float64. If
-// any error is encountered, a zero value float64 is returned, and the Parth
-// instance's err value is set. If an error has already been set, a zero value
-// float64 is returned.
-func (p *Parth) SubSegToFloat64(key string) float64 {
-	if p.err != nil {
-		return 0
-	}
-
-	f, err := SubSegToFloat64(p.path, key)
-
-	p.err = err
-	return f
-}
-
-// SubSegToFloat32 receives a key which is used to search for the first
-// matching path segment, then returns the subsequent segment as an float32. If
-// any error is encountered, a zero value float32 is returned, and the Parth
-// instance's err value is set. If an error has already been set, a zero value
-// float32 is returned.
-func (p *Parth) SubSegToFloat32(key string) float32 {
-	if p.err != nil {
-		return 0
-	}
-
-	f, err := SubSegToFloat32(p.path, key)
-
-	p.err = err
-	return f
-}
-
-// SpanToString receives two int values representing path segments, then
-// returns the content between those segments, including the first segment, as
-// a string. If any error is encountered, a zero value string is returned, and
-// the Parth instance's err value is set. If an error has already been set, a
-// zero value string is returned. See SpanToString for more info.
-func (p *Parth) SpanToString(firstSeg, lastSeg int) string {
-	if p.err != nil {
-		return ""
-	}
-
-	s, err := SpanToString(p.path, firstSeg, lastSeg)
-
-	p.err = err
-	return s
-}
-
-// SubSpanToString receives a key which is used to search for the first
+// SubSpan receives a key which is used to search for the first
 // matching path segment, and an int value representing a second segment by
 // it's distance from the matched segment, then returns the content between
 // those segments as a string. If an error has already been set, a zero value
-// string is returned. See SubSpanToString for more info.
-func (p *Parth) SubSpanToString(key string, lastSeg int) string {
+// string is returned. See SubSpan for more info.
+func (p *Parth) SubSpan(key string, lastSeg int) string {
 	if p.err != nil {
 		return ""
 	}
 
-	s, err := SubSpanToString(p.path, key, lastSeg)
-
+	s, err := SubSpan(p.path, key, lastSeg)
 	p.err = err
+
 	return s
 }
 
@@ -1135,7 +587,7 @@ func segIndexByKey(path, key string) (int, error) {
 }
 
 func segToStrUint(path string, i int) (string, error) {
-	s, err := SegmentToString(path, i)
+	s, err := segmentToString(path, i)
 	if err != nil {
 		return "", err
 	}
@@ -1148,7 +600,7 @@ func segToStrUint(path string, i int) (string, error) {
 }
 
 func segToStrInt(path string, i int) (string, error) {
-	s, err := SegmentToString(path, i)
+	s, err := segmentToString(path, i)
 	if err != nil {
 		return "", err
 	}
@@ -1161,7 +613,7 @@ func segToStrInt(path string, i int) (string, error) {
 }
 
 func segToStrFloat(path string, i int) (string, error) {
-	s, err := SegmentToString(path, i)
+	s, err := segmentToString(path, i)
 	if err != nil {
 		return "", err
 	}
@@ -1174,7 +626,7 @@ func segToStrFloat(path string, i int) (string, error) {
 }
 
 func subSegToStrUint(path, key string) (string, error) {
-	s, err := SubSegToString(path, key)
+	s, err := subSegToString(path, key)
 	if err != nil {
 		return "", err
 	}
@@ -1187,7 +639,7 @@ func subSegToStrUint(path, key string) (string, error) {
 }
 
 func subSegToStrInt(path, key string) (string, error) {
-	s, err := SubSegToString(path, key)
+	s, err := subSegToString(path, key)
 	if err != nil {
 		return "", err
 	}
@@ -1200,7 +652,7 @@ func subSegToStrInt(path, key string) (string, error) {
 }
 
 func subSegToStrFloat(path, key string) (string, error) {
-	s, err := SubSegToString(path, key)
+	s, err := subSegToString(path, key)
 	if err != nil {
 		return "", err
 	}
