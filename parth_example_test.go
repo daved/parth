@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	r, rErr = http.NewRequest("GET", "/zero/1/2/nn3.3nn/key/5.5", nil)
+	r, rErr = http.NewRequest("GET", "/zero/1/2/key/nn4.4nn/5.5", nil)
 )
 
 func init() {
@@ -18,30 +18,77 @@ func init() {
 	}
 }
 
-func Example() {
-	fmt.Println(r.URL.Path)
-
+func Example_segment() {
 	var s string
-	if err := parth.Segment(r.URL.Path, 0, &s); err != nil {
+	if err := parth.Segment(r.URL.Path, 4, &s); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
+
+	fmt.Println(r.URL.Path)
+	fmt.Printf("%v (%T)\n", s, s)
+
+	// Output:
+	// /zero/1/2/key/nn4.4nn/5.5
+	// nn4.4nn (string)
+}
+
+func Example_span() {
+	s, err := parth.Span(r.URL.Path, 2, 4)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	fmt.Println(r.URL.Path)
 	fmt.Println(s)
 
+	// Output:
+	// /zero/1/2/key/nn4.4nn/5.5
+	// /2/key
+}
+
+func Example_subSeg() {
 	var f float32
 	if err := parth.SubSeg(r.URL.Path, "key", &f); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
-	fmt.Println(f)
+
+	fmt.Println(r.URL.Path)
+	fmt.Printf("%v (%T)\n", f, f)
 
 	// Output:
-	// /zero/1/2/nn3.3nn/key/5.5
-	// zero
-	// 5.5
+	// /zero/1/2/key/nn4.4nn/5.5
+	// 4.4 (float32)
 }
 
-func Example_parthType() {
-	fmt.Println(r.URL.Path)
+func Example_subSpan() {
+	s0, err := parth.SubSpan(r.URL.Path, "zero", 0, 3)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
 
+	s1, err := parth.SubSpan(r.URL.Path, "zero", 2, 4)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	s2, err := parth.SubSpan(r.URL.Path, "1", 1, 3)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	fmt.Println(r.URL.Path)
+	fmt.Println(s0)
+	fmt.Println(s1)
+	fmt.Println(s2)
+
+	// Output:
+	// /zero/1/2/key/nn4.4nn/5.5
+	// /1/2/key
+	// /key/nn4.4nn
+	// /key/nn4.4nn
+}
+
+func ExampleParth() {
 	var s string
 	var f float32
 
@@ -52,11 +99,12 @@ func Example_parthType() {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
+	fmt.Println(r.URL.Path)
 	fmt.Println(s)
 	fmt.Println(f)
 
 	// Output:
-	// /zero/1/2/nn3.3nn/key/5.5
+	// /zero/1/2/key/nn4.4nn/5.5
 	// zero
-	// 5.5
+	// 4.4
 }
