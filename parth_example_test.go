@@ -32,6 +32,20 @@ func Example_segment() {
 	// nn4.4nn (string)
 }
 
+func Example_sequent() {
+	var f float32
+	if err := parth.Sequent(r.URL.Path, "key", &f); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	fmt.Println(r.URL.Path)
+	fmt.Printf("%v (%T)\n", f, f)
+
+	// Output:
+	// /zero/1/2/key/nn4.4nn/5.5
+	// 4.4 (float32)
+}
+
 func Example_span() {
 	s, err := parth.Span(r.URL.Path, 2, 4)
 	if err != nil {
@@ -47,8 +61,8 @@ func Example_span() {
 }
 
 func Example_subSeg() {
-	var f float32
-	if err := parth.SubSeg(r.URL.Path, "key", &f); err != nil {
+	var f float64
+	if err := parth.SubSeg(r.URL.Path, "key", 1, &f); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
@@ -57,21 +71,16 @@ func Example_subSeg() {
 
 	// Output:
 	// /zero/1/2/key/nn4.4nn/5.5
-	// 4.4 (float32)
+	// 5.5 (float64)
 }
 
 func Example_subSpan() {
-	s0, err := parth.SubSpan(r.URL.Path, "zero", 0, 3)
+	s0, err := parth.SubSpan(r.URL.Path, "zero", 2, 4)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	s1, err := parth.SubSpan(r.URL.Path, "zero", 2, 4)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
-
-	s2, err := parth.SubSpan(r.URL.Path, "1", 1, 3)
+	s1, err := parth.SubSpan(r.URL.Path, "1", 1, 3)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
@@ -79,11 +88,9 @@ func Example_subSpan() {
 	fmt.Println(r.URL.Path)
 	fmt.Println(s0)
 	fmt.Println(s1)
-	fmt.Println(s2)
 
 	// Output:
 	// /zero/1/2/key/nn4.4nn/5.5
-	// /1/2/key
 	// /key/nn4.4nn
 	// /key/nn4.4nn
 }
@@ -94,7 +101,7 @@ func ExampleParth() {
 
 	p := parth.New(r.URL.Path)
 	p.Segment(0, &s)
-	p.SubSeg("key", &f)
+	p.SubSeg("key", 1, &f)
 	if err := p.Err(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
@@ -106,5 +113,5 @@ func ExampleParth() {
 	// Output:
 	// /zero/1/2/key/nn4.4nn/5.5
 	// zero
-	// 4.4
+	// 5.5
 }
