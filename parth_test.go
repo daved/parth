@@ -23,6 +23,12 @@ func TestBhvrSegment(t *testing.T) {
 	t.Run("uint32", applyToUint32TFunc(path, key, pti(1), 4))
 	t.Run("uint64", applyToUint64TFunc(path, key, pti(1), 4))
 	t.Run("uint8", applyToUint8TFunc(path, key, pti(1), 4))
+
+	t.Run("bad type", func(t *testing.T) {
+		var x uintptr
+		err := Segment(path, 3, &x)
+		exp(t, t.Name(), err)
+	})
 }
 
 func TestBhvrSequent(t *testing.T) {
@@ -43,6 +49,12 @@ func TestBhvrSequent(t *testing.T) {
 	t.Run("uint32", applyToUint32TFunc(path, "junk", i, 4))
 	t.Run("uint64", applyToUint64TFunc(path, "junk", i, 4))
 	t.Run("uint8", applyToUint8TFunc(path, "junk", i, 4))
+
+	t.Run("bad type", func(t *testing.T) {
+		var x uintptr
+		err := Sequent(path, "key", &x)
+		exp(t, t.Name(), err)
+	})
 }
 
 func TestBhvrSpan(t *testing.T) {
@@ -65,6 +77,12 @@ func TestBhvrSubSeg(t *testing.T) {
 	t.Run("uint32", applyToUint32TFunc(path, "junk", pti(0), 4))
 	t.Run("uint64", applyToUint64TFunc(path, "junk", pti(0), 4))
 	t.Run("uint8", applyToUint8TFunc(path, "junk", pti(0), 4))
+
+	t.Run("bad type", func(t *testing.T) {
+		var x uintptr
+		err := SubSeg(path, "key", 2, &x)
+		exp(t, t.Name(), err)
+	})
 }
 
 func TestBhvrSubSpan(t *testing.T) {

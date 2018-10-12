@@ -13,6 +13,8 @@ import (
 
 // Err{Name} values are for error identification.
 var (
+	ErrUnknownType = errors.New("unknown type provided")
+
 	ErrFirstSegNotExist = errors.New("first segment index does not exist")
 	ErrLastSegNotExist  = errors.New("last segment index does not exist")
 	ErrSegOrderReversed = errors.New("first segment must precede last segment")
@@ -93,6 +95,7 @@ func Segment(path string, i int, v interface{}) error {
 		*v = uint8(n)
 
 	default:
+		err = ErrUnknownType
 	}
 
 	return err
@@ -280,6 +283,7 @@ func SubSeg(path, key string, i int, v interface{}) error {
 		*v = uint8(n)
 
 	default:
+		err = ErrUnknownType
 	}
 
 	return err
