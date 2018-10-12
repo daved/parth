@@ -1,24 +1,19 @@
-package parth_test
+package parth
 
 import (
-	"context"
 	"fmt"
-	"net/http"
 	"path"
 	"strconv"
 	"strings"
 	"testing"
-
-	"github.com/codemodus/parth"
 )
 
 var (
-	bmri int
-	bmrs string
+	x interface{}
 )
 
-func standardSegment(path string, i int) (int, error) {
-	ss := strings.Split(strings.TrimLeft(path, "/"), "/")
+func stdSegmentInt(p string, i int) (int, error) {
+	ss := strings.Split(strings.TrimLeft(p, "/"), "/")
 
 	if len(ss) == 0 || i > len(ss) {
 		err := fmt.Errorf("segment out of bounds")
@@ -33,90 +28,93 @@ func standardSegment(path string, i int) (int, error) {
 	return int(v), nil
 }
 
-func BenchmarkStandardInt(b *testing.B) {
+func BenchmarkStdSegmentInt(b *testing.B) {
 	p := "/zero/1"
 	var r int
 
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		r, _ = standardSegment(p, 1)
+		r, _ = stdSegmentInt(p, 1)
 	}
 
-	bmri = r
+	x = r
 }
 
-func BenchmarkParthInt(b *testing.B) {
+func BenchmarkSegmentToIntN(b *testing.B) {
 	p := "/zero/1"
 	var r int
 
 	b.ResetTimer()
-
 	for n := 0; n < b.N; n++ {
-		r, _ = parth.SegmentToInt(p, 1)
+		t, _ := segmentToIntN(p, 1, 0)
+		r = int(t)
 	}
 
-	bmri = r
+	x = r
 }
 
-func BenchmarkParthIntNeg(b *testing.B) {
+func BenchmarkSegmentToIntNNeg(b *testing.B) {
 	p := "/zero/1"
 	var r int
 
 	b.ResetTimer()
-
 	for n := 0; n < b.N; n++ {
-		r, _ = parth.SegmentToInt(p, -1)
+		t, _ := segmentToIntN(p, -1, 0)
+		r = int(t)
 	}
 
-	bmri = r
+	x = r
 }
 
-func BenchmarkParthSubSeg(b *testing.B) {
-	p := "/zero/1/2"
-	k := "1"
-	var r string
-
-	b.ResetTimer()
-
-	for n := 0; n < b.N; n++ {
-		r, _ = parth.SubSegToString(p, k)
-	}
-
-	bmrs = r
-}
-
-func BenchmarkStandardSpan(b *testing.B) {
+func BenchmarkSegmentToString(b *testing.B) {
 	p := "/zero/1/2"
 	var r string
 
 	b.ResetTimer()
-
 	for n := 0; n < b.N; n++ {
-		cs := strings.Split(p, "/")
-		if p[0] == '/' {
-			cs[1] = "/" + cs[1]
-		}
-		r = path.Join(cs[0:3]...)
+		r, _ = segmentToString(p, 1)
 	}
 
-	bmrs = r
+	x = r
+}
+func stdSpan(p string, i, j int) string {
+	cs := strings.Split(p, "/")
+
+	if p[0] == '/' {
+		cs[1] = "/" + cs[1]
+	}
+
+	return path.Join(cs[i:j]...)
 }
 
-func BenchmarkParthSpan(b *testing.B) {
+func BenchmarkStdSpan(b *testing.B) {
 	p := "/zero/1/2"
 	var r string
 
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		r, _ = parth.SpanToString(p, 0, 1)
+		r = stdSpan(p, 0, 1)
 	}
 
-	bmrs = r
+	x = r
 }
 
-func BenchmarkParthSubSpan(b *testing.B) {
+func BenchmarkSpan(b *testing.B) {
+	p := "/zero/1/2"
+	var r string
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		r, _ = Span(p, 0, 1)
+	}
+
+	x = r
+}
+
+/*
+func BenchmarkSubSpan(b *testing.B) {
 	p := "/zero/1/2"
 	k := "zero"
 	i := 2
@@ -125,7 +123,7 @@ func BenchmarkParthSubSpan(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		r, _ = parth.SubSpanToString(p, k, i)
+		r, _ = SubSpanToString(p, k, i)
 	}
 
 	bmrs = r
@@ -138,8 +136,8 @@ func BenchmarkVsCtxParthString2x(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		r0, _ = parth.SegmentToString(p, 1)
-		r1, _ = parth.SegmentToString(p, 1)
+		r0, _ = SegmentToString(p, 1)
+		r1, _ = SegmentToString(p, 1)
 	}
 
 	bmrs = r0
@@ -153,9 +151,9 @@ func BenchmarkVsCtxParthString3x(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		r0, _ = parth.SegmentToString(p, 1)
-		r1, _ = parth.SegmentToString(p, 1)
-		r2, _ = parth.SegmentToString(p, 1)
+		r0, _ = SegmentToString(p, 1)
+		r1, _ = SegmentToString(p, 1)
+		r2, _ = SegmentToString(p, 1)
 	}
 
 	bmrs = r0
@@ -228,4 +226,4 @@ func BenchmarkVsCtxContextGetSetGetGet(b *testing.B) {
 	bmrs = r0
 	bmrs = r1
 	bmrs = r2
-}
+}*/
