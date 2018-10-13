@@ -18,13 +18,13 @@ func TestBhvrSegment(t *testing.T) {
 	t.Run("int64", applyToInt64TFunc(path, key, pti(1), 4))
 	t.Run("int8", applyToInt8TFunc(path, key, pti(1), 4))
 	t.Run("string", applyToStringTFunc(path, key, pti(0), "junk"))
-	t.Run("uint", applyToUintTFunc(path, key, pti(1), 4))
-	t.Run("uint16", applyToUint16TFunc(path, key, pti(1), 4))
-	t.Run("uint32", applyToUint32TFunc(path, key, pti(1), 4))
-	t.Run("uint64", applyToUint64TFunc(path, key, pti(1), 4))
-	t.Run("uint8", applyToUint8TFunc(path, key, pti(1), 4))
+	t.Run("uint", applyToUintTFunc(path, key, pti(-1), 3))
+	t.Run("uint16", applyToUint16TFunc(path, key, pti(-1), 3))
+	t.Run("uint32", applyToUint32TFunc(path, key, pti(-1), 3))
+	t.Run("uint64", applyToUint64TFunc(path, key, pti(-1), 3))
+	t.Run("uint8", applyToUint8TFunc(path, key, pti(-1), 3))
 
-	t.Run("bad type", func(t *testing.T) {
+	t.Run("badType", func(t *testing.T) {
 		var x uintptr
 		err := Segment(path, 3, &x)
 		exp(t, t.Name(), err)
@@ -50,7 +50,7 @@ func TestBhvrSequent(t *testing.T) {
 	t.Run("uint64", applyToUint64TFunc(path, "junk", i, 4))
 	t.Run("uint8", applyToUint8TFunc(path, "junk", i, 4))
 
-	t.Run("bad type", func(t *testing.T) {
+	t.Run("badType", func(t *testing.T) {
 		var x uintptr
 		err := Sequent(path, "key", &x)
 		exp(t, t.Name(), err)
@@ -58,6 +58,34 @@ func TestBhvrSequent(t *testing.T) {
 }
 
 func TestBhvrSpan(t *testing.T) {
+	path := "/zero/one/two/three/four"
+
+	tests := []struct {
+		name string
+		path string
+		i, j int
+		want string
+		ck   checkFunc
+	}{
+		{"5 segs: +1,+3", path, 1, 3, "/one/two", unx},
+		{"5 segs: +1,-2", path, 1, -2, "/one/two", unx},
+		{"5 segs: +1,00", path, 1, 0, "/one/two/three/four", unx},
+		{"5 segs: -3,-1", path, -3, -1, "/two/three", unx},
+		{"5 segs: -3,00", path, -3, 0, "/two/three/four", unx},
+		{"5 segs: -9,00", path, -9, 0, "", exp},
+		{"5 segs: 00,+9", path, 0, 9, "", exp},
+	}
+
+	for _, tt := range tests {
+		got, err := Span(tt.path, tt.i, tt.j)
+		if tt.ck(t, tt.name, err) {
+			continue
+		}
+
+		if got != tt.want {
+			t.Errorf(gwxFmt, tt.name, got, tt.want)
+		}
+	}
 }
 
 func TestBhvrSubSeg(t *testing.T) {
@@ -78,7 +106,7 @@ func TestBhvrSubSeg(t *testing.T) {
 	t.Run("uint64", applyToUint64TFunc(path, "junk", pti(0), 4))
 	t.Run("uint8", applyToUint8TFunc(path, "junk", pti(0), 4))
 
-	t.Run("bad type", func(t *testing.T) {
+	t.Run("badType", func(t *testing.T) {
 		var x uintptr
 		err := SubSeg(path, "key", 2, &x)
 		exp(t, t.Name(), err)
@@ -86,9 +114,101 @@ func TestBhvrSubSeg(t *testing.T) {
 }
 
 func TestBhvrSubSpan(t *testing.T) {
+	path := "/zero/one/two/key/four/five/six"
+
+	tests := []struct {
+		name string
+		path string
+		key  string
+		i, j int
+		want string
+		ck   checkFunc
+	}{
+		{"7 segs: 00,+2", path, "key", 0, 2, "/four/five", unx},
+		{"7 segs: +1,-1", path, "key", 1, -1, "/five", unx},
+		{"7 segs: +1,00", path, "key", 1, 0, "/five/six", unx},
+		{"7 segs: -3,-1", path, "key", -3, -1, "/four/five", unx},
+		{"7 segs: -3,00", path, "key", -3, 0, "/four/five/six", unx},
+		{"7 segs: -9,00", path, "key", -9, 0, "", exp},
+		{"7 segs: 00,+9", path, "key", 0, 9, "", exp},
+	}
+
+	for _, tt := range tests {
+		got, err := SubSpan(tt.path, tt.key, tt.i, tt.j)
+		if tt.ck(t, tt.name, err) {
+			continue
+		}
+
+		if got != tt.want {
+			t.Errorf(gwxFmt, tt.name, got, tt.want)
+		}
+	}
 }
 
 func TestBhvrParth(t *testing.T) {
+	t.Run("fromSpan/segment", func(t *testing.T) {
+		p := NewFromSpan("/zero/one/two/three", 1, 3)
+
+		var got string
+		p.Segment(1, &got)
+		if unx(t, t.Name(), p.Err()) {
+			return
+		}
+
+		want := "two"
+		if got != want {
+			t.Errorf(gwFmt, got, want)
+		}
+	})
+
+	t.Run("fromSubSpan/sequent", func(t *testing.T) {
+		p := NewFromSubSpan("/zero/one/two/three/four", "one", 1, 0)
+
+		var got string
+		p.Sequent("three", &got)
+		if unx(t, t.Name(), p.Err()) {
+			return
+		}
+
+		want := "four"
+		if got != want {
+			t.Errorf(gwFmt, got, want)
+		}
+	})
+
+	t.Run("basic", func(t *testing.T) {
+		p := New("/zero/one/two/three")
+
+		t.Run("subSeg", func(t *testing.T) {
+			var got string
+			p.SubSeg("one", 1, &got)
+
+			want := "three"
+			if got != want {
+				t.Errorf(gwFmt, got, want)
+			}
+		})
+
+		t.Run("span", func(t *testing.T) {
+			got := p.Span(1, 3)
+
+			want := "/one/two"
+			if got != want {
+				t.Errorf(gwFmt, got, want)
+			}
+		})
+
+		t.Run("subSpan", func(t *testing.T) {
+			got := p.SubSpan("one", 0, 0)
+
+			want := "/two/three"
+			if got != want {
+				t.Errorf(gwFmt, got, want)
+			}
+		})
+
+		unx(t, t.Name(), p.Err())
+	})
 }
 
 func segSeqSubSeg(path, key string, i *int, v interface{}) error {

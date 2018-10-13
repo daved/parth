@@ -144,7 +144,12 @@ func segmentToIntN(path string, i, size int) (int64, error) {
 }
 
 func segmentToString(path string, i int) (string, error) {
-	s, err := Span(path, i, i+1)
+	j := i + 1
+	if i < 0 {
+		i--
+	}
+
+	s, err := Span(path, i, j)
 	if err != nil {
 		return "", err
 	}
