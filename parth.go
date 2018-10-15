@@ -13,12 +13,11 @@ import (
 var (
 	ErrUnknownType = errors.New("unknown type provided")
 
-	ErrSegNotExist      = errors.New("segment not found by index")
-	ErrFirstSegNotExist = errors.New("first segment not found by index")
-	ErrLastSegNotExist  = errors.New("last segment not found by index")
-	ErrKeyNotExist      = errors.New("segment not found by key")
+	ErrFirstSegNotFound = errors.New("first segment not found by index")
+	ErrLastSegNotFound  = errors.New("last segment not found by index")
+	ErrKeyNotFound      = errors.New("segment not found by key")
 	ErrSegOrderReversed = errors.New("first segment must precede last segment")
-	ErrUnparsable       = errors.New("unable to parse segment")
+	ErrSegUnparsable    = errors.New("segment cannot be parsed")
 )
 
 // Segment receives an int representing a path segment, then returns
@@ -116,7 +115,7 @@ func Span(path string, i, j int) (string, error) {
 		f, ok = segStartIndexFromStart(path, i)
 	}
 	if !ok {
-		return "", ErrFirstSegNotExist
+		return "", ErrFirstSegNotFound
 	}
 
 	if j > 0 {
@@ -125,7 +124,7 @@ func Span(path string, i, j int) (string, error) {
 		l, ok = segEndIndexFromEnd(path, j)
 	}
 	if !ok {
-		return "", ErrLastSegNotExist
+		return "", ErrLastSegNotFound
 	}
 
 	if f == l {
@@ -224,7 +223,7 @@ func SubSeg(path, key string, i int, v interface{}) error {
 func SubSpan(path, key string, i, j int) (string, error) {
 	si, ok := segIndexByKey(path, key)
 	if !ok {
-		return "", ErrKeyNotExist
+		return "", ErrKeyNotFound
 	}
 
 	if i >= 0 {

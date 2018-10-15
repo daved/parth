@@ -13,7 +13,7 @@ func segmentToBool(path string, i int) (bool, error) {
 
 	v, err := strconv.ParseBool(s)
 	if err != nil {
-		return false, ErrUnparsable
+		return false, ErrSegUnparsable
 	}
 
 	return v, nil
@@ -32,7 +32,7 @@ func segmentToFloatN(path string, i, size int) (float64, error) {
 
 	v, err := strconv.ParseFloat(s, size)
 	if err != nil {
-		return 0.0, ErrUnparsable
+		return 0.0, ErrSegUnparsable
 	}
 
 	return v, nil
@@ -46,12 +46,12 @@ func segmentToIntN(path string, i, size int) (int64, error) {
 
 	s, ok := firstIntFromString(ss)
 	if !ok {
-		return 0, ErrUnparsable
+		return 0, ErrSegUnparsable
 	}
 
 	v, err := strconv.ParseInt(s, 10, size)
 	if err != nil {
-		return 0, ErrUnparsable
+		return 0, ErrSegUnparsable
 	}
 
 	return v, nil
@@ -83,12 +83,12 @@ func segmentToUintN(path string, i, size int) (uint64, error) {
 
 	s, ok := firstUintFromString(ss)
 	if !ok {
-		return 0, ErrUnparsable
+		return 0, ErrSegUnparsable
 	}
 
 	v, err := strconv.ParseUint(s, 10, size)
 	if err != nil {
-		return 0, ErrUnparsable
+		return 0, ErrSegUnparsable
 	}
 
 	return v, nil
@@ -102,7 +102,7 @@ func subSegToBool(path, key string, i int) (bool, error) {
 
 	v, err := strconv.ParseBool(s)
 	if err != nil {
-		return false, ErrUnparsable
+		return false, ErrSegUnparsable
 	}
 
 	return v, nil
@@ -116,12 +116,12 @@ func subSegToFloatN(path, key string, i, size int) (float64, error) {
 
 	s, ok := firstFloatFromString(ss)
 	if !ok {
-		return 0.0, ErrUnparsable
+		return 0.0, ErrSegUnparsable
 	}
 
 	v, err := strconv.ParseFloat(s, size)
 	if err != nil {
-		return 0.0, ErrUnparsable
+		return 0.0, ErrSegUnparsable
 	}
 
 	return v, nil
@@ -135,12 +135,12 @@ func subSegToIntN(path, key string, i, size int) (int64, error) {
 
 	s, ok := firstIntFromString(ss)
 	if !ok {
-		return 0, ErrUnparsable
+		return 0, ErrSegUnparsable
 	}
 
 	v, err := strconv.ParseInt(s, 10, size)
 	if err != nil {
-		return 0, ErrUnparsable
+		return 0, ErrSegUnparsable
 	}
 
 	return v, nil
@@ -149,7 +149,7 @@ func subSegToIntN(path, key string, i, size int) (int64, error) {
 func subSegToString(path, key string, i int) (string, error) {
 	ki, ok := segIndexByKey(path, key)
 	if !ok {
-		return "", ErrKeyNotExist
+		return "", ErrKeyNotFound
 	}
 
 	i++
@@ -170,12 +170,12 @@ func subSegToUintN(path, key string, i, size int) (uint64, error) {
 
 	s, ok := firstUintFromString(ss)
 	if !ok {
-		return 0, ErrUnparsable
+		return 0, ErrSegUnparsable
 	}
 
 	v, err := strconv.ParseUint(s, 10, size)
 	if err != nil {
-		return 0, ErrUnparsable
+		return 0, ErrSegUnparsable
 	}
 
 	return v, nil
