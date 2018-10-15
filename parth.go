@@ -7,24 +7,18 @@ package parth
 
 import (
 	"errors"
-	"strconv"
-	"unicode"
 )
 
 // Err{Name} values are for error identification.
 var (
 	ErrUnknownType = errors.New("unknown type provided")
 
-	ErrFirstSegNotExist = errors.New("first segment index does not exist")
-	ErrLastSegNotExist  = errors.New("last segment index does not exist")
+	ErrSegNotExist      = errors.New("segment not found by index")
+	ErrFirstSegNotExist = errors.New("first segment not found by index")
+	ErrLastSegNotExist  = errors.New("last segment not found by index")
+	ErrKeyNotExist      = errors.New("segment not found by key")
 	ErrSegOrderReversed = errors.New("first segment must precede last segment")
-	ErrSegNotExist      = errors.New("segment index does not exist")
-	ErrIntNotFound      = errors.New("segment does not contain int")
-	ErrFloatNotFound    = errors.New("segment does not contain float")
 	ErrUnparsable       = errors.New("unable to parse segment")
-
-	ErrIndexBad      = errors.New("index cannot be found")
-	ErrIndexNotFound = errors.New("no index found")
 )
 
 // Segment receives an int representing a path segment, then returns
@@ -101,80 +95,6 @@ func Segment(path string, i int, v interface{}) error {
 	return err
 }
 
-func segmentToBool(path string, i int) (bool, error) {
-	s, err := segmentToString(path, i)
-	if err != nil {
-		return false, err
-	}
-
-	v, err := strconv.ParseBool(s)
-	if err != nil {
-		return false, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-func segmentToFloatN(path string, i, size int) (float64, error) {
-	s, err := segToStrFloat(path, i)
-	if err != nil {
-		return 0.0, err
-	}
-
-	v, err := strconv.ParseFloat(s, size)
-	if err != nil {
-		return 0.0, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-func segmentToIntN(path string, i, size int) (int64, error) {
-	s, err := segToStrInt(path, i)
-	if err != nil {
-		return 0, err
-	}
-
-	v, err := strconv.ParseInt(s, 10, size)
-	if err != nil {
-		return 0, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-func segmentToString(path string, i int) (string, error) {
-	j := i + 1
-	if i < 0 {
-		i--
-	}
-
-	s, err := Span(path, i, j)
-	if err != nil {
-		return "", err
-	}
-
-	if s[0] == '/' {
-		s = s[1:]
-	}
-
-	return s, nil
-}
-
-func segmentToUintN(path string, i, size int) (uint64, error) {
-	s, err := segToStrUint(path, i)
-	if err != nil {
-		return 0, err
-	}
-
-	v, err := strconv.ParseUint(s, 10, size)
-	if err != nil {
-		return 0, ErrUnparsable
-	}
-
-	return v, nil
-}
-
 // Sequent ...
 func Sequent(path, key string, v interface{}) error {
 	return SubSeg(path, key, 0, v)
@@ -188,23 +108,23 @@ func Sequent(path, key string, v interface{}) error {
 // second int is a special case which indicates the end of the path.
 func Span(path string, i, j int) (string, error) {
 	var f, l int
-	var err error
+	var ok bool
 
 	if i < 0 {
-		f, err = segStartIndexFromEnd(path, i)
+		f, ok = segStartIndexFromEnd(path, i)
 	} else {
-		f, err = segStartIndexFromStart(path, i)
+		f, ok = segStartIndexFromStart(path, i)
 	}
-	if err != nil {
+	if !ok {
 		return "", ErrFirstSegNotExist
 	}
 
 	if j > 0 {
-		l, err = segEndIndexFromStart(path, j)
+		l, ok = segEndIndexFromStart(path, j)
 	} else {
-		l, err = segEndIndexFromEnd(path, j)
+		l, ok = segEndIndexFromEnd(path, j)
 	}
-	if err != nil {
+	if !ok {
 		return "", ErrLastSegNotExist
 	}
 
@@ -294,78 +214,6 @@ func SubSeg(path, key string, i int, v interface{}) error {
 	return err
 }
 
-func subSegToBool(path, key string, i int) (bool, error) {
-	s, err := subSegToString(path, key, i)
-	if err != nil {
-		return false, err
-	}
-
-	v, err := strconv.ParseBool(s)
-	if err != nil {
-		return false, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-func subSegToFloatN(path, key string, i, size int) (float64, error) {
-	s, err := subSegToStrFloat(path, key, i)
-	if err != nil {
-		return 0.0, err
-	}
-
-	v, err := strconv.ParseFloat(s, size)
-	if err != nil {
-		return 0.0, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-func subSegToIntN(path, key string, i, size int) (int64, error) {
-	s, err := subSegToStrInt(path, key, i)
-	if err != nil {
-		return 0, err
-	}
-
-	v, err := strconv.ParseInt(s, 10, size)
-	if err != nil {
-		return 0, ErrUnparsable
-	}
-
-	return v, nil
-}
-
-func subSegToString(path, key string, i int) (string, error) {
-	ki, err := segIndexByKey(path, key)
-	if err != nil {
-		return "", err
-	}
-
-	i++
-
-	s, err := segmentToString(path[ki:], i)
-	if err != nil {
-		return "", err
-	}
-
-	return s, nil
-}
-
-func subSegToUintN(path, key string, i, size int) (uint64, error) {
-	s, err := subSegToStrUint(path, key, i)
-	if err != nil {
-		return 0, err
-	}
-
-	v, err := strconv.ParseUint(s, 10, size)
-	if err != nil {
-		return 0, ErrUnparsable
-	}
-
-	return v, nil
-}
-
 // SubSpan receives a key which is used to search for the first
 // matching path segment and an int value representing a second segment by it's
 // distance from the matched segment, then returns the content between those
@@ -374,9 +222,9 @@ func subSegToUintN(path, key string, i, size int) (uint64, error) {
 // of negative values. Providing a 0 int is a special case which indicates the
 // end of the path.
 func SubSpan(path, key string, i, j int) (string, error) {
-	si, err := segIndexByKey(path, key)
-	if err != nil {
-		return "", err
+	si, ok := segIndexByKey(path, key)
+	if !ok {
+		return "", ErrKeyNotExist
 	}
 
 	if i >= 0 {
@@ -491,322 +339,4 @@ func (p *Parth) SubSpan(key string, i, j int) string {
 	p.err = err
 
 	return s
-}
-
-func segStartIndexFromStart(path string, seg int) (int, error) {
-	if seg < 0 {
-		return 0, ErrIndexBad
-	}
-
-	for n, ct := 0, 0; n < len(path); n++ {
-		if n > 0 && path[n] == '/' {
-			ct++
-		}
-
-		if ct == seg {
-			return n, nil
-		}
-	}
-
-	return 0, ErrIndexNotFound
-}
-
-func segStartIndexFromEnd(path string, seg int) (int, error) {
-	if seg > -1 {
-		return 0, ErrIndexBad
-	}
-
-	for n, ct := len(path)-1, 0; n >= 0; n-- {
-		if path[n] == '/' || n == 0 {
-			ct--
-		}
-
-		if ct == seg {
-			return n, nil
-		}
-	}
-
-	return 0, ErrIndexNotFound
-}
-
-func segEndIndexFromStart(path string, seg int) (int, error) {
-	if seg < 1 {
-		return 0, ErrIndexBad
-	}
-
-	for n, ct := 0, 0; n < len(path); n++ {
-		if path[n] == '/' && n > 0 {
-			ct++
-		}
-
-		if ct == seg {
-			return n, nil
-		}
-
-		if n+1 == len(path) && ct+1 == seg {
-			return n + 1, nil
-		}
-	}
-
-	return 0, ErrIndexNotFound
-}
-
-func segEndIndexFromEnd(path string, seg int) (int, error) {
-	if seg > 0 {
-		return 0, ErrIndexBad
-	}
-
-	if seg == 0 {
-		return len(path), nil
-	}
-
-	if len(path) == 1 && path[0] == '/' {
-		return 0, nil
-	}
-
-	for n, ct := len(path)-1, 0; n >= 0; n-- {
-		if n == 0 || path[n] == '/' {
-			ct--
-		}
-
-		if ct == seg {
-			return n, nil
-		}
-
-	}
-
-	return 0, ErrIndexNotFound
-}
-
-func segIndexByKey(path, key string) (int, error) {
-	if path == "" || key == "" {
-		return 0, ErrUnparsable
-	}
-
-	for n := 0; n < len(path); n++ {
-		si, err := segStartIndexFromStart(path, n)
-		if err != nil {
-			return 0, ErrSegNotExist
-		}
-
-		if len(path[si:]) == len(key)+1 {
-			if path[si+1:] == key {
-				return si, nil
-			}
-
-			return 0, ErrSegNotExist
-		}
-
-		tmpEI, err := segStartIndexFromStart(path[si:], 1)
-		if err != nil {
-			return 0, ErrSegNotExist
-		}
-
-		if path[si+1:tmpEI+si] == key || n == 0 && path[0] != '/' && path[si:tmpEI+si] == key {
-			return si, nil
-		}
-	}
-
-	return 0, nil
-}
-
-func segToStrUint(path string, i int) (string, error) {
-	s, err := segmentToString(path, i)
-	if err != nil {
-		return "", err
-	}
-
-	if s, err = firstUintFromString(s); err != nil {
-		return "", err
-	}
-
-	return s, nil
-}
-
-func segToStrInt(path string, i int) (string, error) {
-	s, err := segmentToString(path, i)
-	if err != nil {
-		return "", err
-	}
-
-	if s, err = firstIntFromString(s); err != nil {
-		return "", err
-	}
-
-	return s, nil
-}
-
-func segToStrFloat(path string, i int) (string, error) {
-	s, err := segmentToString(path, i)
-	if err != nil {
-		return "", err
-	}
-
-	if s, err = firstFloatFromString(s); err != nil {
-		return "", err
-	}
-
-	return s, nil
-}
-
-func subSegToStrUint(path, key string, i int) (string, error) {
-	s, err := subSegToString(path, key, i)
-	if err != nil {
-		return "", err
-	}
-
-	if s, err = firstUintFromString(s); err != nil {
-		return "", err
-	}
-
-	return s, nil
-}
-
-func subSegToStrInt(path, key string, i int) (string, error) {
-	s, err := subSegToString(path, key, i)
-	if err != nil {
-		return "", err
-	}
-
-	if s, err = firstIntFromString(s); err != nil {
-		return "", err
-	}
-
-	return s, nil
-}
-
-func subSegToStrFloat(path, key string, i int) (string, error) {
-	s, err := subSegToString(path, key, i)
-	if err != nil {
-		return "", err
-	}
-
-	if s, err = firstFloatFromString(s); err != nil {
-		return "", err
-	}
-
-	return s, nil
-}
-
-func firstUintFromString(s string) (string, error) {
-	ind, l := 0, 0
-
-	for n := 0; n < len(s); n++ {
-		if unicode.IsDigit(rune(s[n])) {
-			if l == 0 {
-				ind = n
-			}
-
-			l++
-		} else {
-			if l == 0 && s[n] == '.' {
-				if n+1 < len(s) && unicode.IsDigit(rune(s[n+1])) {
-					return "0", nil
-				}
-
-				break
-			}
-
-			if l > 0 {
-				break
-			}
-		}
-	}
-
-	if l == 0 {
-		return "", ErrIntNotFound
-	}
-
-	return s[ind : ind+l], nil
-}
-
-func firstIntFromString(s string) (string, error) {
-	ind, l := 0, 0
-
-	for n := 0; n < len(s); n++ {
-		if unicode.IsDigit(rune(s[n])) {
-			if l == 0 {
-				ind = n
-			}
-
-			l++
-		} else if s[n] == '-' {
-			if l == 0 {
-				ind = n
-				l++
-			} else {
-				break
-			}
-		} else {
-			if l == 0 && s[n] == '.' {
-				if n+1 < len(s) && unicode.IsDigit(rune(s[n+1])) {
-					return "0", nil
-				}
-
-				break
-			}
-
-			if l > 0 {
-				break
-			}
-		}
-	}
-
-	if l == 0 {
-		return "", ErrIntNotFound
-	}
-
-	return s[ind : ind+l], nil
-}
-
-func firstFloatFromString(s string) (string, error) {
-	c, ind, l := 0, 0, 0
-
-	for n := 0; n < len(s); n++ {
-		if unicode.IsDigit(rune(s[n])) {
-			if l == 0 {
-				ind = n
-			}
-
-			l++
-		} else if s[n] == '-' {
-			if l == 0 {
-				ind = n
-				l++
-			} else {
-				break
-			}
-		} else if s[n] == '.' {
-			if l == 0 {
-				ind = n
-			}
-
-			if c > 0 {
-				break
-			}
-
-			l++
-			c++
-		} else if s[n] == 'e' && l > 0 && n+1 < len(s) && s[n+1] == '+' {
-			l++
-		} else if s[n] == '+' && l > 0 && s[n-1] == 'e' {
-			if n+1 < len(s) && unicode.IsDigit(rune(s[n+1])) {
-				l++
-				continue
-			}
-
-			l--
-			break
-		} else {
-			if l > 0 {
-				break
-			}
-		}
-	}
-
-	if l == 0 || s[ind:ind+l] == "." {
-		return "", ErrFloatNotFound
-	}
-
-	return s[ind : ind+l], nil
 }
