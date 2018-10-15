@@ -18,7 +18,7 @@ func init() {
 	}
 }
 
-func Example_segment() {
+func Example() {
 	var s string
 	if err := parth.Segment(r.URL.Path, 4, &s); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -32,7 +32,21 @@ func Example_segment() {
 	// nn4.4nn (string)
 }
 
-func Example_sequent() {
+func ExampleSegment() {
+	var s string
+	if err := parth.Segment(r.URL.Path, 4, &s); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	fmt.Println(r.URL.Path)
+	fmt.Printf("%v (%T)\n", s, s)
+
+	// Output:
+	// /zero/1/2/key/nn4.4nn/5.5
+	// nn4.4nn (string)
+}
+
+func ExampleSequent() {
 	var f float32
 	if err := parth.Sequent(r.URL.Path, "key", &f); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -46,7 +60,7 @@ func Example_sequent() {
 	// 4.4 (float32)
 }
 
-func Example_span() {
+func ExampleSpan() {
 	s, err := parth.Span(r.URL.Path, 2, 4)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -60,7 +74,7 @@ func Example_span() {
 	// /2/key
 }
 
-func Example_subSeg() {
+func ExampleSubSeg() {
 	var f float64
 	if err := parth.SubSeg(r.URL.Path, "key", 1, &f); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -74,7 +88,7 @@ func Example_subSeg() {
 	// 5.5 (float64)
 }
 
-func Example_subSpan() {
+func ExampleSubSpan() {
 	s0, err := parth.SubSpan(r.URL.Path, "zero", 2, 4)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -107,11 +121,41 @@ func ExampleParth() {
 	}
 
 	fmt.Println(r.URL.Path)
-	fmt.Println(s)
-	fmt.Println(f)
+	fmt.Printf("%v (%T)\n", s, s)
+	fmt.Printf("%v (%T)\n", f, f)
 
 	// Output:
 	// /zero/1/2/key/nn4.4nn/5.5
-	// zero
-	// 5.5
+	// zero (string)
+	// 5.5 (float32)
+}
+
+func ExampleUnmarshaler() {
+	/*
+		type mytype []byte
+
+		func (m *mytype) UnmarshalSegment(seg string) error {
+			*m = []byte(seg)
+		}
+	*/
+
+	var m mytype
+
+	if err := parth.Segment(r.URL.Path, 4, &m); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	fmt.Println(r.URL.Path)
+	fmt.Printf("%v == %q (%T)\n", m, m, m)
+
+	// Output:
+	// /zero/1/2/key/nn4.4nn/5.5
+	// [110 110 52 46 52 110 110] == "nn4.4nn" (parth_test.mytype)
+}
+
+type mytype []byte
+
+func (m *mytype) UnmarshalSegment(seg string) error {
+	*m = []byte(seg)
+	return nil
 }

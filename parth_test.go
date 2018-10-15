@@ -2,6 +2,7 @@ package parth
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -23,6 +24,7 @@ func TestBhvrSegment(t *testing.T) {
 	t.Run("uint32", applyToUint32TFunc(path, key, pti(-1), 3))
 	t.Run("uint64", applyToUint64TFunc(path, key, pti(-1), 3))
 	t.Run("uint8", applyToUint8TFunc(path, key, pti(-1), 3))
+	t.Run("unmarsaler", applyToUnmarshalerTFunc(path, key, pti(2), []byte("key")))
 
 	t.Run("badType", func(t *testing.T) {
 		var x uintptr
@@ -49,6 +51,7 @@ func TestBhvrSequent(t *testing.T) {
 	t.Run("uint32", applyToUint32TFunc(path, "junk", i, 4))
 	t.Run("uint64", applyToUint64TFunc(path, "junk", i, 4))
 	t.Run("uint8", applyToUint8TFunc(path, "junk", i, 4))
+	t.Run("unmarsaler", applyToUnmarshalerTFunc(path, "key", i, []byte("true")))
 
 	t.Run("badType", func(t *testing.T) {
 		var x uintptr
@@ -105,6 +108,7 @@ func TestBhvrSubSeg(t *testing.T) {
 	t.Run("uint32", applyToUint32TFunc(path, "junk", pti(0), 4))
 	t.Run("uint64", applyToUint64TFunc(path, "junk", pti(0), 4))
 	t.Run("uint8", applyToUint8TFunc(path, "junk", pti(0), 4))
+	t.Run("unmarsaler", applyToUnmarshalerTFunc(path, "key", pti(1), []byte("other")))
 
 	t.Run("badType", func(t *testing.T) {
 		var x uintptr
@@ -491,6 +495,32 @@ func applyToUint8TFunc(path, key string, i *int, want uint8) func(*testing.T) {
 			t.Errorf(gwFmt, got, want)
 		}
 	}
+}
+
+func applyToUnmarshalerTFunc(path, key string, i *int, want []byte) func(*testing.T) {
+	return func(t *testing.T) {
+		subj := subject(path, key)
+		if i != nil {
+			subj = subject(path, key, *i)
+		}
+
+		var got custom
+		err := segSeqSubSeg(path, key, i, &got)
+		if unx(t, subj, err) {
+			return
+		}
+
+		if !reflect.DeepEqual([]byte(got), want) {
+			t.Errorf(gwFmt, got, want)
+		}
+	}
+}
+
+type custom []byte
+
+func (c *custom) UnmarshalSegment(d string) error {
+	*c = []byte(d)
+	return nil
 }
 
 func pti(i int) *int {

@@ -9,6 +9,11 @@ import (
 	"errors"
 )
 
+// Unmarshaler ...
+type Unmarshaler interface {
+	UnmarshalSegment(string) error
+}
+
 // Err{Name} values are for error identification.
 var (
 	ErrUnknownType = errors.New("unknown type provided")
@@ -86,6 +91,13 @@ func Segment(path string, i int, v interface{}) error {
 		var n uint64
 		n, err = segmentToUintN(path, i, 8)
 		*v = uint8(n)
+
+	case Unmarshaler:
+		var s string
+		s, err = segmentToString(path, i)
+		if err == nil {
+			err = v.UnmarshalSegment(s)
+		}
 
 	default:
 		err = ErrUnknownType
@@ -205,6 +217,13 @@ func SubSeg(path, key string, i int, v interface{}) error {
 		var n uint64
 		n, err = subSegToUintN(path, key, i, 8)
 		*v = uint8(n)
+
+	case Unmarshaler:
+		var s string
+		s, err = subSegToString(path, key, i)
+		if err == nil {
+			err = v.UnmarshalSegment(s)
+		}
 
 	default:
 		err = ErrUnknownType
