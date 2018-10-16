@@ -1,34 +1,41 @@
-// Package parth provides functions for accessing path segments.
+// Package parth provides path parsing for segment unmarshaling and slicing.
 //
-// When returning an int/uint of any size, the first whole number within the
-// specified segment will be returned. When returning a float of any size,
-// the first decimal number within the specified segment will be returned.
+// Along with string, all basic non-alias types are supported. An interface is
+// available for implementation by user-defined types. When handling an int,
+// uint, or float of any size, the first and longest valid value within the
+// specified segment will be used.
 package parth
 
 import (
 	"errors"
 )
 
-// Unmarshaler ...
+// Unmarshaler is the interface implemented by types that can unmarshal a path
+// segment representation of themselves. It is safe to assume that the segment
+// data will not include slashes.
 type Unmarshaler interface {
 	UnmarshalSegment(string) error
 }
 
-// Err{Name} values are for error identification.
+// Err{Name} values facilitate error identification.
 var (
 	ErrUnknownType = errors.New("unknown type provided")
 
 	ErrFirstSegNotFound = errors.New("first segment not found by index")
 	ErrLastSegNotFound  = errors.New("last segment not found by index")
-	ErrKeyNotFound      = errors.New("segment not found by key")
 	ErrSegOrderReversed = errors.New("first segment must precede last segment")
-	ErrSegUnparsable    = errors.New("segment cannot be parsed")
+	ErrKeySegNotFound   = errors.New("segment not found by key")
+
+	ErrDataUnparsable = errors.New("data cannot be parsed")
 )
 
-// Segment receives an int representing a path segment, then returns
-// both the specified segment as a string and a nil error. If any error is
-// encountered, a zero value string and error are returned.
-func Segment(path string, i int, v interface{}) error {
+// Segment locates the path segment indicated by the index i and unmarshals it
+// into the provided type v. An error is returned if: 1. The type is not a
+// pointer to an instance of one of the basic non-alias types and does not
+// implement the Unmarshaler interface; 2. The index is out of range of the
+// path; 3. The located path segment data cannot be parsed as the type or if an
+// error is returned by an Unmarshaler implementation.
+func Segment(path string, i int, v interface{}) error { //nolint
 	var err error
 
 	switch v := v.(type) {
@@ -106,17 +113,18 @@ func Segment(path string, i int, v interface{}) error {
 	return err
 }
 
-// Sequent ...
+// Sequent is similar to Segment, but uses a key to locate a segment and then
+// unmarshal the subsequent segment. It is a simple wrapper over SubSeg with an
+// index of 0.
 func Sequent(path, key string, v interface{}) error {
 	return SubSeg(path, key, 0, v)
 }
 
-// Span receives two int values representing path segments, and
-// returns the content between those segments, including the first segment, as
-// a string and a nil error. If any error is encountered, a zero value string
-// and error are returned. The segments can be of negative values, but the
-// first segment must come before the last segment. Providing a 0 int for the
-// second int is a special case which indicates the end of the path.
+// Span returns the path segments between two segment indexes i and j including
+// the first segment. An error is returned if: 1. Either index is out of range
+// of the path; 2. The first index i does not precede the last index j.
+// Providing a 0 for the last index is a special case which acts as an alias
+// for the end of the path.
 func Span(path string, i, j int) (string, error) {
 	var f, l int
 	var ok bool
@@ -150,11 +158,10 @@ func Span(path string, i, j int) (string, error) {
 	return path[f:l], nil
 }
 
-// SubSeg receives a key which is used to search for the first matching
-// path segment, then returns both the subsequent segment as a string and a nil
-// error. If any error is encountered, a zero value string and error are
-// returned.
-func SubSeg(path, key string, i int, v interface{}) error {
+// SubSeg is similar to Segment, but only handles the portion of the path
+// subsequent to the provided key. For example, to access the segment
+// immediately after a key, an index of 0 should be provided (see Sequent).
+func SubSeg(path, key string, i int, v interface{}) error { //nolint
 	var err error
 
 	switch v := v.(type) {
@@ -232,17 +239,12 @@ func SubSeg(path, key string, i int, v interface{}) error {
 	return err
 }
 
-// SubSpan receives a key which is used to search for the first
-// matching path segment and an int value representing a second segment by it's
-// distance from the matched segment, then returns the content between those
-// segments as a string and a nil error. If any error is encountered, a zero
-// value string and error are returned. The int representing a segment can be
-// of negative values. Providing a 0 int is a special case which indicates the
-// end of the path.
+// SubSpan is similar to Span, but only handles the portion of the path
+// subsequent to the provided key.
 func SubSpan(path, key string, i, j int) (string, error) {
 	si, ok := segIndexByKey(path, key)
 	if !ok {
-		return "", ErrKeyNotFound
+		return "", ErrKeySegNotFound
 	}
 
 	if i >= 0 {
@@ -260,47 +262,39 @@ func SubSpan(path, key string, i, j int) (string, error) {
 	return s, nil
 }
 
-// Parth holds path and error data for processing paths multiple times, and
-// then checking for errors only once. Only the first encountered error will be
-// returned.
+// Parth manages path and error data for processing a single path multiple
+// times while error checking only once. Only the first encountered error is
+// stored as all subsequent calls to Parth methods that can error are elided.
 type Parth struct {
 	path string
 	err  error
 }
 
-// New receives a path as a string, then returns a new Parth set with the
-// provided path.
+// New constructs a pointer to an instance of Parth around the provided path.
 func New(path string) *Parth {
 	return &Parth{path: path}
 }
 
-// NewBySpan receives a path as a string, and two int values representing
-// path segments, then returns a new Parth set with the content between those
-// segments, and any error encountered. See Span for more info.
+// NewBySpan constructs a pointer to an instance of Parth after preprocessing
+// the provided path with Span.
 func NewBySpan(path string, i, j int) *Parth {
 	s, err := Span(path, i, j)
 	return &Parth{s, err}
 }
 
-// NewBySubSpan receives a path as a string, a key which is used to search
-// for the first matching path segment, and an int value representing a second
-// segment by it's distance from the matched segment, then returns a new Parth
-// set with the content between those segments, and any error encountered. See
-// SubSpan for more info.
+// NewBySubSpan constructs a pointer to an instance of Parth after
+// preprocessing the provided path with Span.
 func NewBySubSpan(path, key string, i, j int) *Parth {
 	s, err := SubSpan(path, key, i, j)
 	return &Parth{s, err}
 }
 
-// Err returns the first error encountered by the Parth instance.
+// Err returns the first error encountered by the *Parth receiver.
 func (p *Parth) Err() error {
 	return p.err
 }
 
-// Segment receives an int representing a path segment, then returns
-// the specified segment as a string. If any error is encountered, a zero value
-// string is returned, and the Parth instance's err value is set. If an error
-// has already been set, a zero value string is returned.
+// Segment operates the same as the package-level function Segment.
 func (p *Parth) Segment(i int, v interface{}) {
 	if p.err != nil {
 		return
@@ -309,16 +303,12 @@ func (p *Parth) Segment(i int, v interface{}) {
 	p.err = Segment(p.path, i, v)
 }
 
-// Sequent ...
+// Sequent operates the same as the package-level function Sequent.
 func (p *Parth) Sequent(key string, v interface{}) {
 	p.SubSeg(key, 0, v)
 }
 
-// Span receives two int values representing path segments, then
-// returns the content between those segments, including the first segment, as
-// a string. If any error is encountered, a zero value string is returned, and
-// the Parth instance's err value is set. If an error has already been set, a
-// zero value string is returned. See Span for more info.
+// Span operates the same as the package-level function Span.
 func (p *Parth) Span(i, j int) string {
 	if p.err != nil {
 		return ""
@@ -330,11 +320,7 @@ func (p *Parth) Span(i, j int) string {
 	return s
 }
 
-// SubSeg receives a key which is used to search for the first matching
-// path segment, then returns the subsequent segment as a string. If any error
-// is encountered, a zero value string is returned, and the Parth instances err
-// value is set. If an error has already been set, a zero value string is
-// returned.
+// SubSeg operates the same as the package-level function SubSeg.
 func (p *Parth) SubSeg(key string, i int, v interface{}) {
 	if p.err != nil {
 		return
@@ -343,11 +329,7 @@ func (p *Parth) SubSeg(key string, i int, v interface{}) {
 	p.err = SubSeg(p.path, key, i, v)
 }
 
-// SubSpan receives a key which is used to search for the first
-// matching path segment, and an int value representing a second segment by
-// it's distance from the matched segment, then returns the content between
-// those segments as a string. If an error has already been set, a zero value
-// string is returned. See SubSpan for more info.
+// SubSpan operates the same as the package-level function SubSpan.
 func (p *Parth) SubSpan(key string, i, j int) string {
 	if p.err != nil {
 		return ""

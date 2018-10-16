@@ -85,7 +85,7 @@ func segEndIndexFromEnd(path string, seg int) (int, bool) {
 	return 0, false
 }
 
-func segIndexByKey(path, key string) (int, bool) {
+func segIndexByKey(path, key string) (int, bool) { //nolint
 	if path == "" || key == "" {
 		return 0, false
 	}
