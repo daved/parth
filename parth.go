@@ -2,8 +2,8 @@
 //
 // Along with string, all basic non-alias types are supported. An interface is
 // available for implementation by user-defined types. When handling an int,
-// uint, or float of any size, the first and longest valid value within the
-// specified segment will be used.
+// uint, or float of any size, the first valid value within the specified
+// segment will be used.
 package parth
 
 import (
@@ -33,8 +33,8 @@ var (
 // into the provided type v. An error is returned if: 1. The type is not a
 // pointer to an instance of one of the basic non-alias types and does not
 // implement the Unmarshaler interface; 2. The index is out of range of the
-// path; 3. The located path segment data cannot be parsed as the type or if an
-// error is returned by an Unmarshaler implementation.
+// path; 3. The located path segment data cannot be parsed as the provided type
+// or if an error is returned when using a provided Unmarshaler implementation.
 func Segment(path string, i int, v interface{}) error { //nolint
 	var err error
 
@@ -283,7 +283,7 @@ func NewBySpan(path string, i, j int) *Parth {
 }
 
 // NewBySubSpan constructs a pointer to an instance of Parth after
-// preprocessing the provided path with Span.
+// preprocessing the provided path with SubSpan.
 func NewBySubSpan(path, key string, i, j int) *Parth {
 	s, err := SubSpan(path, key, i, j)
 	return &Parth{s, err}
