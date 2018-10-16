@@ -150,8 +150,8 @@ func TestBhvrSubSpan(t *testing.T) {
 }
 
 func TestBhvrParth(t *testing.T) {
-	t.Run("fromSpan/segment", func(t *testing.T) {
-		p := NewFromSpan("/zero/one/two/three", 1, 3)
+	t.Run("bySpan/segment", func(t *testing.T) {
+		p := NewBySpan("/zero/one/two/three", 1, 3)
 
 		var got string
 		p.Segment(1, &got)
@@ -165,8 +165,8 @@ func TestBhvrParth(t *testing.T) {
 		}
 	})
 
-	t.Run("fromSubSpan/sequent", func(t *testing.T) {
-		p := NewFromSubSpan("/zero/one/two/three/four", "one", 1, 0)
+	t.Run("bySubSpan/sequent", func(t *testing.T) {
+		p := NewBySubSpan("/zero/one/two/three/four", "one", 1, 0)
 
 		var got string
 		p.Sequent("three", &got)

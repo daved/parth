@@ -274,20 +274,20 @@ func New(path string) *Parth {
 	return &Parth{path: path}
 }
 
-// NewFromSpan receives a path as a string, and two int values representing
+// NewBySpan receives a path as a string, and two int values representing
 // path segments, then returns a new Parth set with the content between those
 // segments, and any error encountered. See Span for more info.
-func NewFromSpan(path string, i, j int) *Parth {
+func NewBySpan(path string, i, j int) *Parth {
 	s, err := Span(path, i, j)
 	return &Parth{s, err}
 }
 
-// NewFromSubSpan receives a path as a string, a key which is used to search
+// NewBySubSpan receives a path as a string, a key which is used to search
 // for the first matching path segment, and an int value representing a second
 // segment by it's distance from the matched segment, then returns a new Parth
 // set with the content between those segments, and any error encountered. See
 // SubSpan for more info.
-func NewFromSubSpan(path, key string, i, j int) *Parth {
+func NewBySubSpan(path, key string, i, j int) *Parth {
 	s, err := SubSpan(path, key, i, j)
 	return &Parth{s, err}
 }
