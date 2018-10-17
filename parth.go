@@ -32,7 +32,8 @@ var (
 )
 
 // Segment locates the path segment indicated by the index i and unmarshals it
-// into the provided type v. An error is returned if: 1. The type is not a
+// into the provided type v. If the index is negative, the negative count
+// begins with the last segment. An error is returned if: 1. The type is not a
 // pointer to an instance of one of the basic non-alias types and does not
 // implement the Unmarshaler interface; 2. The index is out of range of the
 // path; 3. The located path segment data cannot be parsed as the provided type
@@ -123,10 +124,12 @@ func Sequent(path, key string, v interface{}) error {
 }
 
 // Span returns the path segments between two segment indexes i and j including
-// the first segment. An error is returned if: 1. Either index is out of range
-// of the path; 2. The first index i does not precede the last index j.
-// Providing a 0 for the last index is a special case which acts as an alias
-// for the end of the path.
+// the first segment. If an index is negative, the negative count begins with
+// the last segment. Providing a 0 for the last index j is a special case which
+// acts as an alias for the end of the path. If the first segment does not begin
+// with a slash and it is part of the requested span, no slash will be added. An
+// error is returned if: 1. Either index is out of range of the path; 2. The
+// first index i does not precede the last index j.
 func Span(path string, i, j int) (string, error) {
 	var f, l int
 	var ok bool
@@ -162,7 +165,8 @@ func Span(path string, i, j int) (string, error) {
 
 // SubSeg is similar to Segment, but only handles the portion of the path
 // subsequent to the provided key. For example, to access the segment
-// immediately after a key, an index of 0 should be provided (see Sequent).
+// immediately after a key, an index of 0 should be provided (see Sequent). An
+// error is returned if the key cannot be found in the path.
 func SubSeg(path, key string, i int, v interface{}) error { //nolint
 	var err error
 
@@ -242,7 +246,8 @@ func SubSeg(path, key string, i int, v interface{}) error { //nolint
 }
 
 // SubSpan is similar to Span, but only handles the portion of the path
-// subsequent to the provided key.
+// subsequent to the provided key. An error is returned if the key cannot be
+// found in the path.
 func SubSpan(path, key string, i, j int) (string, error) {
 	si, ok := segIndexByKey(path, key)
 	if !ok {
