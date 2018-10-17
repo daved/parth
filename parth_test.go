@@ -77,6 +77,7 @@ func TestBhvrSpan(t *testing.T) {
 		{"5 segs: -3,00", path, -3, 0, "/two/three/four", unx},
 		{"5 segs: -9,00", path, -9, 0, "", exp},
 		{"5 segs: 00,+9", path, 0, 9, "", exp},
+		{"3 no /: 00,+9", "zero/one/two", 0, 2, "zero/one", unx},
 	}
 
 	for _, tt := range tests {
