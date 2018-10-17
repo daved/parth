@@ -1,4 +1,6 @@
-// Package parth provides path parsing for segment unmarshaling and slicing.
+// Package parth provides path parsing for segment unmarshaling and slicing. In
+// other words, parth provides simple and flexible access to (URL) path
+// parameters.
 //
 // Along with string, all basic non-alias types are supported. An interface is
 // available for implementation by user-defined types. When handling an int,
