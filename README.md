@@ -36,23 +36,23 @@ type Unmarshaler
 
 ```go
 import (
-	"fmt"
+    "fmt"
 
-	"github.com/codemodus/parth"
+    "github.com/codemodus/parth"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	var s string
-	if err := parth.Segment(r.URL.Path, 4, &s); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
+    var s string
+    if err := parth.Segment(r.URL.Path, 4, &s); err != nil {
+        fmt.Fprintln(os.Stderr, err)
+    }
 
-	fmt.Println(r.URL.Path)
-	fmt.Printf("%v (%T)\n", s, s)
+    fmt.Println(r.URL.Path)
+    fmt.Printf("%v (%T)\n", s, s)
 
-	// Output:
-	// /some/path/things/42/others/3
-	// others (string)
+    // Output:
+    // /some/path/things/42/others/3
+    // others (string)
 }
 ```
 
@@ -60,23 +60,23 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 ```go
 import (
-	"fmt"
+    "fmt"
 
-	"github.com/codemodus/parth"
+    "github.com/codemodus/parth"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	var i int64
-	if err := parth.Sequent(r.URL.Path, "things", &i); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
+    var i int64
+    if err := parth.Sequent(r.URL.Path, "things", &i); err != nil {
+        fmt.Fprintln(os.Stderr, err)
+    }
 
-	fmt.Println(r.URL.Path)
-	fmt.Printf("%v (%T)\n", i, i)
+    fmt.Println(r.URL.Path)
+    fmt.Printf("%v (%T)\n", i, i)
 
-	// Output:
-	// /some/path/things/42/others/3
-	// 42 (int64)
+    // Output:
+    // /some/path/things/42/others/3
+    // 42 (int64)
 }
 ```
 
@@ -84,30 +84,30 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 ```go
 import (
-	"fmt"
+    "fmt"
 
-	"github.com/codemodus/parth"
+    "github.com/codemodus/parth"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	var s string
-	var f float32
+    var s string
+    var f float32
 
-	p := parth.New(r.URL.Path)
-	p.Segment(2, &s)
-	p.SubSeg("key", 1, &f)
-	if err := p.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
+    p := parth.New(r.URL.Path)
+    p.Segment(2, &s)
+    p.SubSeg("key", 1, &f)
+    if err := p.Err(); err != nil {
+        fmt.Fprintln(os.Stderr, err)
+    }
 
-	fmt.Println(r.URL.Path)
-	fmt.Printf("%v (%T)\n", s, s)
-	fmt.Printf("%v (%T)\n", f, f)
+    fmt.Println(r.URL.Path)
+    fmt.Printf("%v (%T)\n", s, s)
+    fmt.Printf("%v (%T)\n", f, f)
 
-	// Output:
-	// /zero/one/two/key/four/5.5/six
-	// two (string)
-	// 5.5 (float32)
+    // Output:
+    // /zero/one/two/key/four/5.5/six
+    // two (string)
+    // 5.5 (float32)
 }
 ```
 
@@ -115,31 +115,31 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 ```go
 import (
-	"fmt"
+    "fmt"
 
-	"github.com/codemodus/parth"
+    "github.com/codemodus/parth"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
     /*
         type mytype []byte
 
-		func (m *mytype) UnmarshalSegment(seg string) error {
-			*m = []byte(seg)
-		}
+        func (m *mytype) UnmarshalSegment(seg string) error {
+            *m = []byte(seg)
+        }
     */
 
-	var m mytype
-	if err := parth.Segment(r.URL.Path, 4, &m); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
+    var m mytype
+    if err := parth.Segment(r.URL.Path, 4, &m); err != nil {
+        fmt.Fprintln(os.Stderr, err)
+    }
 
-	fmt.Println(r.URL.Path)
-	fmt.Printf("%v == %q (%T)\n", m, m, m)
+    fmt.Println(r.URL.Path)
+    fmt.Printf("%v == %q (%T)\n", m, m, m)
 
-	// Output:
-	// /zero/one/two/key/four/5.5/six
-	// [102 111 117 114] == "four" (mypkg.mytype)
+    // Output:
+    // /zero/one/two/key/four/5.5/six
+    // [102 111 117 114] == "four" (mypkg.mytype)
 }
 ```
 
