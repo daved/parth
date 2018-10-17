@@ -141,6 +141,7 @@ func TestUnitSegIndexByKey(t *testing.T) {
 		okWant bool
 	}{
 		{"test", "/1/test/3", 2, true},
+		{"test", "/0/test/1/test/3", 2, true},
 		{"2", "/2/t/3", 0, true},
 		{"3", "/1/test/3", 7, true},
 		{"4", "/44/44/33", 0, false},
