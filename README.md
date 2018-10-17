@@ -111,7 +111,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-### Setup ("By Index")
+### Setup (Unmarshaler)
 
 ```go
 import (
@@ -145,7 +145,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 ## More Info
 
-### Path parameters often require avoiding the http.HandlerFunc.
+### Keep Using http.HandlerFunc And Minimize context.Context Usage
 
 The most obvious use case for parth is when working with any URL path such as
 the one found at http.Request.URL.Path. parth is fast enough that it can be used
