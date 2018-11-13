@@ -1,1 +1,1 @@
-module github.com/codemodus/parth
+module github.com/codemodus/parth/v2
