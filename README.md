@@ -1,6 +1,6 @@
 # parth
 
-    go get -u github.com/codemodus/parth
+    go get github.com/codemodus/parth/v2
 
 Package parth provides path parsing for segment unmarshaling and slicing. In
 other words, parth provides simple and flexible access to (URL) path parameters.
@@ -38,7 +38,7 @@ type Unmarshaler
 import (
     "fmt"
 
-    "github.com/codemodus/parth"
+    "github.com/codemodus/parth/v2"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +62,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 import (
     "fmt"
 
-    "github.com/codemodus/parth"
+    "github.com/codemodus/parth/v2"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +86,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 import (
     "fmt"
 
-    "github.com/codemodus/parth"
+    "github.com/codemodus/parth/v2"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +117,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 import (
     "fmt"
 
-    "github.com/codemodus/parth"
+    "github.com/codemodus/parth/v2"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
