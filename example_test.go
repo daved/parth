@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/codemodus/parth/v2"
+	"github.com/daved/parth"
 )
 
 var (
