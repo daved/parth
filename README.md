@@ -178,7 +178,7 @@ the specified segment will be used.
 
 ## Documentation
 
-View the [GoDoc](http://godoc.org/github.com/codemodus/parth)
+View the [GoDoc](http://godoc.org/github.com/daved/parth)
 
 ## Benchmarks
 
