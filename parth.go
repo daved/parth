@@ -9,15 +9,9 @@
 package parth
 
 import (
+	"encoding"
 	"errors"
 )
-
-// Unmarshaler is the interface implemented by types that can unmarshal a path
-// segment representation of themselves. It is safe to assume that the segment
-// data will not include slashes.
-type Unmarshaler interface {
-	UnmarshalSegment(string) error
-}
 
 // Err{Name} values facilitate error identification.
 var (
@@ -35,9 +29,10 @@ var (
 // into the provided type v. If the index is negative, the negative count
 // begins with the last segment. An error is returned if: 1. The type is not a
 // pointer to an instance of one of the basic non-alias types and does not
-// implement the Unmarshaler interface; 2. The index is out of range of the
-// path; 3. The located path segment data cannot be parsed as the provided type
-// or if an error is returned when using a provided Unmarshaler implementation.
+// implement the [encoding.TextUnmarshaler] interface; 2. The index is out of
+// range of the path; 3. The located path segment data cannot be parsed as the
+// provided type or if an error is returned when using a provided
+// [encoding.TextUnmarshaler] implementation.
 func Segment(path string, i int, v interface{}) error { //nolint
 	var err error
 
@@ -102,11 +97,11 @@ func Segment(path string, i int, v interface{}) error { //nolint
 		n, err = segmentToUintN(path, i, 8)
 		*v = uint8(n)
 
-	case Unmarshaler:
+	case encoding.TextUnmarshaler:
 		var s string
 		s, err = segmentToString(path, i)
 		if err == nil {
-			err = v.UnmarshalSegment(s)
+			err = v.UnmarshalText([]byte(s))
 		}
 
 	default:
@@ -231,11 +226,11 @@ func SubSeg(path, key string, i int, v interface{}) error { //nolint
 		n, err = subSegToUintN(path, key, i, 8)
 		*v = uint8(n)
 
-	case Unmarshaler:
+	case encoding.TextUnmarshaler:
 		var s string
 		s, err = subSegToString(path, key, i)
 		if err == nil {
-			err = v.UnmarshalSegment(s)
+			err = v.UnmarshalText([]byte(s))
 		}
 
 	default:

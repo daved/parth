@@ -8,23 +8,15 @@ import (
 	"github.com/daved/parth"
 )
 
-var (
-	r, rErr = http.NewRequest("GET", "/zero/1/2/key/nn4.4nn/5.5", nil)
-)
-
-func init() {
-	if rErr != nil {
-		panic(rErr)
-	}
-}
+var req, _ = http.NewRequest("GET", "/zero/1/2/key/nn4.4nn/5.5", nil)
 
 func Example() {
 	var s string
-	if err := parth.Segment(r.URL.Path, 4, &s); err != nil {
+	if err := parth.Segment(req.URL.Path, 4, &s); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	fmt.Println(r.URL.Path)
+	fmt.Println(req.URL.Path)
 	fmt.Printf("%v (%T)\n", s, s)
 
 	// Output:
@@ -34,11 +26,11 @@ func Example() {
 
 func ExampleSegment() {
 	var s string
-	if err := parth.Segment(r.URL.Path, 4, &s); err != nil {
+	if err := parth.Segment(req.URL.Path, 4, &s); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	fmt.Println(r.URL.Path)
+	fmt.Println(req.URL.Path)
 	fmt.Printf("%v (%T)\n", s, s)
 
 	// Output:
@@ -48,11 +40,11 @@ func ExampleSegment() {
 
 func ExampleSequent() {
 	var f float32
-	if err := parth.Sequent(r.URL.Path, "key", &f); err != nil {
+	if err := parth.Sequent(req.URL.Path, "key", &f); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	fmt.Println(r.URL.Path)
+	fmt.Println(req.URL.Path)
 	fmt.Printf("%v (%T)\n", f, f)
 
 	// Output:
@@ -61,12 +53,12 @@ func ExampleSequent() {
 }
 
 func ExampleSpan() {
-	s, err := parth.Span(r.URL.Path, 2, 4)
+	s, err := parth.Span(req.URL.Path, 2, 4)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	fmt.Println(r.URL.Path)
+	fmt.Println(req.URL.Path)
 	fmt.Println(s)
 
 	// Output:
@@ -76,11 +68,11 @@ func ExampleSpan() {
 
 func ExampleSubSeg() {
 	var f float64
-	if err := parth.SubSeg(r.URL.Path, "key", 1, &f); err != nil {
+	if err := parth.SubSeg(req.URL.Path, "key", 1, &f); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	fmt.Println(r.URL.Path)
+	fmt.Println(req.URL.Path)
 	fmt.Printf("%v (%T)\n", f, f)
 
 	// Output:
@@ -89,17 +81,17 @@ func ExampleSubSeg() {
 }
 
 func ExampleSubSpan() {
-	s0, err := parth.SubSpan(r.URL.Path, "zero", 2, 4)
+	s0, err := parth.SubSpan(req.URL.Path, "zero", 2, 4)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	s1, err := parth.SubSpan(r.URL.Path, "1", 1, 3)
+	s1, err := parth.SubSpan(req.URL.Path, "1", 1, 3)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	fmt.Println(r.URL.Path)
+	fmt.Println(req.URL.Path)
 	fmt.Println(s0)
 	fmt.Println(s1)
 
@@ -113,14 +105,14 @@ func ExampleParth() {
 	var s string
 	var f float32
 
-	p := parth.New(r.URL.Path)
+	p := parth.New(req.URL.Path)
 	p.Segment(0, &s)
 	p.SubSeg("key", 1, &f)
 	if err := p.Err(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	fmt.Println(r.URL.Path)
+	fmt.Println(req.URL.Path)
 	fmt.Printf("%v (%T)\n", s, s)
 	fmt.Printf("%v (%T)\n", f, f)
 
@@ -130,32 +122,26 @@ func ExampleParth() {
 	// 5.5 (float32)
 }
 
-func ExampleUnmarshaler() {
-	/*
-		type mytype []byte
+type MyType []byte
 
-		func (m *mytype) UnmarshalSegment(seg string) error {
-			*m = []byte(seg)
-		}
-	*/
+// UnmarshalText implements encoding.TextUnmarshaler. Let's pretend something
+// interesting is actually happening here.
+func (m *MyType) UnmarshalText(text []byte) error {
+	*m = text
+	return nil
+}
 
-	var m mytype
+func Example_encodingTextUnmarshaler() {
+	var m MyType
 
-	if err := parth.Segment(r.URL.Path, 4, &m); err != nil {
+	if err := parth.Segment(req.URL.Path, 4, &m); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	fmt.Println(r.URL.Path)
+	fmt.Println(req.URL.Path)
 	fmt.Printf("%v == %q (%T)\n", m, m, m)
 
 	// Output:
 	// /zero/1/2/key/nn4.4nn/5.5
-	// [110 110 52 46 52 110 110] == "nn4.4nn" (parth_test.mytype)
-}
-
-type mytype []byte
-
-func (m *mytype) UnmarshalSegment(seg string) error {
-	*m = []byte(seg)
-	return nil
+	// [110 110 52 46 52 110 110] == "nn4.4nn" (parth_test.MyType)
 }

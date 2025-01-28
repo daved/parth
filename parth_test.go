@@ -519,8 +519,8 @@ func applyToUnmarshalerTFunc(path, key string, i *int, want []byte) func(*testin
 
 type custom []byte
 
-func (c *custom) UnmarshalSegment(d string) error {
-	*c = []byte(d)
+func (c *custom) UnmarshalText(text []byte) error {
+	*c = text
 	return nil
 }
 
