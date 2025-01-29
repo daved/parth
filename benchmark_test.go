@@ -10,9 +10,7 @@ import (
 	"testing"
 )
 
-var (
-	x interface{}
-)
+var x any
 
 func BenchmarkSegmentString(b *testing.B) {
 	p := "/zero/1/2"
@@ -20,7 +18,7 @@ func BenchmarkSegmentString(b *testing.B) {
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		_ = Segment(p, 1, &r)
+		_ = Segment(&r, p, 1)
 	}
 
 	x = r
@@ -32,7 +30,7 @@ func BenchmarkSegmentInt(b *testing.B) {
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		_ = Segment(p, 1, &r)
+		_ = Segment(&r, p, 1)
 	}
 
 	x = r
@@ -44,7 +42,7 @@ func BenchmarkSegmentIntNegIndex(b *testing.B) {
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		_ = Segment(p, -1, &r)
+		_ = Segment(&r, p, -1)
 	}
 
 	x = r

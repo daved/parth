@@ -28,7 +28,7 @@ func TestBhvrSegment(t *testing.T) {
 
 	t.Run("badType", func(t *testing.T) {
 		var x uintptr
-		err := Segment(path, 3, &x)
+		err := Segment(&x, path, 3)
 		exp(t, t.Name(), err)
 	})
 }
@@ -55,7 +55,7 @@ func TestBhvrSequent(t *testing.T) {
 
 	t.Run("badType", func(t *testing.T) {
 		var x uintptr
-		err := Sequent(path, "key", &x)
+		err := Sequent(&x, path, "key")
 		exp(t, t.Name(), err)
 	})
 }
@@ -113,7 +113,7 @@ func TestBhvrSubSeg(t *testing.T) {
 
 	t.Run("badType", func(t *testing.T) {
 		var x uintptr
-		err := SubSeg(path, "key", 2, &x)
+		err := SubSeg(&x, path, "key", 2)
 		exp(t, t.Name(), err)
 	})
 }
@@ -155,7 +155,7 @@ func TestBhvrParth(t *testing.T) {
 		p := NewBySpan("/zero/one/two/three", 1, 3)
 
 		var got string
-		p.Segment(1, &got)
+		p.Segment(&got, 1)
 		if unx(t, t.Name(), p.Err()) {
 			return
 		}
@@ -170,7 +170,7 @@ func TestBhvrParth(t *testing.T) {
 		p := NewBySubSpan("/zero/one/two/three/four", "one", 1, 0)
 
 		var got string
-		p.Sequent("three", &got)
+		p.Sequent(&got, "three")
 		if unx(t, t.Name(), p.Err()) {
 			return
 		}
@@ -186,7 +186,7 @@ func TestBhvrParth(t *testing.T) {
 
 		t.Run("subSeg", func(t *testing.T) {
 			var got string
-			p.SubSeg("one", 1, &got)
+			p.SubSeg(&got, "one", 1)
 
 			want := "three"
 			if got != want {
@@ -216,17 +216,17 @@ func TestBhvrParth(t *testing.T) {
 	})
 }
 
-func segSeqSubSeg(path, key string, i *int, v interface{}) error {
+func segSeqSubSeg(v any, path, key string, i *int) error {
 	if path != "" && key != "" && i != nil {
-		return SubSeg(path, key, *i, v)
+		return SubSeg(v, path, key, *i)
 	}
 
 	if path != "" && key != "" {
-		return Sequent(path, key, v)
+		return Sequent(v, path, key)
 	}
 
 	if path != "" && i != nil {
-		return Segment(path, *i, v)
+		return Segment(v, path, *i)
 	}
 
 	return fmt.Errorf("see segSeqSubSeg for missing requirements")
@@ -240,7 +240,7 @@ func applyToBoolTFunc(path, key string, i *int, want bool) func(*testing.T) {
 		}
 
 		var got bool
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -259,7 +259,7 @@ func applyToFloat32TFunc(path, key string, i *int, want float32) func(*testing.T
 		}
 
 		var got float32
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -278,7 +278,7 @@ func applyToFloat64TFunc(path, key string, i *int, want float64) func(*testing.T
 		}
 
 		var got float64
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -297,7 +297,7 @@ func applyToIntTFunc(path, key string, i *int, want int) func(*testing.T) {
 		}
 
 		var got int
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -316,7 +316,7 @@ func applyToInt16TFunc(path, key string, i *int, want int16) func(*testing.T) {
 		}
 
 		var got int16
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -335,7 +335,7 @@ func applyToInt32TFunc(path, key string, i *int, want int32) func(*testing.T) {
 		}
 
 		var got int32
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -354,7 +354,7 @@ func applyToInt64TFunc(path, key string, i *int, want int64) func(*testing.T) {
 		}
 
 		var got int64
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -373,7 +373,7 @@ func applyToInt8TFunc(path, key string, i *int, want int8) func(*testing.T) {
 		}
 
 		var got int8
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -392,7 +392,7 @@ func applyToStringTFunc(path, key string, i *int, want string) func(*testing.T) 
 		}
 
 		var got string
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -411,7 +411,7 @@ func applyToUintTFunc(path, key string, i *int, want uint) func(*testing.T) {
 		}
 
 		var got uint
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -430,7 +430,7 @@ func applyToUint16TFunc(path, key string, i *int, want uint16) func(*testing.T) 
 		}
 
 		var got uint16
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -449,7 +449,7 @@ func applyToUint32TFunc(path, key string, i *int, want uint32) func(*testing.T) 
 		}
 
 		var got uint32
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -468,7 +468,7 @@ func applyToUint64TFunc(path, key string, i *int, want uint64) func(*testing.T) 
 		}
 
 		var got uint64
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -487,7 +487,7 @@ func applyToUint8TFunc(path, key string, i *int, want uint8) func(*testing.T) {
 		}
 
 		var got uint8
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -506,7 +506,7 @@ func applyToUnmarshalerTFunc(path, key string, i *int, want []byte) func(*testin
 		}
 
 		var got custom
-		err := segSeqSubSeg(path, key, i, &got)
+		err := segSeqSubSeg(&got, path, key, i)
 		if unx(t, subj, err) {
 			return
 		}
@@ -533,9 +533,9 @@ var (
 	gwxFmt = "subj '%v': got %v, want %v"
 )
 
-type checkFunc func(*testing.T, interface{}, error) bool
+type checkFunc func(*testing.T, any, error) bool
 
-func unx(t *testing.T, subj interface{}, err error) bool {
+func unx(t *testing.T, subj any, err error) bool {
 	b := err != nil
 	if b {
 		t.Errorf(gwxFmt, subj, err, nil)
@@ -543,7 +543,7 @@ func unx(t *testing.T, subj interface{}, err error) bool {
 	return b
 }
 
-func exp(t *testing.T, subj interface{}, err error) bool {
+func exp(t *testing.T, subj any, err error) bool {
 	b := err == nil
 	if b {
 		t.Errorf(gwxFmt, subj, nil, "{error}")
